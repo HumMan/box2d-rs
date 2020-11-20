@@ -6,6 +6,9 @@ Minimum Rust version: 1.47.0
 
 Ported Box2D version: 2.4.0
 
+[![Latest release on crates.io](https://meritbadge.herokuapp.com/box2d-rs)](https://crates.io/crates/box2d-rs)
+[![Documentation on docs.rs](https://docs.rs/box2d-rs/badge.svg)](https://docs.rs/box2d-rs)
+
 When porting, I pursued the following goals
 - Keep file system structure as is for simpler further updates
 - Keep all identifiers names(except case convertion) and code order(except some specific cases)
