@@ -28,6 +28,6 @@ This repo is a work in progress.
 ## Compiling and running the testbed
 ```bash
 # At the reposity root
-cargo build --examples --tests'
+cargo build --examples --tests
 cargo run --example testbed
 ```
