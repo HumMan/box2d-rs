@@ -1,7 +1,9 @@
 # box2d-rs
 
-=====
 A native port of [Box2D](https://github.com/erincatto/box2d) to Rust.
+
+Minimum Rust version: 1.47.0
+
 Ported Box2D version: 2.4.0
 
 When porting, I pursued the following goals
@@ -23,15 +25,9 @@ When porting, I pursued the following goals
 
 This repo is a work in progress.
 
-## Compiling and running the demos
+## Compiling and running the testbed
 ```bash
 # At the reposity root
-cargo build --examples --tests
-```
-
-Main examples are located in the imgui-examples directory.
-
-```bash
-# At the reposity root
+cargo build --examples --tests'
 cargo run --example testbed
 ```
