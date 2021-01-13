@@ -1,3 +1,4 @@
+
 name: Rust
 
 on:
@@ -5,18 +6,21 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-
+    
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   build:
 
-    runs-on: [windows-latest, ubuntu-latest]
+    runs-on: ubuntu-latest
 
     steps:
+    - name: Install xmllint
+      run: sudo apt-get install libxcb-composite0-dev
     - uses: actions/checkout@v2
     - name: Build
       run: cargo build --verbose
     - name: Run tests
       run: cargo test --verbose
+    
