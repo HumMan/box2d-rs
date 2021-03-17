@@ -24,7 +24,6 @@ use crate::joints::b2_wheel_joint::*;
 
 use crate::private::dynamics::b2_joint as private;
 
-//TODO_humman 
 pub enum B2JointDefEnum<D: UserDataType> {
 	DistanceJoint(B2distanceJointDef<D>),
 	FrictionJoint(B2frictionJointDef<D>),

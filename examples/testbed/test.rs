@@ -12,7 +12,7 @@ use box2d_rs::b2_time_step::*;
 use box2d_rs::b2_world::*;
 use box2d_rs::b2_world_callbacks::*;
 
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
 use rand::Rng;
 
@@ -50,7 +50,7 @@ impl<D: UserDataType> B2destructionListener<D> for B2testDestructionListenerDefa
 	}
 }
 
-#[derive(Copy, Clone, Debug, Serialize, PartialEq)]
+#[derive(Copy, Clone, Debug, Serialize, PartialEq, Deserialize)]
 pub(crate) enum FixtureData {
 	Int(i32)
 }
@@ -62,7 +62,7 @@ impl Default for FixtureData
 	}
 }
 
-#[derive(Default, Copy, Clone, Debug, Serialize)]
+#[derive(Default, Copy, Clone, Debug, Serialize, Deserialize)]
 pub(crate) struct UserDataTypes;
 impl UserDataType for UserDataTypes {
     type Fixture = FixtureData;

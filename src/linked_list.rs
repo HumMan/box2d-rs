@@ -40,7 +40,8 @@ where
     where
         S: Serializer,
     {
-        let mut state = serializer.serialize_seq(None)?;
+        let len = self.iter().count();
+        let mut state = serializer.serialize_seq(Some(len))?;
         for jn_ in self.iter() {
             state.serialize_element(&*jn_.borrow())?;
         }

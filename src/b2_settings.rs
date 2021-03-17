@@ -2,7 +2,7 @@
 use std::assert;
 
 #[cfg(feature="serde_support")]
-use serde::{Serialize, Deserialize, Serializer, ser::{SerializeStruct, SerializeSeq}};
+use serde::{de::DeserializeOwned, Serialize, Deserialize, Serializer, ser::{SerializeStruct, SerializeSeq}};
 
 use std::rc::{Rc,Weak};
 pub fn b2_not_used<T>(_x: T) {}
@@ -34,10 +34,10 @@ pub trait UserDataType: Default + Clone + 'static {
 }
 
 #[cfg(feature="serde_support")]
-pub trait UserDataType: Default + Clone + Serialize + 'static {
-    type Fixture: Default + Clone + Serialize + std::fmt::Debug;
-    type Body: Default + Clone + Serialize + PartialEq + std::fmt::Debug;
-    type Joint: Default + Clone + Serialize + std::fmt::Debug;
+pub trait UserDataType: Default + Clone + Serialize + DeserializeOwned + 'static {
+    type Fixture: Default + Clone + Serialize + DeserializeOwned + std::fmt::Debug;
+    type Body: Default + Clone + Serialize + DeserializeOwned + PartialEq + std::fmt::Debug;
+    type Joint: Default + Clone + Serialize + DeserializeOwned + std::fmt::Debug;
 }
 
 pub const B2_MAX_FLOAT: f32 = std::f32::MAX;

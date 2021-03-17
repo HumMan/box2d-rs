@@ -10,12 +10,17 @@ mod test {
     use box2d_rs::b2_world::*;
     use box2d_rs::shapes::b2_polygon_shape::*;
 
+    #[cfg(feature="serde_support")]
+	use serde::{Serialize, Deserialize};
+
     #[derive(Default, Copy, Clone, Debug, PartialEq)]
+    #[cfg_attr(feature = "serde_support", derive(Serialize, Deserialize))]
     struct FixtureData {
         id: i32,
     }
 
     #[derive(Default, Copy, Clone, Debug, PartialEq)]
+    #[cfg_attr(feature = "serde_support", derive(Serialize, Deserialize))]
     struct UserDataTypes;
     impl UserDataType for UserDataTypes {
         type Fixture = FixtureData;

@@ -3,12 +3,17 @@ mod math_test {
     use box2d_rs::b2_math::*;
     use box2d_rs::b2_settings::*;
 
+    #[cfg(feature="serde_support")]
+	use serde::{Serialize, Deserialize};
+
     #[derive(Default, Copy, Clone, Debug,PartialEq)]
+    #[cfg_attr(feature = "serde_support", derive(Serialize, Deserialize))]
     struct FixtureData {
         id: i32,
     }
 
     #[derive(Default, Copy, Clone, Debug, PartialEq)]
+    #[cfg_attr(feature = "serde_support", derive(Serialize, Deserialize))]
     struct UserDataTypes;
     impl UserDataType for UserDataTypes {
         type Fixture = FixtureData;

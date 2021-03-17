@@ -33,10 +33,12 @@ mod double_linked_list;
 mod linked_list;
 
 #[cfg(feature="serde_support")]
-mod serialize_context;
+pub mod serialize_context;
 #[cfg(feature="serde_support")]
-mod serialize_b2_fixture;
+pub mod serialize_b2_fixture;
 #[cfg(feature="serde_support")]
-mod serialize_b2_body;
+pub mod serialize_b2_body;
+#[cfg(feature="serde_support")]
+pub mod serialize_b2_world;
 
 mod private;

@@ -5,10 +5,15 @@ use crate::b2_settings::upgrade;
 use crate::linked_list::*;
 use std::fmt;
 
+#[cfg(feature="serde_support")]
+use serde::{
+    ser::{SerializeSeq, SerializeStruct},
+    Deserialize, Serialize, Serializer,
+};
+
 pub trait DoubleLinkedListNode<T: DoubleLinkedListNode<T> + ?Sized>: LinkedListNode<T> {
     fn get_prev(&self) -> Option<Weak<RefCell<T>>>;
     fn set_prev(&mut self, value: Option<Weak<RefCell<T>>>);
-    //fn remove_from_list(&mut self);
 }
 
 pub struct DoubleLinkedList<T: DoubleLinkedListNode<T> + ?Sized> {
@@ -42,6 +47,25 @@ impl<T:DoubleLinkedListNode<T> + ?Sized> Clone for DoubleLinkedList<T> {
         return Self {
             head: self.head.clone(),
         };
+    }
+}
+
+
+#[cfg(feature="serde_support")]
+impl<T> Serialize for DoubleLinkedList<T>
+where
+    T: DoubleLinkedListNode<T> + ?Sized + Serialize,
+{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let len = self.iter().count();
+        let mut state = serializer.serialize_seq(Some(len))?;
+        for jn_ in self.iter() {
+            state.serialize_element(&*jn_.borrow())?;
+        }
+        state.end()
     }
 }
 

@@ -88,6 +88,7 @@ impl<D:UserDataType> DoubleLinkedListNode<B2body<D>> for B2body<D>
 /// A body definition holds all the data needed to construct a rigid body.
 /// You can safely re-use body definitions. Shapes are added to a body after construction.
 #[derive(Debug, Clone)]
+#[cfg_attr(feature = "serde_support", derive(Serialize, Deserialize))]
 pub struct B2bodyDef<D: UserDataType> {
 	/// The body type: static, kinematic, or dynamic.
 	/// Note: if a dynamic body would have zero mass, the mass is set to one.
@@ -149,7 +150,6 @@ pub type BodyWeakPtr<D> = Weak<RefCell<B2body<D>>>;
 
 /// A rigid body. These are created via B2world::create_body.
 #[derive(Default)]
-#[cfg_attr(feature = "serde_support", derive(Serialize))]
 pub struct B2body<D: UserDataType>
 //<BodyData>
 {
@@ -168,19 +168,14 @@ pub struct B2body<D: UserDataType>
 	pub(crate) m_force: B2vec2,
 	pub(crate) m_torque: f32,
 
-	#[cfg_attr(feature = "serde_support", serde(skip_serializing))]
 	pub(crate) m_world: B2worldWeakPtr<D>,
-	#[cfg_attr(feature = "serde_support", serde(skip_serializing))]
 	pub(crate) m_prev: Option<BodyWeakPtr<D>>,
-	#[cfg_attr(feature = "serde_support", serde(skip_serializing))]
 	pub(crate) m_next: Option<BodyPtr<D>>,
 
 	pub(crate) m_fixture_list: LinkedList<B2fixture<D>>,
 	pub(crate) m_fixture_count: i32,
 
-	#[cfg_attr(feature = "serde_support", serde(skip_serializing))]
 	pub(crate) m_joint_list: DoubleLinkedList<B2jointEdge<D>>,
-	#[cfg_attr(feature = "serde_support", serde(skip_serializing))]
 	pub(crate) m_contact_list: DoubleLinkedList<B2contactEdge<D>>,
 
 	pub(crate) m_mass: f32,
@@ -196,7 +191,6 @@ pub struct B2body<D: UserDataType>
 
 	pub(crate) m_sleep_time: f32,
 
-	#[cfg_attr(feature = "serde_support", serde(skip_serializing))]
 	pub(crate) m_user_data: Option<D::Body>,
 }
 

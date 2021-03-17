@@ -11,15 +11,19 @@ use box2d_rs::shapes::b2_circle_shape::*;
 use box2d_rs::shapes::b2_edge_shape::*;
 use box2d_rs::shapes::b2_polygon_shape::*;
 
+use box2d_rs::serialize_b2_world::*;
+
 use glium::backend::Facade;
 use std::cell::RefCell;
 use std::rc::Rc;
 
 use glium::glutin::event::{ElementState, KeyboardInput, VirtualKeyCode};
-// use serde_json;
-// use std::fs::read_to_string; // use instead of std::fs::File
-// use std::fs::File;
-// use std::io::BufReader;
+use serde_json;
+use serde_yaml;
+use bincode;
+use std::fs::read_to_string; // use instead of std::fs::File
+use std::fs::File;
+use std::io::BufReader;
 
 pub(crate) struct BoxStack<D: UserDataType> {
 	base: TestBasePtr<D>,
@@ -74,12 +78,6 @@ impl<D: UserDataType> BoxStack<D> {
 
 			shape.set_two_sided(B2vec2::new(20.0, 0.0), B2vec2::new(20.0, 20.0));
 			B2body::create_fixture_by_shape(ground.clone(), Rc::new(RefCell::new(shape)), 0.0);
-
-			//TODO_humman some serde tests
-			// if let Ok(json_file) = File::create("stack_ground.json") {
-			// 	serde_json::to_writer_pretty(json_file, &*ground.borrow())
-			// 		.expect("erro while writing json");
-			// }
 		}
 
 		let xs = [0.0, -10.0, -5.0, 5.0, 10.0];
@@ -149,59 +147,84 @@ impl<D: UserDataType> BoxStack<D> {
 		// 	}
 		// }
 
-		// if let Ok(json_file) = File::create("stack_body_polygon.yaml") {
-		// 	serde_yaml::to_writer(
+		// if let Ok(json_file) = File::create("stack_body.json") {
+		// 	serde_json::to_writer_pretty(
 		// 		json_file,
-		// 		&*(m_bodies[0]
-		// 			.borrow()
-		// 			.get_fixture_list()
-		// 			.front()
-		// 			.unwrap()
-		// 			.borrow()
-		// 			.get_shape()
-		// 			.as_polygon()
-		// 			.unwrap()),
+		// 		&*(m_bodies[0]),
 		// 	)
 		// 	.expect("erro while writing yaml");
 		// }
 
-		// {
-		// 	let file = File::open("stack_body_polygon.yaml").unwrap();
-		// 	let reader = BufReader::new(file);
-		// 	let u: B2polygonShape = serde_yaml::from_reader(reader).unwrap();
+		
 
-		// 	if let Ok(json_file) = File::create("stack_body_polygon_mod.yaml") {
-		// 		serde_yaml::to_writer(json_file, &u).expect("erro while writing yaml");
-		// 	}
-		// }
+		{
+			world_to_json(self_.m_world.clone(), "world.json");
+			let deserialized_world = world_from_json::<D>("world.json");
+			world_to_json(deserialized_world.clone(), "world.json.json");
 
-		// if let Ok(json_file) = File::create("stack_body_polygon.bincode") {
-		// 	bincode::serialize_into(
-		// 		json_file,
-		// 		&*(m_bodies[0]
-		// 			.borrow()
-		// 			.get_fixture_list()
-		// 			.front()
-		// 			.unwrap()
-		// 			.borrow()
-		// 			.get_shape()
-		// 			.as_polygon()
-		// 			.unwrap()),
-		// 	)
-		// 	.expect("erro while writing bincode");
-		// }
+			world_to_yaml(deserialized_world.clone(), "world.yaml");
+			let deserialized_world = world_from_yaml::<D>("world.yaml");
+			world_to_json(deserialized_world.clone(), "world.yaml.json");
 
-		// {
-		// 	let file = File::open("stack_body_polygon.bincode").unwrap();
-		// 	let reader = BufReader::new(file);
-		// 	let u: B2polygonShape = bincode::deserialize_from(reader).unwrap();
-
-		// 	if let Ok(json_file) = File::create("stack_body_polygon_mod.bincode") {
-		// 		bincode::serialize_into(json_file, &u).expect("erro while writing bincode");
-		// 	}
-		// }
+			world_to_bincode(deserialized_world.clone(), "world.bincode");
+			let deserialized_world = world_from_bincode::<D>("world.bincode");
+			world_to_json(deserialized_world.clone(), "world.bincode.json");			
+			
+		}
 	}
 }
+
+fn world_to_json<D:UserDataType>(world: B2worldPtr<D>, file_name: &str)
+{
+	let json_file = File::create(file_name).unwrap();
+	serde_json::to_writer_pretty(
+		json_file,
+		&*world,
+	)
+	.expect("erro while writing yaml");	
+}
+
+fn world_from_json<D:UserDataType>(file_name: &str)->B2worldPtr<D>
+{
+	let file = File::open(file_name).unwrap();
+	let reader = BufReader::new(file);
+	return serde_json::from_reader::<_, B2worldDeserializeResult<D>>(reader).unwrap().world;
+}
+
+fn world_to_yaml<D:UserDataType>(world: B2worldPtr<D>, file_name: &str)
+{
+	let json_file = File::create(file_name).unwrap();
+	serde_yaml::to_writer(
+		json_file,
+		&*world,
+	)
+	.expect("erro while writing yaml");	
+}
+
+fn world_from_yaml<D:UserDataType>(file_name: &str)->B2worldPtr<D>
+{
+	let file = File::open(file_name).unwrap();
+	let reader = BufReader::new(file);
+	return serde_yaml::from_reader::<_, B2worldDeserializeResult<D>>(reader).unwrap().world;
+}
+
+fn world_to_bincode<D:UserDataType>(world: B2worldPtr<D>, file_name: &str)
+{
+	let json_file = File::create(file_name).unwrap();
+	bincode::serialize_into(
+		json_file,
+		&*world,
+	)
+	.expect("erro while writing yaml");	
+}
+
+fn world_from_bincode<D:UserDataType>(file_name: &str)->B2worldPtr<D>
+{
+	let file = File::open(file_name).unwrap();
+	let reader = BufReader::new(file);
+	return bincode::deserialize_from::<_, B2worldDeserializeResult<D>>(reader).unwrap().world;
+}
+
 impl<D: UserDataType, F: Facade> TestDyn<D, F> for BoxStack<D> {
 	fn get_base(&self) -> TestBasePtr<D> {
 		return self.base.clone();
