@@ -5,7 +5,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 
 #[cfg(feature="serde_support")]
-use serde::{Serialize, Deserialize, Serializer};
+use serde::{Serialize, Deserialize};
 
 /// This holds the mass data computed for a shape.
 #[derive(Default, Clone, Copy, Debug)]

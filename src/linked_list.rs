@@ -1,7 +1,7 @@
 #[cfg(feature="serde_support")]
 use serde::{
-    ser::{SerializeSeq, SerializeStruct},
-    Deserialize, Serialize, Serializer,
+    ser::{SerializeSeq},
+    Serialize, Serializer,
 };
 use std::cell::RefCell;
 use std::ptr;

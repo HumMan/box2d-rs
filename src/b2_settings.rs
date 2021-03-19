@@ -2,7 +2,7 @@
 use std::assert;
 
 #[cfg(feature="serde_support")]
-use serde::{de::DeserializeOwned, Serialize, Deserialize, Serializer, ser::{SerializeStruct, SerializeSeq}};
+use serde::{de::DeserializeOwned, Serialize};
 
 use std::rc::{Rc,Weak};
 pub fn b2_not_used<T>(_x: T) {}

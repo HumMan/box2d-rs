@@ -25,6 +25,9 @@ use super::tests::register::get_tests_list;
 
 use imgui::im_str;
 
+#[cfg(feature="serde_support")]
+use super::test_serialize;
+
 pub struct System {
     pub event_loop: EventLoop<()>,
     pub display: glium::Display,
@@ -506,6 +509,12 @@ impl System {
                                                         .create_fcn)(
                                                         g_debug_draw.clone()
                                                     );
+                                                    #[cfg(feature="serde_support")]
+                                                    {                                                        
+                                                        test_serialize::test_serialize_deserialize::<D>(
+                                                            g_test_entries[s_settings.m_test_index as usize].name,
+                                                            s_test.borrow().get_base().borrow().m_world.clone());
+                                                    }
                                                 }
                                             });
                                     }

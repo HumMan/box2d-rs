@@ -3,23 +3,7 @@ use crate::b2_math::*;
 use crate::b2_settings::*;
 use crate::b2_shape::*;
 use crate::private::collision::b2_polygon_shape as private;
-#[cfg(feature="serde_support")]
-use crate::serialize_context;
 use std::rc::Rc;
-
-#[cfg(feature="serde_support")]
-use serde::de;
-#[cfg(feature="serde_support")]
-use serde::de::{DeserializeSeed, Deserializer, MapAccess, SeqAccess, Visitor};
-#[cfg(feature="serde_support")]
-use serde::{
-	ser::{SerializeSeq, SerializeStruct},
-	Deserialize, Serialize, Serializer,
-};
-#[cfg(feature="serde_support")]
-use strum::VariantNames;
-#[cfg(feature="serde_support")]
-use strum_macros::EnumString;
 
 /// A solid convex polygon. It is assumed that the interior of the polygon is to
 /// the left of each edge.

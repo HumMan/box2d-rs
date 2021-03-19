@@ -1,11 +1,7 @@
-use crate::b2_collision::*;
 use crate::b2_math::*;
 use crate::b2_settings::*;
-use crate::b2_shape::*;
 use super::b2_polygon_shape::*;
 use crate::serialize_context;
-use crate::private::collision::b2_polygon_shape as private;
-use std::rc::Rc;
 
 use serde::{Serialize, Deserialize, Serializer, ser::{SerializeStruct, SerializeSeq}};
 use std::fmt;

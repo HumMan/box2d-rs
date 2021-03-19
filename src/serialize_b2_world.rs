@@ -1,25 +1,17 @@
-use serde::de::{self, Deserializer, MapAccess, SeqAccess, Visitor, Error};
+use serde::de::{self, Deserializer, Error, MapAccess, SeqAccess, Visitor};
 use serde::{
-    ser::{SerializeSeq, SerializeStruct},
+    ser::{SerializeStruct},
     Deserialize, Serialize, Serializer,
 };
-use std::cell::RefCell;
 use std::fmt;
 use std::marker::PhantomData;
-use std::rc::{Rc, Weak};
+use std::rc::{Rc};
 
-use crate::b2_body::*;
-use crate::b2_contact::*;
-use crate::b2_fixture::*;
-use crate::b2_joint::*;
+
 use crate::b2_math::*;
 use crate::b2_settings::*;
-use crate::b2_shape::*;
 use crate::b2_world::*;
-use crate::private::dynamics::b2_body as private;
 
-use crate::double_linked_list::*;
-use crate::linked_list::*;
 use strum::VariantNames;
 use strum_macros::EnumVariantNames;
 
@@ -38,11 +30,9 @@ impl<D: UserDataType> Serialize for B2world<D> {
     }
 }
 
-pub struct B2worldDeserializeResult<U: UserDataType>
-{
-    pub world: B2worldPtr<U>
+pub struct B2worldDeserializeResult<U: UserDataType> {
+    pub world: B2worldPtr<U>,
 }
-
 
 impl<'de, U: UserDataType> Deserialize<'de> for B2worldDeserializeResult<U> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
@@ -73,18 +63,15 @@ impl<'de, U: UserDataType> Deserialize<'de> for B2worldDeserializeResult<U> {
             where
                 V: SeqAccess<'de>,
             {
-
-                let mut m_gravity = B2vec2::zero();
-                m_gravity = seq
+                let m_gravity: B2vec2 = seq
                     .next_element()?
                     .ok_or_else(|| de::Error::invalid_length(0, &self))?;
-                let mut result = B2world::new(m_gravity);
-                let bodiesContext = B2bodyVisitorContext{
-                    m_world: Rc::downgrade(&result)
-                };
-                m_gravity = seq
-                    .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(0, &self))?;
+                let result = B2world::new(m_gravity);
+               
+                seq.next_element_seed(B2bodyVisitorContext {
+                    m_world: Rc::downgrade(&result),
+                })?
+                .ok_or_else(|| de::Error::invalid_length(0, &self))?;
                 Ok(result)
             }
 
@@ -101,8 +88,8 @@ impl<'de, U: UserDataType> Deserialize<'de> for B2worldDeserializeResult<U> {
                         }
                         Field::m_bodies_list => {
                             let world = B2world::<U>::new(m_gravity);
-                            map.next_value_seed(B2bodyVisitorContext{
-                                m_world: Rc::downgrade(&world)
+                            map.next_value_seed(B2bodyVisitorContext {
+                                m_world: Rc::downgrade(&world),
                             })?;
                             result = Ok(world);
                         }
@@ -112,10 +99,8 @@ impl<'de, U: UserDataType> Deserialize<'de> for B2worldDeserializeResult<U> {
             }
         }
 
-        let result = deserializer.deserialize_struct("B2world", Field::VARIANTS, B2worldVisitor::default());
-        Ok(B2worldDeserializeResult
-        {
-            world: result?
-        })
+        let result =
+            deserializer.deserialize_struct("B2world", Field::VARIANTS, B2worldVisitor::default());
+        Ok(B2worldDeserializeResult { world: result? })
     }
 }

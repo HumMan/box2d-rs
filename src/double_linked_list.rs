@@ -7,8 +7,8 @@ use std::fmt;
 
 #[cfg(feature="serde_support")]
 use serde::{
-    ser::{SerializeSeq, SerializeStruct},
-    Deserialize, Serialize, Serializer,
+    ser::SerializeSeq,
+    Serialize, Serializer,
 };
 
 pub trait DoubleLinkedListNode<T: DoubleLinkedListNode<T> + ?Sized>: LinkedListNode<T> {
