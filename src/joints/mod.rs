@@ -9,3 +9,6 @@ pub mod b2_revolute_joint;
 pub mod b2_rope_joint;
 pub mod b2_weld_joint;
 pub mod b2_wheel_joint;
+
+#[cfg(feature="serde_support")]
+pub mod serialize;

@@ -11,8 +11,13 @@ use std::rc::{Rc};
 
 use crate::b2_body::*;
 use crate::b2_settings::*;
-
+use crate::b2_joint::*;
 use crate::b2_world::*;
+
+use crate::joints::b2_distance_joint::*;
+use crate::joints::b2_revolute_joint::*;
+use crate::joints::serialize::serialize_b2_distance_joint::*;
+use crate::joints::serialize::serialize_b2_revolute_joint::*;
 
 use crate::serialize_b2_fixture::*;
 
@@ -73,10 +78,11 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2bodyDefinitionVisitorConte
         #[derive(Deserialize)]
         #[serde(field_identifier, rename_all = "lowercase")]
         #[derive(EnumVariantNames)]
+        #[allow(non_camel_case_types)]
         enum Field {
             m_definition,
             m_fixture_list,
-        };
+        }
 
         struct B2bodyDefinitionVisitor<D: UserDataType>(B2bodyDefinitionVisitorContext<D>);
 
@@ -133,24 +139,24 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2bodyDefinitionVisitorConte
     }
 }
 
-pub(crate) struct B2bodyVisitorContext<D: UserDataType> {
+pub(crate) struct B2bodyListContext<D: UserDataType> {
     pub(crate) m_world: B2worldWeakPtr<D>,
 }
 
-impl<'de, U: UserDataType> DeserializeSeed<'de> for B2bodyVisitorContext<U> {
+impl<'de, U: UserDataType> DeserializeSeed<'de> for B2bodyListContext<U> {
     type Value = ();
 
     fn deserialize<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
     where
         D: Deserializer<'de>,
     {
-        struct B2bodyVisitor<D: UserDataType>(B2bodyVisitorContext<D>);
+        struct B2bodyVisitor<D: UserDataType>(B2bodyListContext<D>);
 
         impl<'de, U: UserDataType> Visitor<'de> for B2bodyVisitor<U> {
             type Value = ();
 
             fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                formatter.write_str("struct B2fixture")
+                formatter.write_str("struct B2bodyListContext")
             }
 
             fn visit_seq<V>(self, mut seq: V) -> Result<Self::Value, V::Error>
@@ -166,5 +172,171 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2bodyVisitorContext<U> {
         }
 
         deserializer.deserialize_seq(B2bodyVisitor(self))
+    }
+}
+
+
+#[derive(Clone)]
+pub(crate) struct B2jointDefinitionVisitorContext<D: UserDataType> {
+    pub(crate) m_world: B2worldWeakPtr<D>,
+    pub(crate) m_body_array: Vec<BodyPtr<D>>,
+}
+
+impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefinitionVisitorContext<U> {
+    type Value = ();
+
+    fn deserialize<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        #[serde(field_identifier, rename_all = "lowercase")]
+        #[derive(EnumVariantNames)]
+        #[allow(non_camel_case_types)]
+        enum Field {
+            jtype,
+            joint_def,
+        }
+
+        struct B2jointDefinitionVisitor<D: UserDataType>(B2jointDefinitionVisitorContext<D>);
+
+        impl<'de, U: UserDataType> Visitor<'de> for B2jointDefinitionVisitor<U> {
+            type Value = ();
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("struct B2fixture")
+            }
+
+            fn visit_seq<V>(self, mut seq: V) -> Result<Self::Value, V::Error>
+            where
+                V: SeqAccess<'de>,
+            {
+                let world = self.0.m_world.upgrade().unwrap();
+
+                let jtype: B2jointType = seq
+                    .next_element()?
+                    .ok_or_else(|| de::Error::invalid_length(0, &self))?;
+
+                match jtype {
+                    B2jointType::EUnknownJoint =>{
+                        panic!();
+                    }
+                    B2jointType::EDistanceJoint => {
+                        let def = seq.next_element_seed(B2distanceJointDefContext {
+                            m_body_array: self.0.m_body_array.clone(),
+                        })?
+                        .ok_or_else(|| de::Error::invalid_length(0, &self))?;
+
+                        world.borrow_mut().create_joint(&B2JointDefEnum::DistanceJoint(def));
+                    }
+                    B2jointType::EFrictionJoint => {}
+                    B2jointType::EGearJoint => {}
+                    B2jointType::EMouseJoint => {}
+                    B2jointType::EMotorJoint => {}
+                    B2jointType::EPulleyJoint => {}
+                    B2jointType::ERevoluteJoint => {
+                        let def = seq.next_element_seed(B2revoluteJointDefContext {
+                            m_body_array: self.0.m_body_array.clone(),
+                        })?
+                        .ok_or_else(|| de::Error::invalid_length(0, &self))?;
+
+                        world.borrow_mut().create_joint(&B2JointDefEnum::RevoluteJoint(def));
+                    }
+                    B2jointType::ERopeJoint => {}
+                    B2jointType::EPrismaticJoint => {}
+                    B2jointType::EWeldJoint => {}
+                    B2jointType::EWheelJoint => {}
+                }
+
+                Ok(())
+            }
+
+            fn visit_map<V>(self, mut map: V) -> Result<Self::Value, V::Error>
+            where
+                V: MapAccess<'de>,
+            {
+                let world = self.0.m_world.upgrade().unwrap();
+                let mut jtype: Option<B2jointType> = None;
+                while let Some(key) = map.next_key()? {
+                    match key {
+                        Field::jtype => {
+                            jtype = Some(map.next_value()?);
+                        }
+                        Field::joint_def => {
+                            match jtype.unwrap() {
+                                B2jointType::EUnknownJoint =>{
+                                    panic!();
+                                }
+                                B2jointType::EDistanceJoint => {
+                                    let def = map.next_value_seed(B2distanceJointDefContext {
+                                        m_body_array: self.0.m_body_array.clone(),
+                                    })?;
+                                    world.borrow_mut().create_joint(&B2JointDefEnum::DistanceJoint(def));
+                                }
+                                B2jointType::EFrictionJoint => {}
+                                B2jointType::EGearJoint => {}
+                                B2jointType::EMouseJoint => {}
+                                B2jointType::EMotorJoint => {}
+                                B2jointType::EPulleyJoint => {}
+                                B2jointType::ERevoluteJoint => {
+                                    let def = map.next_value_seed(B2revoluteJointDefContext {
+                                        m_body_array: self.0.m_body_array.clone(),
+                                    })?;
+                                    world.borrow_mut().create_joint(&B2JointDefEnum::RevoluteJoint(def));
+                                }
+                                B2jointType::ERopeJoint => {}
+                                B2jointType::EPrismaticJoint => {}
+                                B2jointType::EWeldJoint => {}
+                                B2jointType::EWheelJoint => {}
+                            }
+                            
+                        }
+                    }
+                }
+                
+                Ok(())
+            }
+        }
+
+        deserializer.deserialize_struct("B2body", Field::VARIANTS, B2jointDefinitionVisitor(self))
+    }
+}
+
+
+pub(crate) struct B2jointListContext<D: UserDataType> {
+    pub(crate) m_world: B2worldWeakPtr<D>,
+    pub(crate) m_body_array: Vec<BodyPtr<D>>,
+}
+
+impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointListContext<U> {
+    type Value = ();
+
+    fn deserialize<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct B2jointListVisitor<D: UserDataType>(B2jointListContext<D>);
+
+        impl<'de, U: UserDataType> Visitor<'de> for B2jointListVisitor<U> {
+            type Value = ();
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("struct B2jointListContext")
+            }
+
+            fn visit_seq<V>(self, mut seq: V) -> Result<Self::Value, V::Error>
+            where
+                V: SeqAccess<'de>,
+            {
+                let context = B2jointDefinitionVisitorContext {
+                    m_world: self.0.m_world.clone(),
+                    m_body_array: self.0.m_body_array.clone(),
+                };
+                while let Some(elem) = seq.next_element_seed(context.clone())? {}
+                Ok(())
+            }
+        }
+
+        deserializer.deserialize_seq(B2jointListVisitor(self))
     }
 }

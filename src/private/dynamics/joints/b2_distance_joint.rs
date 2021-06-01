@@ -240,20 +240,3 @@ pub(crate) fn  get_reaction_torque<D: UserDataType>(_this: &B2distanceJoint<D>,i
 	b2_not_used(inv_dt);
 	return 0.0;
 }
-
-pub(crate) fn dump<D: UserDataType>(_this: &B2distanceJoint<D>)
-{
-	// i32 index_a = m_body_a->m_island_index;
-	// i32 index_b = m_body_b->m_island_index;
-
-	// b2Log("  B2distanceJointDef jd;\n");
-	// b2Log("  jd.body_a = bodies[%d];\n", index_a);
-	// b2Log("  jd.body_b = bodies[%d];\n", index_b);
-	// b2Log("  jd.collide_connected = bool(%d);\n", m_collide_connected);
-	// b2Log("  jd.local_anchor_a.set(%.15lef, %.15lef);\n", m_local_anchor_a.x, m_local_anchor_a.y);
-	// b2Log("  jd.local_anchor_b.set(%.15lef, %.15lef);\n", m_local_anchor_b.x, m_local_anchor_b.y);
-	// b2Log("  jd.length = %.15lef;\n", m_length);
-	// b2Log("  jd.frequency_hz = %.15lef;\n", m_frequency_hz);
-	// b2Log("  jd.damping_ratio = %.15lef;\n", m_damping_ratio);
-	// b2Log("  joints[%d] = m_world->create_joint(&jd);\n", m_index);
-}

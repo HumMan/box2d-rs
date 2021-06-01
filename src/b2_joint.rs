@@ -10,6 +10,9 @@ use crate::linked_list::*;
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
+#[cfg(feature="serde_support")]
+use serde::{Serialize, Deserialize};
+
 use crate::joints::b2_distance_joint::*;
 use crate::joints::b2_friction_joint::*;
 use crate::joints::b2_gear_joint::*;
@@ -38,6 +41,8 @@ pub enum B2JointDefEnum<D: UserDataType> {
 	WheelJoint(B2wheelJointDef<D>),
 }
 
+
+#[cfg_attr(feature = "serde_support", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum B2jointType {
 	EUnknownJoint,

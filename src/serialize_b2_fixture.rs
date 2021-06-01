@@ -64,6 +64,7 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2fixtureVisitorContext<U> {
 		#[derive(Deserialize)]
 		#[serde(field_identifier, rename_all = "lowercase")]
 		#[derive(EnumVariantNames)]
+        #[allow(non_camel_case_types)]
 		enum Field {
 			m_friction,
 			m_restitution,
@@ -72,7 +73,7 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2fixtureVisitorContext<U> {
 			m_filter,
 			m_shape_type,
 			m_shape,
-		};
+		}
 		struct B2fixtureVisitor<D: UserDataType>(B2fixtureVisitorContext<D>);
 
 		impl<'de, U: UserDataType> Visitor<'de> for B2fixtureVisitor<U> {

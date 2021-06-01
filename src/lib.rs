@@ -33,9 +33,9 @@ mod double_linked_list;
 mod linked_list;
 
 #[cfg(feature="serde_support")]
-pub mod serialize_context;
-#[cfg(feature="serde_support")]
 pub mod serialize_b2_fixture;
+#[cfg(feature="serde_support")]
+pub mod serialize_b2_joint;
 #[cfg(feature="serde_support")]
 pub mod serialize_b2_body;
 #[cfg(feature="serde_support")]

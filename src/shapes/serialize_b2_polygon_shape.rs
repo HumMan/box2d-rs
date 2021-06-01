@@ -1,7 +1,6 @@
 use crate::b2_math::*;
 use crate::b2_settings::*;
 use super::b2_polygon_shape::*;
-use crate::serialize_context;
 
 use serde::{Serialize, Deserialize, Serializer, ser::{SerializeStruct, SerializeSeq}};
 use std::fmt;
@@ -10,9 +9,26 @@ use serde::de::{DeserializeSeed, Deserializer, Visitor, SeqAccess, MapAccess};
 use strum::VariantNames;
 use strum_macros::{EnumString,EnumVariantNames, AsRefStr};
 
+use std::marker::PhantomData;
+
+struct WithContext<'ctx, T: ?Sized, A> {
+    context: &'ctx T,
+    phantom: PhantomData<A>,
+}
+
+impl<'ctx, T: ?Sized, A> WithContext<'ctx, T, A>{
+    fn new(context: &'ctx T) -> Self{
+        Self{
+            context,
+            phantom: PhantomData
+        }
+    }
+}
+
 #[derive(Deserialize)]
 #[serde(field_identifier, rename_all = "lowercase")]
 #[derive(EnumString, EnumVariantNames, AsRefStr)]
+#[allow(non_camel_case_types)]
 enum Field {
 	base,
 	m_centroid,
@@ -33,7 +49,7 @@ impl Serialize for B2polygonShape
 		state.serialize_field("m_count", &self.m_count)?;
 		{
 			struct VerticesContext;
-			impl Serialize for serialize_context::WithContext<'_, B2polygonShape, VerticesContext>
+			impl Serialize for WithContext<'_, B2polygonShape, VerticesContext>
 			{
 				fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
 				where
@@ -49,10 +65,10 @@ impl Serialize for B2polygonShape
 				}
 			}
 			
-			state.serialize_field("m_vertices", &serialize_context::WithContext::<'_, B2polygonShape, VerticesContext>::new(&self))?;
+			state.serialize_field("m_vertices", &WithContext::<'_, B2polygonShape, VerticesContext>::new(&self))?;
 
 			struct NormalsContext;
-			impl Serialize for serialize_context::WithContext<'_, B2polygonShape, NormalsContext>
+			impl Serialize for WithContext<'_, B2polygonShape, NormalsContext>
 			{
 				fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
 				where
@@ -68,7 +84,7 @@ impl Serialize for B2polygonShape
 				}
 			}
 			
-			state.serialize_field("m_normals", &serialize_context::WithContext::<'_, B2polygonShape, NormalsContext>::new(&self))?;
+			state.serialize_field("m_normals", &WithContext::<'_, B2polygonShape, NormalsContext>::new(&self))?;
 		}
 		state.end()
 	}
