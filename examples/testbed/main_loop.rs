@@ -468,11 +468,14 @@ impl System {
                                 g_debug_draw.clone(),
                             );
                         }
-                        if ui.button(im_str!("Deserialize"), button_sz) {
-                            let new_world = test_serialize::test_deserialize::<D>(g_test_entries[s_settings.m_test_index as usize].name);
-                            let base = s_test.borrow().get_base();
-                            new_world.borrow_mut().set_debug_draw(g_debug_draw.clone());
-                            base.borrow_mut().m_world = new_world;
+                        #[cfg(feature="serde_support")]
+                        {
+                            if ui.button(im_str!("Deserialize"), button_sz) {
+                                let new_world = test_serialize::test_deserialize::<D>(g_test_entries[s_settings.m_test_index as usize].name);
+                                let base = s_test.borrow().get_base();
+                                new_world.borrow_mut().set_debug_draw(g_debug_draw.clone());
+                                base.borrow_mut().m_world = new_world;
+                            }
                         }
                         if ui.button(im_str!("Quit"), button_sz) {
                             *control_flow = ControlFlow::Exit;
