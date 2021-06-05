@@ -6,6 +6,7 @@ use serde::{
 use std::fmt;
 use std::marker::PhantomData;
 use std::rc::Rc;
+use std::cell::RefCell;
 
 use crate::b2_joint::*;
 use crate::b2_math::*;
@@ -13,7 +14,10 @@ use crate::b2_settings::*;
 use crate::b2_world::*;
 
 use crate::joints::serialize::serialize_b2_distance_joint::*;
+use crate::joints::serialize::serialize_b2_friction_joint::*;
 use crate::joints::serialize::serialize_b2_revolute_joint::*;
+use crate::joints::serialize::serialize_b2_gear_joint::*;
+use crate::joints::serialize::serialize_b2_prismatic_joint::*;
 
 use strum::VariantNames;
 use strum_macros::EnumVariantNames;
@@ -41,17 +45,19 @@ where
     }
 }
 
-impl<D> Serialize for DoubleLinkedList<dyn B2jointTraitDyn<D>>
-where
-    D: UserDataType,
+pub(crate) struct B2jointsArrayContext<D: UserDataType> {
+    pub(crate) m_joints_to_process: Vec<B2jointPtr<D>>,
+}
+
+impl<D: UserDataType> Serialize for B2jointsArrayContext<D>
 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
-        let len = self.iter().count();
+        let len = self.m_joints_to_process.len();
         let mut state = serializer.serialize_seq(Some(len))?;
-        for j in self.iter() {
+        for j in &self.m_joints_to_process {
             match j.borrow().as_derived() {
                 JointAsDerived::EDistanceJoint(joint) => {
                     let def = joint.get_def();
@@ -60,8 +66,20 @@ where
                         joint_def: def,
                     })?;
                 }
-                JointAsDerived::EFrictionJoint(joint) => {}
-                JointAsDerived::EGearJoint(joint) => {}
+                JointAsDerived::EFrictionJoint(joint) => {
+                    let def = joint.get_def();
+                    state.serialize_element(&JointWithType {
+                        jtype: def.base.jtype,
+                        joint_def: def,
+                    })?;
+                }
+                JointAsDerived::EGearJoint(joint) => {
+                    let def = joint.get_def();
+                    state.serialize_element(&JointWithType {
+                        jtype: def.base.jtype,
+                        joint_def: def,
+                    })?;
+                }
                 JointAsDerived::EMouseJoint(joint) => {}
                 JointAsDerived::EMotorJoint(joint) => {}
                 JointAsDerived::EPulleyJoint(joint) => {}
@@ -73,7 +91,13 @@ where
                     })?;
                 }
                 JointAsDerived::ERopeJoint(joint) => {}
-                JointAsDerived::EPrismaticJoint(joint) => {}
+                JointAsDerived::EPrismaticJoint(joint) => {
+                    let def = joint.get_def();
+                    state.serialize_element(&JointWithType {
+                        jtype: def.base.jtype,
+                        joint_def: def,
+                    })?;
+                }
                 JointAsDerived::EWeldJoint(joint) => {}
                 JointAsDerived::EWheelJoint(joint) => {}
             }
@@ -87,7 +111,7 @@ impl<D: UserDataType> Serialize for B2world<D> {
     where
         S: Serializer,
     {
-        let mut state = serializer.serialize_struct("B2world", 2)?;
+        let mut state = serializer.serialize_struct("B2world", 3)?;
 
         state.serialize_field("m_gravity", &self.m_gravity)?;
         state.serialize_field("m_bodies_list", &self.m_body_list)?;
@@ -95,7 +119,36 @@ impl<D: UserDataType> Serialize for B2world<D> {
             b.borrow_mut().m_island_index = i as i32;
         }
 
-        state.serialize_field("m_joints_list", &self.m_joint_list)?;
+        //TODO get m_joint_count from world
+        let mut not_gear_joint = Vec::new();
+        let mut gear_joint = Vec::new();
+
+        for (i, ref mut b) in self.m_joint_list.iter().enumerate() {
+            let mut j = b.borrow_mut();
+            j.get_base_mut().m_index = -1;
+            if j.get_base().m_type!=B2jointType::EGearJoint
+            {
+                not_gear_joint.push(b.clone());
+            }
+            else
+            {
+                gear_joint.push(b.clone());
+            }
+        }
+
+        for (i, j) in not_gear_joint.iter().enumerate()
+        {
+            let mut j = j.borrow_mut();
+            j.get_base_mut().m_index = i as i32;
+        }
+
+        state.serialize_field("m_joints_list", &B2jointsArrayContext{
+            m_joints_to_process: not_gear_joint,
+        } )?;
+
+        state.serialize_field("m_gear_joints_list", &B2jointsArrayContext{
+            m_joints_to_process: gear_joint,
+        } )?;
 
         state.end()
     }
@@ -117,7 +170,8 @@ impl<'de, U: UserDataType> Deserialize<'de> for B2worldDeserializeResult<U> {
         enum Field {
             m_gravity,
             m_bodies_list,
-            m_joints_list
+            m_joints_list,
+            m_gear_joints_list
         }
         #[derive(Default)]
         struct B2worldVisitor<U: UserDataType> {
@@ -141,19 +195,32 @@ impl<'de, U: UserDataType> Deserialize<'de> for B2worldDeserializeResult<U> {
                 let world = B2world::new(m_gravity);
 
                 seq.next_element_seed(B2bodyListContext {
-                    m_world: Rc::downgrade(&world),
+                    m_world: world.clone(),
                 })?
                 .ok_or_else(|| de::Error::invalid_length(0, &self))?;
 
                 let m_body_array;
                 {
-                    m_body_array = world.borrow().m_body_list.iter().collect::<Vec<_>>();
+                    m_body_array = Rc::new(RefCell::new(world.borrow().m_body_list.iter().collect::<Vec<_>>()));
                 }  
 
                 seq.next_element_seed(B2jointListContext {
-                                m_world: Rc::downgrade(&world.clone()),
-                                m_body_array
+                                m_world: world.clone(),
+                                m_body_array: m_body_array.clone(),
+                                m_all_joints: Rc::default()
                             })?
+                .ok_or_else(|| de::Error::invalid_length(0, &self))?;
+
+                let m_all_joints;
+                {
+                    m_all_joints = Rc::new(RefCell::new(world.borrow().m_joint_list.iter().collect::<Vec<_>>()));
+                }  
+
+                seq.next_element_seed(B2jointListContext {
+                    m_world: world.clone(),
+                    m_body_array: m_body_array.clone(),
+                    m_all_joints
+                })?
                 .ok_or_else(|| de::Error::invalid_length(0, &self))?;
                 
                 Ok(world)
@@ -164,6 +231,9 @@ impl<'de, U: UserDataType> Deserialize<'de> for B2worldDeserializeResult<U> {
                 V: MapAccess<'de>,
             {
                 let mut world = None;
+                let mut m_body_array = None;
+                let mut m_all_joints = None;
+
                 while let Some(key) = map.next_key()? {
                     match key {
                         Field::m_gravity => {
@@ -172,17 +242,27 @@ impl<'de, U: UserDataType> Deserialize<'de> for B2worldDeserializeResult<U> {
                         }
                         Field::m_bodies_list => {                            
                             map.next_value_seed(B2bodyListContext {
-                                m_world: Rc::downgrade(&world.as_ref().unwrap()),
+                                m_world: world.clone().unwrap(),
                             })?;
+
+                            m_body_array = Some(Rc::new(RefCell::new(world.as_ref().unwrap().borrow().m_body_list.iter().collect::<Vec<_>>())));
                         }
                         Field::m_joints_list => {                          
-                            let m_body_array;
-                            {
-                                m_body_array = world.as_ref().unwrap().borrow().m_body_list.iter().collect::<Vec<_>>();
-                            }  
+ 
                             map.next_value_seed(B2jointListContext {
-                                m_world: Rc::downgrade(&world.as_ref().unwrap()),
-                                m_body_array
+                                m_world: world.clone().unwrap(),
+                                m_body_array: m_body_array.clone().unwrap(),
+                                m_all_joints: Rc::default()
+                            })?;
+
+                            m_all_joints = Some(Rc::new(RefCell::new(world.as_ref().unwrap().borrow().m_joint_list.iter().collect::<Vec<_>>())));
+                        }
+                        Field::m_gear_joints_list => {                          
+
+                            map.next_value_seed(B2jointListContext {
+                                m_world: world.clone().unwrap(),
+                                m_body_array: m_body_array.clone().unwrap(),
+                                m_all_joints: m_all_joints.clone().unwrap()
                             })?;
                         }
                     }

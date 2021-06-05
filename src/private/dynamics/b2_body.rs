@@ -537,32 +537,3 @@ pub fn set_fixed_rotation<D: UserDataType>(self_: &mut B2body<D>, flag: bool) {
 
 	self_.reset_mass_data();
 }
-
-//pub fn dump<D: UserDataType>(self_: &B2body<D>) {
-	// i32 body_index = m_island_index;
-
-	// b2Log("{\n");
-	// b2Log("  let mut bd = B2bodyDef::default();\n");
-	// b2Log("  bd.type = B2bodyType(%d);\n",self_.m_type);
-	// b2Log("  bd.position.set(%.15lef, %.15lef);\n", m_xf.p.x, m_xf.p.y);
-	// b2Log("  bd.angle = %.15lef;\n", self_.m_sweep.a);
-	// b2Log("  bd.linear_velocity.set(%.15lef, %.15lef);\n", self_.m_linear_velocity.x, self_.m_linear_velocity.y);
-	// b2Log("  bd.angular_velocity = %.15lef;\n", self_.m_angular_velocity);
-	// b2Log("  bd.linear_damping = %.15lef;\n", m_linear_damping);
-	// b2Log("  bd.angular_damping = %.15lef;\n", m_angular_damping);
-	// b2Log("  bd.allow_sleep = bool(%d);\n", m_flags & BodyFlags::E_AUTO_SLEEP_FLAG);
-	// b2Log("  bd.awake = bool(%d);\n", m_flags & BodyFlags::E_AWAKE_FLAG);
-	// b2Log("  bd.fixed_rotation = bool(%d);\n", m_flags & BodyFlags::E_FIXED_ROTATION_FLAG);
-	// b2Log("  bd.bullet = bool(%d);\n", m_flags & BodyFlags::E_BULLET_FLAG);
-	// b2Log("  bd.enabled = bool(%d);\n", m_flags & BodyFlags::E_ENABLED_FLAG);
-	// b2Log("  bd.gravity_scale = %.15lef;\n", m_gravity_scale);
-	// b2Log("  bodies[%d] = self_.m_world.create_body(&bd);\n", m_island_index);
-	// b2Log("\n");
-	// for (B2fixture* f = m_fixture_list; f; f = f->m_next)
-	// {
-	// 	b2Log("  {\n");
-	// 	f->dump(body_index);
-	// 	b2Log("  }\n");
-	// }
-	// b2Log("}\n");
-//}

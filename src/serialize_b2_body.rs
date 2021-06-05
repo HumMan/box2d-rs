@@ -8,6 +8,7 @@ use serde::de::DeserializeSeed;
 use std::fmt;
 
 use std::rc::{Rc};
+use std::cell::RefCell;
 
 use crate::b2_body::*;
 use crate::b2_settings::*;
@@ -15,9 +16,13 @@ use crate::b2_joint::*;
 use crate::b2_world::*;
 
 use crate::joints::b2_distance_joint::*;
+use crate::joints::b2_gear_joint::*;
 use crate::joints::b2_revolute_joint::*;
+use crate::joints::b2_prismatic_joint::*;
 use crate::joints::serialize::serialize_b2_distance_joint::*;
 use crate::joints::serialize::serialize_b2_revolute_joint::*;
+use crate::joints::serialize::serialize_b2_gear_joint::*;
+use crate::joints::serialize::serialize_b2_prismatic_joint::*;
 
 use crate::serialize_b2_fixture::*;
 
@@ -65,7 +70,7 @@ impl<D: UserDataType> Serialize for B2body<D> {
 
 #[derive(Clone)]
 pub(crate) struct B2bodyDefinitionVisitorContext<D: UserDataType> {
-    pub(crate) m_world: B2worldWeakPtr<D>,
+    pub(crate) m_world: B2worldPtr<D>,
 }
 
 impl<'de, U: UserDataType> DeserializeSeed<'de> for B2bodyDefinitionVisitorContext<U> {
@@ -97,7 +102,7 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2bodyDefinitionVisitorConte
             where
                 V: SeqAccess<'de>,
             {
-                let world = self.0.m_world.upgrade().unwrap();
+                let world = self.0.m_world.clone();
 
                 let def: B2bodyDef<U> = seq
                     .next_element()?
@@ -117,7 +122,7 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2bodyDefinitionVisitorConte
                 V: MapAccess<'de>,
             {
                 let mut body = None;
-                let world = self.0.m_world.upgrade().unwrap();
+                let world = self.0.m_world;
                 while let Some(key) = map.next_key()? {
                     match key {
                         Field::m_definition => {
@@ -140,7 +145,7 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2bodyDefinitionVisitorConte
 }
 
 pub(crate) struct B2bodyListContext<D: UserDataType> {
-    pub(crate) m_world: B2worldWeakPtr<D>,
+    pub(crate) m_world: B2worldPtr<D>,
 }
 
 impl<'de, U: UserDataType> DeserializeSeed<'de> for B2bodyListContext<U> {
@@ -178,8 +183,9 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2bodyListContext<U> {
 
 #[derive(Clone)]
 pub(crate) struct B2jointDefinitionVisitorContext<D: UserDataType> {
-    pub(crate) m_world: B2worldWeakPtr<D>,
-    pub(crate) m_body_array: Vec<BodyPtr<D>>,
+    pub(crate) m_world: B2worldPtr<D>,
+    pub(crate) m_body_array: Rc<RefCell<Vec<BodyPtr<D>>>>,
+    pub(crate) m_all_joints: Rc<RefCell<Vec<B2jointPtr<D>>>>,
 }
 
 impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefinitionVisitorContext<U> {
@@ -211,7 +217,7 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefinitionVisitorCont
             where
                 V: SeqAccess<'de>,
             {
-                let world = self.0.m_world.upgrade().unwrap();
+                let world = self.0.m_world.clone();
 
                 let jtype: B2jointType = seq
                     .next_element()?
@@ -230,7 +236,16 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefinitionVisitorCont
                         world.borrow_mut().create_joint(&B2JointDefEnum::DistanceJoint(def));
                     }
                     B2jointType::EFrictionJoint => {}
-                    B2jointType::EGearJoint => {}
+                    B2jointType::EGearJoint => {
+                        let all_joints = self.0.m_all_joints.clone();
+                        let def = seq.next_element_seed(B2gearJointDefContext {
+                            m_body_array: self.0.m_body_array.clone(),
+                            m_all_joints: all_joints.clone(),
+                        })?
+                        .ok_or_else(|| de::Error::invalid_length(0, &self))?;
+
+                        world.borrow_mut().create_joint(&B2JointDefEnum::GearJoint(def));
+                    }
                     B2jointType::EMouseJoint => {}
                     B2jointType::EMotorJoint => {}
                     B2jointType::EPulleyJoint => {}
@@ -243,7 +258,14 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefinitionVisitorCont
                         world.borrow_mut().create_joint(&B2JointDefEnum::RevoluteJoint(def));
                     }
                     B2jointType::ERopeJoint => {}
-                    B2jointType::EPrismaticJoint => {}
+                    B2jointType::EPrismaticJoint => {
+                        let def = seq.next_element_seed(B2prismaticJointDefContext {
+                            m_body_array: self.0.m_body_array.clone(),
+                        })?
+                        .ok_or_else(|| de::Error::invalid_length(0, &self))?;
+
+                        world.borrow_mut().create_joint(&B2JointDefEnum::PrismaticJoint(def));
+                    }
                     B2jointType::EWeldJoint => {}
                     B2jointType::EWheelJoint => {}
                 }
@@ -255,7 +277,7 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefinitionVisitorCont
             where
                 V: MapAccess<'de>,
             {
-                let world = self.0.m_world.upgrade().unwrap();
+                let world = self.0.m_world;
                 let mut jtype: Option<B2jointType> = None;
                 while let Some(key) = map.next_key()? {
                     match key {
@@ -274,7 +296,16 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefinitionVisitorCont
                                     world.borrow_mut().create_joint(&B2JointDefEnum::DistanceJoint(def));
                                 }
                                 B2jointType::EFrictionJoint => {}
-                                B2jointType::EGearJoint => {}
+                                B2jointType::EGearJoint => {
+                                    let all_joints = self.0.m_all_joints.clone();
+                                    let def = map.next_value_seed(B2gearJointDefContext {
+                                        m_body_array: self.0.m_body_array.clone(),
+                                        m_all_joints: all_joints.clone(),
+                                    })?;
+
+                                    let gear_joint = world.borrow_mut().create_joint(&B2JointDefEnum::GearJoint(def));
+                                    all_joints.borrow_mut().push(gear_joint);
+                                }
                                 B2jointType::EMouseJoint => {}
                                 B2jointType::EMotorJoint => {}
                                 B2jointType::EPulleyJoint => {}
@@ -285,7 +316,12 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefinitionVisitorCont
                                     world.borrow_mut().create_joint(&B2JointDefEnum::RevoluteJoint(def));
                                 }
                                 B2jointType::ERopeJoint => {}
-                                B2jointType::EPrismaticJoint => {}
+                                B2jointType::EPrismaticJoint => {
+                                    let def = map.next_value_seed(B2prismaticJointDefContext {
+                                        m_body_array: self.0.m_body_array.clone(),
+                                    })?;
+                                    world.borrow_mut().create_joint(&B2JointDefEnum::PrismaticJoint(def));
+                                }
                                 B2jointType::EWeldJoint => {}
                                 B2jointType::EWheelJoint => {}
                             }
@@ -304,8 +340,9 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefinitionVisitorCont
 
 
 pub(crate) struct B2jointListContext<D: UserDataType> {
-    pub(crate) m_world: B2worldWeakPtr<D>,
-    pub(crate) m_body_array: Vec<BodyPtr<D>>,
+    pub(crate) m_world: B2worldPtr<D>,
+    pub(crate) m_body_array: Rc<RefCell<Vec<BodyPtr<D>>>>,
+    pub(crate) m_all_joints: Rc<RefCell<Vec<B2jointPtr<D>>>>,
 }
 
 impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointListContext<U> {
@@ -331,6 +368,7 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointListContext<U> {
                 let context = B2jointDefinitionVisitorContext {
                     m_world: self.0.m_world.clone(),
                     m_body_array: self.0.m_body_array.clone(),
+                    m_all_joints: self.0.m_all_joints.clone(),
                 };
                 while let Some(elem) = seq.next_element_seed(context.clone())? {}
                 Ok(())

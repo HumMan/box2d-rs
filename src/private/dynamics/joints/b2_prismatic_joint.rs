@@ -506,31 +506,6 @@ pub(crate) fn get_joint_speed<D: UserDataType>(this: &B2prismaticJoint<D>) -> f3
 	return speed;
 }
 
-// void B2prismaticJoint::dump()
-// {
-// 	// FLT_DECIMAL_DIG == 9
-
-// 	let index_a: i32 =m_body_a->m_island_index;
-// 	let index_b: i32 =m_body_b->m_island_index;
-
-// 	b2Log("  let mut jd = B2prismaticJointDef::default();\n");
-// 	b2Log("  jd.body_a = bodies[%d];\n", index_a);
-// 	b2Log("  jd.body_b = bodies[%d];\n", index_b);
-// 	b2Log("  jd.collide_connected = bool(%d);\n", m_collide_connected);
-// 	b2Log("  jd.local_anchor_a.set(%.9g, %.9g);\n", m_local_anchor_a.x, m_local_anchor_a.y);
-// 	b2Log("  jd.local_anchor_b.set(%.9g, %.9g);\n", m_local_anchor_b.x, m_local_anchor_b.y);
-// 	b2Log("  jd.local_axis_a.set(%.9g, %.9g);\n", m_local_xaxis_a.x, m_local_xaxis_a.y);
-// 	b2Log("  jd.reference_angle = %.9g;\n", m_reference_angle);
-// 	b2Log("  jd.enable_limit = bool(%d);\n", m_enable_limit);
-// 	b2Log("  jd.lower_translation = %.9g;\n", m_lower_translation);
-// 	b2Log("  jd.upper_translation = %.9g;\n", m_upper_translation);
-// 	b2Log("  jd.enable_motor = bool(%d);\n", m_enable_motor);
-// 	b2Log("  jd.motor_speed = %.9g;\n", m_motor_speed);
-// 	b2Log("  jd.max_motor_force = %.9g;\n", m_max_motor_force);
-// 	b2Log("  joints[%d] = m_world->create_joint(&jd);\n", m_index);
-// }
-
-///
 pub(crate) fn draw<D: UserDataType>(self_: &B2prismaticJoint<D>, draw: &mut dyn B2drawTrait) {
 	let xf_a = self_.base.m_body_a.borrow().get_transform();
 	let xf_b = self_.base.m_body_b.borrow().get_transform();

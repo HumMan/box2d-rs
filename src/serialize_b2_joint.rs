@@ -5,6 +5,7 @@ use serde::de::DeserializeSeed;
 use std::fmt;
 
 use std::rc::Rc;
+use std::cell::RefCell;
 
 use crate::b2_body::*;
 use crate::b2_joint::*;
@@ -55,7 +56,7 @@ impl<D: UserDataType> Serialize for B2jointDef<D> {
 
 #[derive(Clone)]
 pub(crate) struct B2jointDefVisitorContext<D: UserDataType> {
-    pub(crate) m_body_array: Vec<BodyPtr<D>>,
+    pub(crate) m_body_array: Rc<RefCell<Vec<BodyPtr<D>>>>,
 }
 
 impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefVisitorContext<U> {
@@ -103,13 +104,13 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefVisitorContext<U> 
                         let body_index: i32 =  seq
                         .next_element()?
                         .ok_or_else(|| de::Error::invalid_length(0, &self))?;
-                        Some(bodies[body_index as usize].clone())
+                        Some(bodies.borrow()[body_index as usize].clone())
                     },
                     body_b: {
                         let body_index: i32 =  seq
                         .next_element()?
                         .ok_or_else(|| de::Error::invalid_length(0, &self))?;
-                        Some(bodies[body_index as usize].clone())
+                        Some(bodies.borrow()[body_index as usize].clone())
                     },
                     collide_connected: seq
                     .next_element()?
@@ -141,11 +142,11 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefVisitorContext<U> 
                         }
                         Field::body_a => {
                             let body_index: i32 = map.next_value()?;
-                            joint_def.body_a = Some(bodies[body_index as usize].clone());
+                            joint_def.body_a = Some(bodies.borrow()[body_index as usize].clone());
                         }
                         Field::body_b => {
                             let body_index: i32 = map.next_value()?;
-                            joint_def.body_b = Some(bodies[body_index as usize].clone());
+                            joint_def.body_b = Some(bodies.borrow()[body_index as usize].clone());
                         }
                         Field::collide_connected => {
                             joint_def.collide_connected = map.next_value()?;
