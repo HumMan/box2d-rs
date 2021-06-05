@@ -267,11 +267,6 @@ impl<D: UserDataType> B2fixture<D> {
 		return inline::get_aabb(self, child_index);
 	}
 
-	/// dump this fixture to the log file.
-	pub fn dump(&self, body_index: i32) {
-		private::b2_fixture_dump(self, body_index);
-	}
-
 	pub(crate) fn default() -> Self {
 		return private::b2_fixture_default();
 	}

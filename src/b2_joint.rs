@@ -256,11 +256,6 @@ pub trait B2jointTraitDyn<D: UserDataType>: ToDerivedJoint<D> {
 	/// Get the reaction torque on body_b in n*m.
 	fn get_reaction_torque(&self, inv_dt: f32) -> f32;
 
-	/// dump this joint to the log file.
-	fn dump(&self) {
-		//b2Log("// dump is not supported for this joint type.\n");
-	}
-
 	/// Shift the origin for any points stored in world coordinates.
 	fn shift_origin(&mut self, new_origin: B2vec2) {
 		b2_not_used(new_origin);

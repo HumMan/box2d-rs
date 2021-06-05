@@ -152,10 +152,6 @@ impl<D: UserDataType> B2jointTraitDyn<D> for B2pulleyJoint<D> {
 		self.m_ground_anchor_b -= new_origin;
 	}
 
-	/// dump joint to dmLog
-	fn dump(&self) {
-		//private::dump(self);
-	}
 }
 
 /// The pulley joint is connected to two bodies and two fixed ground points.

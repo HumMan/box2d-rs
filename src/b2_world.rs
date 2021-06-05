@@ -254,12 +254,6 @@ impl<D: UserDataType> B2world<D> {
 		return inline::get_profile(self);
 	}
 
-	/// dump the world into the log file.
-	/// @warning this should be called outside of a time step.
-	pub fn dump(&self) {
-		private::dump(self);
-	}
-
 	// private:
 
 	pub(crate) fn solve(&mut self, step: B2timeStep) {

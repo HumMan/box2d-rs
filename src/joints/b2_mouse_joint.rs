@@ -108,11 +108,6 @@ impl<D: UserDataType> B2jointTraitDyn<D> for B2mouseJoint<D> {
 	fn shift_origin(&mut self, new_origin: B2vec2) {
 		self.m_target_a -= new_origin;
 	}
-
-	/// dump joint to dmLog
-	fn dump(&self) {
-		//b2Log("Mouse joint dumping is not supported.\n");
-	}
 }
 impl<D: UserDataType> B2mouseJoint<D> {
 	/// Use this to update the target point.

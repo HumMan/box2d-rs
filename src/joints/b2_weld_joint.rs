@@ -208,9 +208,4 @@ impl<D: UserDataType> B2jointTraitDyn<D> for B2weldJoint<D> {
 	) -> bool {
 		return private::solve_position_constraints(self, data, positions);
 	}
-
-	/// dump joint to dmLog
-	fn dump(&self) {
-		//private::dump(self);
-	}
 }
