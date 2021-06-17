@@ -15,14 +15,16 @@ use crate::b2_settings::*;
 use crate::b2_joint::*;
 use crate::b2_world::*;
 
-use crate::joints::b2_distance_joint::*;
-use crate::joints::b2_gear_joint::*;
-use crate::joints::b2_revolute_joint::*;
-use crate::joints::b2_prismatic_joint::*;
 use crate::joints::serialize::serialize_b2_distance_joint::*;
-use crate::joints::serialize::serialize_b2_revolute_joint::*;
+use crate::joints::serialize::serialize_b2_friction_joint::*;
 use crate::joints::serialize::serialize_b2_gear_joint::*;
+use crate::joints::serialize::serialize_b2_motor_joint::*;
 use crate::joints::serialize::serialize_b2_prismatic_joint::*;
+use crate::joints::serialize::serialize_b2_pulley_joint::*;
+use crate::joints::serialize::serialize_b2_revolute_joint::*;
+use crate::joints::serialize::serialize_b2_rope_joint::*;
+use crate::joints::serialize::serialize_b2_weld_joint::*;
+use crate::joints::serialize::serialize_b2_wheel_joint::*;
 
 use crate::serialize_b2_fixture::*;
 
@@ -171,7 +173,7 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2bodyListContext<U> {
                 let context = B2bodyDefinitionVisitorContext {
                     m_world: self.0.m_world.clone(),
                 };
-                while let Some(elem) = seq.next_element_seed(context.clone())? {}
+                while let Some(_elem) = seq.next_element_seed(context.clone())? {}
                 Ok(())
             }
         }
@@ -235,7 +237,14 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefinitionVisitorCont
 
                         world.borrow_mut().create_joint(&B2JointDefEnum::DistanceJoint(def));
                     }
-                    B2jointType::EFrictionJoint => {}
+                    B2jointType::EFrictionJoint => {
+                        let def = seq.next_element_seed(B2frictionJointDefContext {
+                            m_body_array: self.0.m_body_array.clone(),
+                        })?
+                        .ok_or_else(|| de::Error::invalid_length(0, &self))?;
+
+                        world.borrow_mut().create_joint(&B2JointDefEnum::FrictionJoint(def));
+                    }
                     B2jointType::EGearJoint => {
                         let all_joints = self.0.m_all_joints.clone();
                         let def = seq.next_element_seed(B2gearJointDefContext {
@@ -246,9 +255,25 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefinitionVisitorCont
 
                         world.borrow_mut().create_joint(&B2JointDefEnum::GearJoint(def));
                     }
-                    B2jointType::EMouseJoint => {}
-                    B2jointType::EMotorJoint => {}
-                    B2jointType::EPulleyJoint => {}
+                    B2jointType::EMouseJoint => {
+                        panic!();
+                    }
+                    B2jointType::EMotorJoint => {
+                        let def = seq.next_element_seed(B2motorJointDefContext {
+                            m_body_array: self.0.m_body_array.clone(),
+                        })?
+                        .ok_or_else(|| de::Error::invalid_length(0, &self))?;
+
+                        world.borrow_mut().create_joint(&B2JointDefEnum::MotorJoint(def));
+                    }
+                    B2jointType::EPulleyJoint => {
+                        let def = seq.next_element_seed(B2pulleyJointDefContext {
+                            m_body_array: self.0.m_body_array.clone(),
+                        })?
+                        .ok_or_else(|| de::Error::invalid_length(0, &self))?;
+
+                        world.borrow_mut().create_joint(&B2JointDefEnum::PulleyJoint(def));
+                    }
                     B2jointType::ERevoluteJoint => {
                         let def = seq.next_element_seed(B2revoluteJointDefContext {
                             m_body_array: self.0.m_body_array.clone(),
@@ -257,7 +282,14 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefinitionVisitorCont
 
                         world.borrow_mut().create_joint(&B2JointDefEnum::RevoluteJoint(def));
                     }
-                    B2jointType::ERopeJoint => {}
+                    B2jointType::ERopeJoint => {
+                        let def = seq.next_element_seed(B2ropeJointDefContext {
+                            m_body_array: self.0.m_body_array.clone(),
+                        })?
+                        .ok_or_else(|| de::Error::invalid_length(0, &self))?;
+
+                        world.borrow_mut().create_joint(&B2JointDefEnum::RopeJoint(def));
+                    }
                     B2jointType::EPrismaticJoint => {
                         let def = seq.next_element_seed(B2prismaticJointDefContext {
                             m_body_array: self.0.m_body_array.clone(),
@@ -266,8 +298,22 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefinitionVisitorCont
 
                         world.borrow_mut().create_joint(&B2JointDefEnum::PrismaticJoint(def));
                     }
-                    B2jointType::EWeldJoint => {}
-                    B2jointType::EWheelJoint => {}
+                    B2jointType::EWeldJoint => {
+                        let def = seq.next_element_seed(B2weldJointDefContext {
+                            m_body_array: self.0.m_body_array.clone(),
+                        })?
+                        .ok_or_else(|| de::Error::invalid_length(0, &self))?;
+
+                        world.borrow_mut().create_joint(&B2JointDefEnum::WeldJoint(def));
+                    }
+                    B2jointType::EWheelJoint => {
+                        let def = seq.next_element_seed(B2wheelJointDefContext {
+                            m_body_array: self.0.m_body_array.clone(),
+                        })?
+                        .ok_or_else(|| de::Error::invalid_length(0, &self))?;
+
+                        world.borrow_mut().create_joint(&B2JointDefEnum::WheelJoint(def));
+                    }
                 }
 
                 Ok(())
@@ -295,7 +341,12 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefinitionVisitorCont
                                     })?;
                                     world.borrow_mut().create_joint(&B2JointDefEnum::DistanceJoint(def));
                                 }
-                                B2jointType::EFrictionJoint => {}
+                                B2jointType::EFrictionJoint => {
+                                    let def = map.next_value_seed(B2frictionJointDefContext {
+                                        m_body_array: self.0.m_body_array.clone(),
+                                    })?;
+                                    world.borrow_mut().create_joint(&B2JointDefEnum::FrictionJoint(def));
+                                }
                                 B2jointType::EGearJoint => {
                                     let all_joints = self.0.m_all_joints.clone();
                                     let def = map.next_value_seed(B2gearJointDefContext {
@@ -307,23 +358,48 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefinitionVisitorCont
                                     all_joints.borrow_mut().push(gear_joint);
                                 }
                                 B2jointType::EMouseJoint => {}
-                                B2jointType::EMotorJoint => {}
-                                B2jointType::EPulleyJoint => {}
+                                B2jointType::EMotorJoint => {
+                                    let def = map.next_value_seed(B2motorJointDefContext {
+                                        m_body_array: self.0.m_body_array.clone(),
+                                    })?;
+                                    world.borrow_mut().create_joint(&B2JointDefEnum::MotorJoint(def));
+                                }
+                                B2jointType::EPulleyJoint => {
+                                    let def = map.next_value_seed(B2pulleyJointDefContext {
+                                        m_body_array: self.0.m_body_array.clone(),
+                                    })?;
+                                    world.borrow_mut().create_joint(&B2JointDefEnum::PulleyJoint(def));
+                                }
                                 B2jointType::ERevoluteJoint => {
                                     let def = map.next_value_seed(B2revoluteJointDefContext {
                                         m_body_array: self.0.m_body_array.clone(),
                                     })?;
                                     world.borrow_mut().create_joint(&B2JointDefEnum::RevoluteJoint(def));
                                 }
-                                B2jointType::ERopeJoint => {}
+                                B2jointType::ERopeJoint => {
+                                    let def = map.next_value_seed(B2ropeJointDefContext {
+                                        m_body_array: self.0.m_body_array.clone(),
+                                    })?;
+                                    world.borrow_mut().create_joint(&B2JointDefEnum::RopeJoint(def));
+                                }
                                 B2jointType::EPrismaticJoint => {
                                     let def = map.next_value_seed(B2prismaticJointDefContext {
                                         m_body_array: self.0.m_body_array.clone(),
                                     })?;
                                     world.borrow_mut().create_joint(&B2JointDefEnum::PrismaticJoint(def));
                                 }
-                                B2jointType::EWeldJoint => {}
-                                B2jointType::EWheelJoint => {}
+                                B2jointType::EWeldJoint => {
+                                    let def = map.next_value_seed(B2weldJointDefContext {
+                                        m_body_array: self.0.m_body_array.clone(),
+                                    })?;
+                                    world.borrow_mut().create_joint(&B2JointDefEnum::WeldJoint(def));
+                                }
+                                B2jointType::EWheelJoint => {
+                                    let def = map.next_value_seed(B2wheelJointDefContext {
+                                        m_body_array: self.0.m_body_array.clone(),
+                                    })?;
+                                    world.borrow_mut().create_joint(&B2JointDefEnum::WheelJoint(def));
+                                }
                             }
                             
                         }
@@ -370,7 +446,7 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointListContext<U> {
                     m_body_array: self.0.m_body_array.clone(),
                     m_all_joints: self.0.m_all_joints.clone(),
                 };
-                while let Some(elem) = seq.next_element_seed(context.clone())? {}
+                while let Some(_elem) = seq.next_element_seed(context.clone())? {}
                 Ok(())
             }
         }

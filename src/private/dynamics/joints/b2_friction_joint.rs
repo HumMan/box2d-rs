@@ -164,18 +164,3 @@ pub(crate) fn solve_position_constraints<D: UserDataType>(
 
 	return true;
 }
-
-pub(crate) fn dump<D: UserDataType>(_this: &B2frictionJoint<D>) {
-	// let index_a: i32 =m_body_a.m_island_index;
-	// let index_b: i32 =m_body_b.m_island_index;
-
-	// b2Log("  B2frictionJointDef jd;\n");
-	// b2Log("  jd.body_a = bodies[%d];\n", index_a);
-	// b2Log("  jd.body_b = bodies[%d];\n", index_b);
-	// b2Log("  jd.collide_connected = bool(%d);\n", m_collide_connected);
-	// b2Log("  jd.local_anchor_a.set(%.15lef, %.15lef);\n", m_local_anchor_a.x, m_local_anchor_a.y);
-	// b2Log("  jd.local_anchor_b.set(%.15lef, %.15lef);\n", m_local_anchor_b.x, m_local_anchor_b.y);
-	// b2Log("  jd.max_force = %.15lef;\n", m_max_force);
-	// b2Log("  jd.max_torque = %.15lef;\n", m_max_torque);
-	// b2Log("  joints[%d] = m_world.create_joint(&jd);\n", m_index);
-}

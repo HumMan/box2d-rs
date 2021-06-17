@@ -196,19 +196,3 @@ pub(crate) fn solve_position_constraints<D: UserDataType>(
 
 	return true;
 }
-
-pub(crate) fn dump<D: UserDataType>(_this: &B2motorJoint<D>) {
-	// let index_a: i32 =this.base.m_body_a.borrow().m_island_index;
-	// let index_b: i32 =this.base.m_body_b.borrow().m_island_index;
-
-	// b2Log("  B2motorJointDef jd;\n");
-	// b2Log("  jd.body_a = bodies[%d];\n", index_a);
-	// b2Log("  jd.body_b = bodies[%d];\n", index_b);
-	// b2Log("  jd.collide_connected = bool(%d);\n", m_collide_connected);
-	// b2Log("  jd.linear_offset.set(%.15lef, %.15lef);\n", m_linear_offset.x, m_linear_offset.y);
-	// b2Log("  jd.angular_offset = %.15lef;\n", m_angular_offset);
-	// b2Log("  jd.max_force = %.15lef;\n", m_max_force);
-	// b2Log("  jd.max_torque = %.15lef;\n", m_max_torque);
-	// b2Log("  jd.correction_factor = %.15lef;\n", m_correction_factor);
-	// b2Log("  joints[%d] = m_world->create_joint(&jd);\n", m_index);
-}

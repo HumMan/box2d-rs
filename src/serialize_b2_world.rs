@@ -15,9 +15,14 @@ use crate::b2_world::*;
 
 use crate::joints::serialize::serialize_b2_distance_joint::*;
 use crate::joints::serialize::serialize_b2_friction_joint::*;
-use crate::joints::serialize::serialize_b2_revolute_joint::*;
 use crate::joints::serialize::serialize_b2_gear_joint::*;
+use crate::joints::serialize::serialize_b2_motor_joint::*;
 use crate::joints::serialize::serialize_b2_prismatic_joint::*;
+use crate::joints::serialize::serialize_b2_pulley_joint::*;
+use crate::joints::serialize::serialize_b2_revolute_joint::*;
+use crate::joints::serialize::serialize_b2_rope_joint::*;
+use crate::joints::serialize::serialize_b2_weld_joint::*;
+use crate::joints::serialize::serialize_b2_wheel_joint::*;
 
 use strum::VariantNames;
 use strum_macros::EnumVariantNames;
@@ -59,6 +64,8 @@ impl<D: UserDataType> Serialize for B2jointsArrayContext<D>
         let mut state = serializer.serialize_seq(Some(len))?;
         for j in &self.m_joints_to_process {
             match j.borrow().as_derived() {
+                JointAsDerived::EMouseJoint(_joint) => {
+                }
                 JointAsDerived::EDistanceJoint(joint) => {
                     let def = joint.get_def();
                     state.serialize_element(&JointWithType {
@@ -80,9 +87,20 @@ impl<D: UserDataType> Serialize for B2jointsArrayContext<D>
                         joint_def: def,
                     })?;
                 }
-                JointAsDerived::EMouseJoint(joint) => {}
-                JointAsDerived::EMotorJoint(joint) => {}
-                JointAsDerived::EPulleyJoint(joint) => {}
+                JointAsDerived::EMotorJoint(joint) => {
+                    let def = joint.get_def();
+                    state.serialize_element(&JointWithType {
+                        jtype: def.base.jtype,
+                        joint_def: def,
+                    })?;
+                }
+                JointAsDerived::EPulleyJoint(joint) => {
+                    let def = joint.get_def();
+                    state.serialize_element(&JointWithType {
+                        jtype: def.base.jtype,
+                        joint_def: def,
+                    })?;
+                }
                 JointAsDerived::ERevoluteJoint(joint) => {
                     let def = joint.get_def();
                     state.serialize_element(&JointWithType {
@@ -90,7 +108,11 @@ impl<D: UserDataType> Serialize for B2jointsArrayContext<D>
                         joint_def: def,
                     })?;
                 }
-                JointAsDerived::ERopeJoint(joint) => {}
+                JointAsDerived::ERopeJoint(joint) => {let def = joint.get_def();
+                    state.serialize_element(&JointWithType {
+                        jtype: def.base.jtype,
+                        joint_def: def,
+                    })?;}
                 JointAsDerived::EPrismaticJoint(joint) => {
                     let def = joint.get_def();
                     state.serialize_element(&JointWithType {
@@ -98,8 +120,16 @@ impl<D: UserDataType> Serialize for B2jointsArrayContext<D>
                         joint_def: def,
                     })?;
                 }
-                JointAsDerived::EWeldJoint(joint) => {}
-                JointAsDerived::EWheelJoint(joint) => {}
+                JointAsDerived::EWeldJoint(joint) => {let def = joint.get_def();
+                    state.serialize_element(&JointWithType {
+                        jtype: def.base.jtype,
+                        joint_def: def,
+                    })?;}
+                JointAsDerived::EWheelJoint(joint) => {let def = joint.get_def();
+                    state.serialize_element(&JointWithType {
+                        jtype: def.base.jtype,
+                        joint_def: def,
+                    })?;}
             }
         }
         state.end()
@@ -123,7 +153,7 @@ impl<D: UserDataType> Serialize for B2world<D> {
         let mut not_gear_joint = Vec::new();
         let mut gear_joint = Vec::new();
 
-        for (i, ref mut b) in self.m_joint_list.iter().enumerate() {
+        for ref b in self.m_joint_list.iter(){
             let mut j = b.borrow_mut();
             j.get_base_mut().m_index = -1;
             if j.get_base().m_type!=B2jointType::EGearJoint

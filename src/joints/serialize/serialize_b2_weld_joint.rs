@@ -4,66 +4,58 @@ use serde::{ser::SerializeStruct, Deserialize, Serialize, Serializer};
 use serde::de::DeserializeSeed;
 use std::fmt;
 
-use std::rc::Rc;
 use std::cell::RefCell;
+use std::rc::Rc;
 
 use crate::b2_body::*;
 use crate::b2_settings::*;
 
-use crate::joints::b2_revolute_joint::*;
+use crate::joints::b2_weld_joint::*;
 use crate::serialize_b2_joint::*;
 
 use strum::VariantNames;
 use strum_macros::EnumVariantNames;
 
-pub(crate) trait B2RevoluteJoinToDef<D: UserDataType> {
-    fn get_def(&self) -> B2revoluteJointDef<D>;
+pub(crate) trait B2weldJoinToDef<D: UserDataType> {
+    fn get_def(&self) -> B2weldJointDef<D>;
 }
 
-impl<D: UserDataType> B2RevoluteJoinToDef<D> for B2revoluteJoint<D> {
-    fn get_def(&self) -> B2revoluteJointDef<D> {
-        return B2revoluteJointDef {
+impl<D: UserDataType> B2weldJoinToDef<D> for B2weldJoint<D> {
+    fn get_def(&self) -> B2weldJointDef<D> {
+        return B2weldJointDef {
             base: self.base.get_def(),
             local_anchor_a: self.m_local_anchor_a,
             local_anchor_b: self.m_local_anchor_b,
             reference_angle: self.m_reference_angle,
-            enable_limit: self.m_enable_limit,
-            lower_angle: self.m_lower_angle,
-            upper_angle: self.m_upper_angle,
-            enable_motor: self.m_enable_motor,
-            motor_speed: self.m_motor_speed,
-            max_motor_torque: self.m_max_motor_torque,
+            stiffness: self.m_stiffness,
+            damping: self.m_damping,
         };
     }
 }
 
-impl<D: UserDataType> Serialize for B2revoluteJointDef<D> {
+impl<D: UserDataType> Serialize for B2weldJointDef<D> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
-        let mut state = serializer.serialize_struct("B2revoluteJointDef", 10)?;
+        let mut state = serializer.serialize_struct("B2weldJointDef", 6)?;
         state.serialize_field("base", &self.base)?;
         state.serialize_field("local_anchor_a", &self.local_anchor_a)?;
         state.serialize_field("local_anchor_b", &self.local_anchor_b)?;
         state.serialize_field("reference_angle", &self.reference_angle)?;
-        state.serialize_field("enable_limit", &self.enable_limit)?;
-        state.serialize_field("lower_angle", &self.lower_angle)?;
-        state.serialize_field("upper_angle", &self.upper_angle)?;
-        state.serialize_field("enable_motor", &self.enable_motor)?;
-        state.serialize_field("motor_speed", &self.motor_speed)?;
-        state.serialize_field("max_motor_torque", &self.max_motor_torque)?;
+        state.serialize_field("stiffness", &self.stiffness)?;
+        state.serialize_field("damping", &self.damping)?;
         state.end()
     }
 }
 
 #[derive(Clone)]
-pub(crate) struct B2revoluteJointDefContext<D: UserDataType> {
+pub(crate) struct B2weldJointDefContext<D: UserDataType> {
     pub(crate) m_body_array: Rc<RefCell<Vec<BodyPtr<D>>>>,
 }
 
-impl<'de, U: UserDataType> DeserializeSeed<'de> for B2revoluteJointDefContext<U> {
-    type Value = B2revoluteJointDef<U>;
+impl<'de, U: UserDataType> DeserializeSeed<'de> for B2weldJointDefContext<U> {
+    type Value = B2weldJointDef<U>;
 
     fn deserialize<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
     where
@@ -78,28 +70,24 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2revoluteJointDefContext<U>
             local_anchor_a,
             local_anchor_b,
             reference_angle,
-            enable_limit,
-            lower_angle,
-            upper_angle,
-            enable_motor,
-            motor_speed,
-            max_motor_torque,
+            stiffness,
+            damping,
         }
 
-        struct B2revoluteJointDefVisitor<D: UserDataType>(B2revoluteJointDefContext<D>);
+        struct B2weldJointDefVisitor<D: UserDataType>(B2weldJointDefContext<D>);
 
-        impl<'de, U: UserDataType> Visitor<'de> for B2revoluteJointDefVisitor<U> {
-            type Value = B2revoluteJointDef<U>;
+        impl<'de, U: UserDataType> Visitor<'de> for B2weldJointDefVisitor<U> {
+            type Value = B2weldJointDef<U>;
 
             fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                formatter.write_str("struct B2revoluteJointDef")
+                formatter.write_str("struct B2weldJointDef")
             }
 
             fn visit_seq<V>(self, mut seq: V) -> Result<Self::Value, V::Error>
             where
                 V: SeqAccess<'de>,
             {
-                let joint_def = B2revoluteJointDef {
+                let joint_def = B2weldJointDef {
                     base: seq
                         .next_element_seed(B2jointDefVisitorContext {
                             m_body_array: self.0.m_body_array.clone(),
@@ -118,27 +106,11 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2revoluteJointDefContext<U>
                         .next_element()?
                         .ok_or_else(|| de::Error::invalid_length(0, &self))?,
 
-                    enable_limit: seq
+                    stiffness: seq
                         .next_element()?
                         .ok_or_else(|| de::Error::invalid_length(0, &self))?,
 
-                    lower_angle: seq
-                        .next_element()?
-                        .ok_or_else(|| de::Error::invalid_length(0, &self))?,
-
-                    upper_angle: seq
-                        .next_element()?
-                        .ok_or_else(|| de::Error::invalid_length(0, &self))?,
-
-                    enable_motor: seq
-                        .next_element()?
-                        .ok_or_else(|| de::Error::invalid_length(0, &self))?,
-
-                    motor_speed: seq
-                        .next_element()?
-                        .ok_or_else(|| de::Error::invalid_length(0, &self))?,
-
-                    max_motor_torque: seq
+                    damping: seq
                         .next_element()?
                         .ok_or_else(|| de::Error::invalid_length(0, &self))?,
                 };
@@ -150,7 +122,7 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2revoluteJointDefContext<U>
             where
                 V: MapAccess<'de>,
             {
-                let mut joint_def = B2revoluteJointDef::default();
+                let mut joint_def = B2weldJointDef::default();
                 while let Some(key) = map.next_key()? {
                     match key {
                         Field::base => {
@@ -167,23 +139,11 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2revoluteJointDefContext<U>
                         Field::reference_angle => {
                             joint_def.reference_angle = map.next_value()?;
                         }
-                        Field::enable_limit => {
-                            joint_def.enable_limit = map.next_value()?;
+                        Field::stiffness => {
+                            joint_def.stiffness = map.next_value()?;
                         }
-                        Field::lower_angle => {
-                            joint_def.lower_angle = map.next_value()?;
-                        }
-                        Field::upper_angle => {
-                            joint_def.upper_angle = map.next_value()?;
-                        }
-                        Field::enable_motor => {
-                            joint_def.enable_motor = map.next_value()?;
-                        }
-                        Field::motor_speed => {
-                            joint_def.motor_speed = map.next_value()?;
-                        }
-                        Field::max_motor_torque => {
-                            joint_def.max_motor_torque = map.next_value()?;
+                        Field::damping => {
+                            joint_def.damping = map.next_value()?;
                         }
                     }
                 }
@@ -193,9 +153,9 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2revoluteJointDefContext<U>
         }
 
         deserializer.deserialize_struct(
-            "B2revoluteJointDef",
+            "B2weldJointDef",
             Field::VARIANTS,
-            B2revoluteJointDefVisitor(self),
+            B2weldJointDefVisitor(self),
         )
     }
 }

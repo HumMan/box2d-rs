@@ -427,23 +427,3 @@ pub(crate) fn solve_position_constraints<D: UserDataType>(this: &B2gearJoint<D>,
 	// TODO_ERIN not implemented
 	return linear_error < B2_LINEAR_SLOP;
 }
-
-
-
-pub(crate) fn dump<D: UserDataType>(_this: &B2gearJoint<D>)
-{
-	// let index_a: i32 =m_body_a.m_island_index;
-	// let index_b: i32 =m_body_b.m_island_index;
-
-	// let index1: i32 =m_joint1.m_index;
-	// let index2: i32 =m_joint2.m_index;
-
-	// b2Log("  B2gearJointDef jd;\n");
-	// b2Log("  jd.body_a = bodies[%d];\n", index_a);
-	// b2Log("  jd.body_b = bodies[%d];\n", index_b);
-	// b2Log("  jd.collide_connected = bool(%d);\n", m_collide_connected);
-	// b2Log("  jd.joint1 = joints[%d];\n", index1);
-	// b2Log("  jd.joint2 = joints[%d];\n", index2);
-	// b2Log("  jd.ratio = %.15lef;\n", m_ratio);
-	// b2Log("  joints[%d] = m_world.create_joint(&jd);\n", m_index);
-}

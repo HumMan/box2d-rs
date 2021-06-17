@@ -274,22 +274,3 @@ pub(crate) fn solve_position_constraints<D: UserDataType>(
 
 	return linear_error < B2_LINEAR_SLOP;
 }
-
-// void B2pulleyJoint::dump()
-// {
-// 	let index_a: i32 =m_body_a->m_island_index;
-// 	let index_b: i32 =m_body_b->m_island_index;
-
-// 	b2Log("  B2pulleyJointDef jd;\n");
-// 	b2Log("  jd.body_a = bodies[%d];\n", index_a);
-// 	b2Log("  jd.body_b = bodies[%d];\n", index_b);
-// 	b2Log("  jd.collide_connected = bool(%d);\n", m_collide_connected);
-// 	b2Log("  jd.ground_anchor_a.set(%.15lef, %.15lef);\n", m_ground_anchor_a.x, m_ground_anchor_a.y);
-// 	b2Log("  jd.ground_anchor_b.set(%.15lef, %.15lef);\n", m_ground_anchor_b.x, m_ground_anchor_b.y);
-// 	b2Log("  jd.local_anchor_a.set(%.15lef, %.15lef);\n", m_local_anchor_a.x, m_local_anchor_a.y);
-// 	b2Log("  jd.local_anchor_b.set(%.15lef, %.15lef);\n", m_local_anchor_b.x, m_local_anchor_b.y);
-// 	b2Log("  jd.length_a = %.15lef;\n", m_length_a);
-// 	b2Log("  jd.length_b = %.15lef;\n", m_length_b);
-// 	b2Log("  jd.ratio = %.15lef;\n", m_ratio);
-// 	b2Log("  joints[%d] = m_world->create_joint(&jd);\n", m_index);
-// }

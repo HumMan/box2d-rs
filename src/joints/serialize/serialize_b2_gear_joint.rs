@@ -12,7 +12,6 @@ use crate::b2_joint::*;
 use crate::b2_settings::*;
 
 use crate::joints::b2_gear_joint::*;
-use crate::b2_world::*;
 use crate::serialize_b2_joint::*;
 
 use strum::VariantNames;
