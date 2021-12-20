@@ -1,5 +1,5 @@
 use crate::b2_fixture::*;
-use crate::b2_settings::*;
+use crate::b2rs_common::UserDataType;
 
 // Return true if contact calculations should be performed between these two shapes.
 // If you implement your own collision filter you may want to build from this implementation.

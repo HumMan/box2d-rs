@@ -7,7 +7,7 @@ use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
 use crate::b2_collision::*;
-use crate::b2_settings::*;
+use crate::b2rs_common::UserDataType;
 use crate::b2_world_callbacks::*;
 use crate::b2_contact_manager::*;
 

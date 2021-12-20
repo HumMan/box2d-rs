@@ -2,6 +2,7 @@ use super::b2_contact_solver::*;
 use crate::b2_contact::*;
 use crate::b2_math::*;
 use crate::b2_settings::*;
+use crate::b2rs_common::*;
 use crate::b2_time_step::*;
 use crate::b2_collision::*;
 

@@ -6,6 +6,7 @@ use box2d_rs::b2_fixture::*;
 use box2d_rs::b2_joint::*;
 use box2d_rs::b2_math::*;
 use box2d_rs::b2_settings::*;
+use box2d_rs::b2rs_common::UserDataType;
 use box2d_rs::b2_world::*;
 use box2d_rs::b2_world_callbacks::*;
 use box2d_rs::shapes::b2_chain_shape::*;

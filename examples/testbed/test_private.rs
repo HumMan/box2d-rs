@@ -9,6 +9,7 @@ use box2d_rs::b2_fixture::*;
 use box2d_rs::b2_joint::*;
 use box2d_rs::b2_math::*;
 use box2d_rs::b2_settings::*;
+use box2d_rs::b2rs_common::UserDataType;
 use box2d_rs::b2_shape::*;
 use box2d_rs::b2_time_step::*;
 use box2d_rs::b2_world::*;

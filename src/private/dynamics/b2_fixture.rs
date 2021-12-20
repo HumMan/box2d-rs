@@ -6,6 +6,7 @@ use crate::b2_math::*;
 use std::rc::Rc;
 use std::ptr;
 use crate::b2_settings::*;
+use crate::b2rs_common::*;
 
 pub fn b2_fixture_default<T:UserDataType>() -> B2fixture<T> {
 	return B2fixture::<T> {

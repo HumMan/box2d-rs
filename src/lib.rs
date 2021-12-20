@@ -2,6 +2,7 @@
 #![crate_type = "lib"]
 
 pub mod b2_settings;
+pub mod b2rs_common;
 pub mod b2_draw;
 pub mod b2_timer;
 

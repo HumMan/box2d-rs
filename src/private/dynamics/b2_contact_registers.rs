@@ -1,7 +1,7 @@
 
 use crate::b2_contact::*;
 use crate::b2_fixture::*;
-use crate::b2_settings::*;
+use crate::b2rs_common::UserDataType;
 use crate::b2_shape::*;
 
 use super::contacts::b2_chain_circle_contact::*;

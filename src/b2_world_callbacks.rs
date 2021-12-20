@@ -4,6 +4,7 @@ use crate::b2_fixture::*;
 use crate::b2_joint::*;
 use crate::b2_math::*;
 use crate::b2_settings::*;
+use crate::b2rs_common::*;
 
 use std::cell::RefCell;
 use std::rc::Rc;

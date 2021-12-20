@@ -1,6 +1,7 @@
 use crate::joints::b2_mouse_joint::*;
 use crate::b2_time_step::*;
 use crate::b2_settings::*;
+use crate::b2rs_common::UserDataType;
 use crate::b2_math::*;
 
 // // p = attached point, m = mouse point

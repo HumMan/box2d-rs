@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::ptr;
 use std::rc::{Rc, Weak};
-use crate::b2_settings::upgrade;
+use crate::b2rs_common::upgrade;
 use crate::linked_list::*;
 use std::fmt;
 

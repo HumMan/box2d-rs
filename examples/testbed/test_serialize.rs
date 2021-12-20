@@ -1,4 +1,4 @@
-use box2d_rs::b2_settings::*;
+use box2d_rs::b2rs_common::UserDataType;
 use box2d_rs::b2_world::*;
 use box2d_rs::serialize_b2_world::*;
 

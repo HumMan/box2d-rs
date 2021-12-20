@@ -4,6 +4,7 @@ use crate::b2_world_callbacks::*;
 use crate::b2_math::*;
 use crate::b2_time_step::*;
 use crate::b2_settings::*;
+use crate::b2rs_common::UserDataType;
 use super::b2_island::*;
 use crate::private::dynamics::b2_contact_solver::*;
 

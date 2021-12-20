@@ -1,6 +1,6 @@
 use crate::b2_broad_phase::*;
 use crate::b2_contact::*;
-use crate::b2_settings::*;
+use crate::b2rs_common::UserDataType;
 use crate::b2_world_callbacks::*;
 use crate::b2_fixture::*;
 use crate::double_linked_list::*;

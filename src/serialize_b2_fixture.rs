@@ -1,6 +1,6 @@
 use super::b2_fixture::*;
 use crate::b2_body::*;
-use crate::b2_settings::*;
+use crate::b2rs_common::UserDataType;
 use crate::b2_shape::*;
 use crate::shapes::b2_chain_shape::*;
 use crate::shapes::b2_circle_shape::*;

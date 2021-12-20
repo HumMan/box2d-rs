@@ -1,43 +1,9 @@
 /// Global tuning constants based on meters-kilograms-seconds (MKS) units.
 use std::assert;
 
-#[cfg(feature="serde_support")]
-use serde::{de::DeserializeOwned, Serialize};
-
-use std::rc::{Rc,Weak};
 pub fn b2_not_used<T>(_x: T) {}
 pub fn b2_assert(a: bool) {
     assert!(a);
-}
-
-//TODO_humman все дополнительные вещи вынести в отдельный файл
-
-pub(crate) fn get_two_mut<T>(data: & mut [T], a: usize, b: usize) -> (& mut T, & mut T) {
-	assert!(a != b);
-	let ptr: *mut [T] = data;
-	unsafe { (&mut (*ptr)[a], &mut (*ptr)[b]) }
-}
-
-pub fn upgrade<T: ?Sized>(v: &Weak<T>) -> Rc<T> {
-	return v.upgrade().unwrap();
-}
-
-pub fn upgrade_opt<T: ?Sized>(v: &Option<Weak<T>>) -> Rc<T> {
-	return v.as_ref().unwrap().upgrade().unwrap();
-}
-
-#[cfg(not(feature="serde_support"))]
-pub trait UserDataType: Default + Clone + 'static {
-    type Fixture: Default + Clone + std::fmt::Debug;
-    type Body: Default + Clone + PartialEq + std::fmt::Debug;
-    type Joint: Default + Clone + std::fmt::Debug;
-}
-
-#[cfg(feature="serde_support")]
-pub trait UserDataType: Default + Clone + Serialize + DeserializeOwned + 'static {
-    type Fixture: Default + Clone + Serialize + DeserializeOwned + std::fmt::Debug;
-    type Body: Default + Clone + Serialize + DeserializeOwned + PartialEq + std::fmt::Debug;
-    type Joint: Default + Clone + Serialize + DeserializeOwned + std::fmt::Debug;
 }
 
 pub const B2_MAX_FLOAT: f32 = std::f32::MAX;

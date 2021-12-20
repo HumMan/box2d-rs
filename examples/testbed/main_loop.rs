@@ -1,5 +1,5 @@
 use super::clipboard;
-use box2d_rs::b2_settings::*;
+use box2d_rs::b2rs_common::UserDataType;
 use box2d_rs::b2_math::*;
 use glium::backend::Facade;
 use glium::glutin;

@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod math_test {
     use box2d_rs::b2_math::*;
-    use box2d_rs::b2_settings::*;
+    use box2d_rs::b2rs_common::UserDataType;
 
     #[cfg(feature="serde_support")]
 	use serde::{Serialize, Deserialize};

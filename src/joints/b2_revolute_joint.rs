@@ -2,6 +2,7 @@ use crate::b2_body::*;
 use crate::b2_joint::*;
 use crate::b2_math::*;
 use crate::b2_settings::*;
+use crate::b2rs_common::UserDataType;
 use crate::b2_time_step::*;
 use crate::private::dynamics::joints::b2_revolute_joint as private;
 use crate::b2_draw::*;

@@ -2,7 +2,7 @@ use crate::b2_body::*;
 use crate::b2_contact::*;
 use crate::b2_contact_manager::*;
 use crate::b2_fixture::*;
-use crate::b2_settings::*;
+use crate::b2rs_common::*;
 
 use std::cell::RefCell;
 use std::rc::Rc;

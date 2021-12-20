@@ -8,7 +8,7 @@ use crate::b2_contact::*;
 use crate::b2_fixture::*;
 use crate::b2_joint::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2rs_common::UserDataType;
 use crate::b2_shape::*;
 use crate::b2_world::*;
 use crate::private::dynamics::b2_body as private;

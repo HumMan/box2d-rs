@@ -1,5 +1,6 @@
 use super::super::draw::*;
 use super::super::settings::*;
+use box2d_rs::b2rs_common::UserDataType;
 use super::super::test::*;
 use box2d_rs::b2_math::*;
 use box2d_rs::b2_settings::*;

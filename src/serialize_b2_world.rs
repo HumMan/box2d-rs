@@ -10,7 +10,7 @@ use std::cell::RefCell;
 
 use crate::b2_joint::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2rs_common::UserDataType;
 use crate::b2_world::*;
 
 use crate::joints::serialize::serialize_b2_distance_joint::*;

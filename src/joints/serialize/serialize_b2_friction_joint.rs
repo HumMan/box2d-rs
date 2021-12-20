@@ -8,7 +8,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 
 use crate::b2_body::*;
-use crate::b2_settings::*;
+use crate::b2rs_common::UserDataType;
 
 use crate::joints::b2_friction_joint::*;
 use crate::serialize_b2_joint::*;
