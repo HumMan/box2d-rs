@@ -1,7 +1,7 @@
 
 use crate::b2_distance::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2_shape::*;
 
 use crate::shapes::to_derived_shape::*;
@@ -578,7 +578,7 @@ pub fn b2_shape_cast(output: &mut B2shapeCastOutput, input: B2shapeCastInput) ->
 	// Main iteration loop.
 	const K_MAX_ITERS: i32 = 20;
 	let mut iter: i32 = 0;
-	while iter < K_MAX_ITERS && b2_abs(v.length() - sigma) > TOLERANCE {
+	while iter < K_MAX_ITERS && v.length() - sigma > TOLERANCE {
 		b2_assert(simplex.m_count < 3);
 
 		output.iterations += 1;
@@ -647,6 +647,12 @@ pub fn b2_shape_cast(output: &mut B2shapeCastOutput, input: B2shapeCastInput) ->
 
 		// Iteration count is equated to the number of support point calls.
 		iter += 1;
+	}
+
+	if iter==0
+	{
+		// Initial overlap
+		return false;
 	}
 
 	// Prepare output.

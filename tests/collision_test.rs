@@ -3,27 +3,28 @@
 mod collision_test {
 	use box2d_rs::b2_math::*;
 	use box2d_rs::b2_shape::*;
-    use box2d_rs::b2_settings::*;
-	use box2d_rs::b2rs_common::UserDataType;
+    //use box2d_rs::b2_settings::*;
+	use box2d_rs::b2_common::*;
+	//use box2d_rs::b2rs_common::UserDataType;
     use box2d_rs::shapes::b2_polygon_shape::*;
 
-	#[cfg(feature="serde_support")]
-	use serde::{Serialize, Deserialize};
+	// #[cfg(feature="serde_support")]
+	// use serde::{Serialize, Deserialize};
 
-    #[derive(Default, Copy, Clone, Debug, PartialEq)]
-	#[cfg_attr(feature = "serde_support", derive(Serialize, Deserialize))]
-    struct FixtureData {
-        id: i32,
-    }
+    // #[derive(Default, Copy, Clone, Debug, PartialEq)]
+	// #[cfg_attr(feature = "serde_support", derive(Serialize, Deserialize))]
+    // struct FixtureData {
+    //     id: i32,
+    // }
 
-    #[derive(Default, Copy, Clone, Debug, PartialEq)]
-	#[cfg_attr(feature = "serde_support", derive(Serialize, Deserialize))]
-    struct UserDataTypes;
-    impl UserDataType for UserDataTypes {
-        type Fixture = FixtureData;
-        type Body = FixtureData;
-        type Joint = FixtureData;
-    }
+    // #[derive(Default, Copy, Clone, Debug, PartialEq)]
+	// #[cfg_attr(feature = "serde_support", derive(Serialize, Deserialize))]
+    // struct UserDataTypes;
+    // impl UserDataType for UserDataTypes {
+    //     type Fixture = FixtureData;
+    //     type Body = FixtureData;
+    //     type Joint = FixtureData;
+    // }
 
 #[test]
     fn polygon_mass_data() {
@@ -34,8 +35,8 @@ mod collision_test {
 
 		// Data from issue #422. Not used because the data exceeds accuracy limits.
 		//constlet center = B2vec2::new(-15000.0f, -15000.0);
-		//const float hx = 0.72f, hy = 0.72f;
-		//const float angle1 = 0.0f;
+		//const let hx: f32 = 0.72f, hy = 0.72f;
+		//const let angle1: f32 = 0.0f;
 
 		let mut polygon1 = B2polygonShape::default();
 		polygon1.set_as_box_angle(hx, hy, center, angle1);

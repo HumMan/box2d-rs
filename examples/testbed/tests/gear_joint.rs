@@ -105,7 +105,7 @@ impl<D: UserDataType> GearJoint<D> {
 			B2body::create_fixture_by_shape(body3.clone(), Rc::new(RefCell::new(circle2)), 5.0);
 
 			let mut jd1 = B2revoluteJointDef::default();
-			jd1.initialize(body2.clone(), body1.clone(), bd1.position);
+			jd1.initialize(body1.clone(), body2.clone(), bd1.position);
 			let joint1 = m_world
 				.borrow_mut()
 				.create_joint(&B2JointDefEnum::RevoluteJoint(jd1));

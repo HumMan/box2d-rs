@@ -22,7 +22,6 @@ use crate::joints::serialize::serialize_b2_motor_joint::*;
 use crate::joints::serialize::serialize_b2_prismatic_joint::*;
 use crate::joints::serialize::serialize_b2_pulley_joint::*;
 use crate::joints::serialize::serialize_b2_revolute_joint::*;
-use crate::joints::serialize::serialize_b2_rope_joint::*;
 use crate::joints::serialize::serialize_b2_weld_joint::*;
 use crate::joints::serialize::serialize_b2_wheel_joint::*;
 
@@ -282,14 +281,6 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefinitionVisitorCont
 
                         world.borrow_mut().create_joint(&B2JointDefEnum::RevoluteJoint(def));
                     }
-                    B2jointType::ERopeJoint => {
-                        let def = seq.next_element_seed(B2ropeJointDefContext {
-                            m_body_array: self.0.m_body_array.clone(),
-                        })?
-                        .ok_or_else(|| de::Error::invalid_length(0, &self))?;
-
-                        world.borrow_mut().create_joint(&B2JointDefEnum::RopeJoint(def));
-                    }
                     B2jointType::EPrismaticJoint => {
                         let def = seq.next_element_seed(B2prismaticJointDefContext {
                             m_body_array: self.0.m_body_array.clone(),
@@ -375,12 +366,6 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2jointDefinitionVisitorCont
                                         m_body_array: self.0.m_body_array.clone(),
                                     })?;
                                     world.borrow_mut().create_joint(&B2JointDefEnum::RevoluteJoint(def));
-                                }
-                                B2jointType::ERopeJoint => {
-                                    let def = map.next_value_seed(B2ropeJointDefContext {
-                                        m_body_array: self.0.m_body_array.clone(),
-                                    })?;
-                                    world.borrow_mut().create_joint(&B2JointDefEnum::RopeJoint(def));
                                 }
                                 B2jointType::EPrismaticJoint => {
                                     let def = map.next_value_seed(B2prismaticJointDefContext {

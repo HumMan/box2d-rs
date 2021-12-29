@@ -1,5 +1,5 @@
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2_shape::*;
 use crate::private::collision::b2_distance as private;
 
@@ -121,6 +121,7 @@ pub struct B2shapeCastOutput {
 }
 
 /// Perform a linear shape cast of shape b moving and shape A fixed. Determines the hit point, normal, and translation fraction.
+/// @returns true if hit, false if there is no hit or an initial overlap
 pub fn b2_shape_cast(output: &mut B2shapeCastOutput, input: B2shapeCastInput) -> bool {
     return private::b2_shape_cast(output, input);
 }

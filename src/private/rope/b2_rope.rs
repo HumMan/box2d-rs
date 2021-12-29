@@ -1,7 +1,7 @@
 use crate::b2_rope::*;
 use crate::b2_draw::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 
 pub(crate) fn default() -> B2rope {
 	B2rope {
@@ -222,6 +222,9 @@ pub(crate) fn step(_self: &mut B2rope, dt: f32, iterations: i32, position: B2vec
 			}
 			B2bendingModel::B2PbdHeightBendingModel => {
 				solve_bend_pbd_height(_self);
+			}
+			B2bendingModel::B2PbdTriangleBendingModel => {
+				solve_bend_pbd_triangle(_self);
 			}
 		}
 
@@ -613,6 +616,40 @@ pub(crate) fn solve_bend_pbd_height(_self: &mut B2rope) {
 		_self.m_positions[c.i1 as usize].m_ps = p1;
 		_self.m_positions[c.i2 as usize].m_ps = p2;
 		_self.m_positions[c.i3 as usize].m_ps = p3;
+	}
+}
+
+// M. Kelager: A Triangle Bending Constraint Model for PBD
+fn solve_bend_pbd_triangle(_self: &mut B2rope)
+{
+	let stiffness: f32 = _self.m_tuning.bend_stiffness;
+
+	for c in &_self.m_bend_constraints
+	{
+		let mut b0: B2vec2 = _self.m_positions[c.i1 as usize].m_ps;
+		let mut v: B2vec2 = _self.m_positions[c.i2 as usize].m_ps;
+		let mut b1: B2vec2 = _self.m_positions[c.i3 as usize].m_ps;
+
+		let wb0: f32 = c.inv_mass1;
+		let wv: f32 = c.inv_mass2;
+		let wb1: f32 = c.inv_mass3;
+
+		let W: f32 = wb0 + wb1 + 2.0 * wv;
+		let invW: f32 = stiffness / W;
+
+		let d: B2vec2 = v - (1.0 / 3.0) * (b0 + v + b1);
+
+		let db0: B2vec2 = 2.0 * wb0 * invW * d;
+		let dv: B2vec2 = -4.0 * wv * invW * d;
+		let db1: B2vec2 = 2.0 * wb1 * invW * d;
+
+		b0 += db0;
+		v += dv;
+		b1 += db1;
+
+		_self.m_positions[c.i1 as usize].m_ps = b0;
+		_self.m_positions[c.i2 as usize].m_ps = v;
+		_self.m_positions[c.i3 as usize].m_ps = b1;
 	}
 }
 

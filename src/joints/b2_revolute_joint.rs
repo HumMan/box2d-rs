@@ -1,7 +1,7 @@
 use crate::b2_body::*;
 use crate::b2_joint::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2rs_common::UserDataType;
 use crate::b2_time_step::*;
 use crate::private::dynamics::joints::b2_revolute_joint as private;
@@ -323,7 +323,7 @@ impl<D: UserDataType> B2jointTraitDyn<D> for B2revoluteJoint<D> {
 	/// Get the reaction torque due to the joint limit given the inverse time step.
 	/// Unit is n*m.
 	fn get_reaction_torque(&self, inv_dt: f32) -> f32 {
-		return inv_dt * (self.m_lower_impulse + self.m_upper_impulse);
+		return inv_dt * (self.m_motor_impulse + self.m_lower_impulse - self.m_upper_impulse);
 	}
 	fn init_velocity_constraints(
 		&mut self,

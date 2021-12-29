@@ -5,7 +5,7 @@ use box2d_rs::b2_body::*;
 use box2d_rs::b2_fixture::*;
 use box2d_rs::b2_joint::*;
 use box2d_rs::b2_math::*;
-use box2d_rs::b2_settings::*;
+use box2d_rs::b2_common::*;
 use box2d_rs::b2rs_common::UserDataType;
 use box2d_rs::b2_world::*;
 use box2d_rs::b2_world_callbacks::*;
@@ -244,6 +244,7 @@ impl<D: UserDataType> Dominos<D> {
 				.borrow()
 				.get_world_point(djd.local_anchor_a);
 		djd.length = d.length();
+		b2_linear_stiffness(&mut djd.stiffness, &mut djd.damping, 1.0, 1.0, djd.base.body_a.clone().unwrap(), djd.base.body_b.clone().unwrap());
 		m_world
 			.borrow_mut()
 			.create_joint(&B2JointDefEnum::DistanceJoint(djd));

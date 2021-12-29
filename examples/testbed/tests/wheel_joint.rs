@@ -173,9 +173,11 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for WheelJoint<D> {
 		Test::step(self.base.clone(), ui, display, target, settings, *camera);
 
 		let mut torque: f32 = 0.0;
+		let mut F: B2vec2 = B2vec2::default();
 		match self.m_joint.as_ref().unwrap().borrow_mut().as_derived_mut() {
 			JointAsDerivedMut::EWheelJoint(ref mut m_spring1) => {
 				torque = m_spring1.get_motor_torque(settings.m_hertz);
+				F = m_spring1.get_reaction_force(settings.m_hertz);
 			}
 			_ => (),
 		}
@@ -183,7 +185,14 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for WheelJoint<D> {
 		base.g_debug_draw.borrow().draw_string(
 			ui,
 			B2vec2::new(5.0, base.m_text_line as f32),
-			&format!("Motor Torque = {0:4}", torque,),
+			&format!("Motor Torque = {0:4}", torque),
+		);
+		base.m_text_line += base.m_text_increment;
+
+		base.g_debug_draw.borrow().draw_string(
+			ui,
+			B2vec2::new(5.0, base.m_text_line as f32),
+			&format!("Reaction Force = ({0:4.1}, {1:4.1})", F.x, F.y),
 		);
 		base.m_text_line += base.m_text_increment;
 	}

@@ -43,7 +43,6 @@ mod pyramid;
 mod ray_cast;
 mod restitution;
 mod revolute_joint;
-mod rope_joint;
 mod rope;
 mod sensor;
 mod shape_cast;
@@ -55,6 +54,8 @@ mod theo_jansen;
 mod tiles;
 mod time_of_impact;
 mod tumbler;
+mod web;
 mod wheel_joint;
+mod wrecking_ball;
 
 pub(crate) mod register;

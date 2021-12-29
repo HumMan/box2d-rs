@@ -116,7 +116,7 @@ impl<D: UserDataType> B2weldJoint<D> {
 
 		/// Set/get stiffness in n*m
 		pub fn  set_stiffness(&mut self,hz: f32) { self.m_stiffness = hz; }
-		pub fn  get_frequency(&self)-> f32 { return self.m_stiffness; }
+		pub fn  get_stiffness(&self)-> f32 { return self.m_stiffness; }
 	
 		/// Set/get damping in n*m*s
 		pub fn  set_damping(&mut self,damping: f32) { self.m_damping = damping; }

@@ -1,7 +1,7 @@
 use crate::b2_body::*;
 use crate::b2_joint::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2rs_common::UserDataType;
 use crate::b2_time_step::*;
 use crate::private::dynamics::joints::b2_gear_joint as private;
@@ -22,6 +22,7 @@ impl<D: UserDataType> Default for B2gearJointDef<D> {
 
 /// Gear joint definition. This definition requires two existing
 /// revolute or prismatic joints (any combination will work).
+/// @warning body_b on the input joints must both be dynamic
 #[derive(Clone)]
 pub struct B2gearJointDef<D: UserDataType> {
 	pub base: B2jointDef<D>,

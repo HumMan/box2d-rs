@@ -52,6 +52,9 @@ impl<D: UserDataType> Restitution<D> {
 	}
 
 	fn init(&mut self) {
+
+		const threshold: f32 = 10.0;
+
 		let m_world = self.base.borrow().m_world.clone();
 		{
 			let bd = B2bodyDef::default();
@@ -59,7 +62,11 @@ impl<D: UserDataType> Restitution<D> {
 
 			let mut shape = B2edgeShape::default();
 			shape.set_two_sided(B2vec2::new(-40.0, 0.0), B2vec2::new(40.0, 0.0));
-			B2body::create_fixture_by_shape(ground, Rc::new(RefCell::new(shape)), 0.0);
+
+			let mut fd = B2fixtureDef::default();
+			fd.shape = Some(Rc::new(RefCell::new(shape)));
+			fd.restitutionThreshold = threshold;
+			B2body::create_fixture(ground, &fd);
 		}
 
 		{
@@ -80,6 +87,7 @@ impl<D: UserDataType> Restitution<D> {
 				let body = B2world::create_body(m_world.clone(), &bd);
 
 				fd.restitution = *r;
+				fd.restitutionThreshold = threshold;
 				B2body::create_fixture(body.clone(), &fd);
 			}
 		}

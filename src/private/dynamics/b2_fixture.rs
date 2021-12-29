@@ -5,7 +5,7 @@ use crate::b2_fixture::*;
 use crate::b2_math::*;
 use std::rc::Rc;
 use std::ptr;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2rs_common::*;
 
 pub fn b2_fixture_default<T:UserDataType>() -> B2fixture<T> {
@@ -21,6 +21,7 @@ pub fn b2_fixture_default<T:UserDataType>() -> B2fixture<T> {
 		m_friction: 0.0,
 		m_is_sensor: false,
 		m_restitution: 0.0,
+		m_restitutionThreshold: 0.0
 	};
 }
 
@@ -32,6 +33,7 @@ pub fn b2_fixture_create<T:UserDataType>(
 	this.m_user_data = def.user_data.clone();
 	this.m_friction = def.friction;
 	this.m_restitution = def.restitution;
+	this.m_restitutionThreshold = def.restitutionThreshold;
 
 	this.m_body = Some(Rc::downgrade(&body));
 	this.m_next = None;

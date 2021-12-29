@@ -1,6 +1,6 @@
 use crate::b2_draw::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2rs_common::UserDataType;
 use crate::b2_time_step::*;
 use crate::joints::b2_revolute_joint::*;
@@ -227,7 +227,6 @@ pub(crate) fn solve_position_constraints<D: UserDataType>(
 	let fixed_rotation: bool = this.m_inv_ia + this.m_inv_ib == 0.0;
 
 	// Solve angular limit constraint
-	//let active = false;
 	if this.m_enable_limit && fixed_rotation == false {
 		let angle: f32 = a_b - a_a - this.m_reference_angle;
 		let mut c: f32 = 0.0;

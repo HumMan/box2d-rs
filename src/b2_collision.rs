@@ -1,5 +1,5 @@
 use crate::b2_math::*;
-use crate::b2_settings::B2_MAX_MANIFOLD_POINTS;
+use crate::b2_common::B2_MAX_MANIFOLD_POINTS;
 use crate::b2_shape::*;
 use crate::private::collision as private;
 use crate::shapes::b2_circle_shape::*;

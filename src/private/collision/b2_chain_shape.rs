@@ -2,7 +2,7 @@ use crate::shapes::b2_chain_shape::*;
 use crate::b2_collision::*;
 use crate::shapes::b2_edge_shape::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2_shape::*;
 
 pub fn b2_chain_shape_clear(this: &mut B2chainShape) {

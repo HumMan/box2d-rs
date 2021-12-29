@@ -6,8 +6,9 @@ use crate::b2_draw::*;
 use crate::b2_fixture::*;
 use crate::b2_joint::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2rs_common::*;
+use crate::b2_settings::*;
 use crate::b2_time_of_impact::*;
 use crate::b2_time_step::*;
 use crate::b2_timer::*;
@@ -233,11 +234,6 @@ pub(crate) fn create_joint<D: UserDataType>(
 			val.base.collide_connected,
 		),
 		B2JointDefEnum::RevoluteJoint(ref val)=>(
-			val.base.body_a.clone().unwrap(),
-			val.base.body_b.clone().unwrap(),
-			val.base.collide_connected,
-		),
-		B2JointDefEnum::RopeJoint(ref val)=>(
 			val.base.body_a.clone().unwrap(),
 			val.base.body_b.clone().unwrap(),
 			val.base.collide_connected,
@@ -477,7 +473,7 @@ pub(crate) fn solve<D: UserDataType>(this: &mut B2world<D>, step: B2timeStep) {
 
 				let other = upgrade(&je.other);
 
-				// Don't simulate joints connected to diabled bodies.
+				// Don't simulate joints connected to disabled bodies.
 				if other.borrow().is_enabled() == false {
 					continue;
 				}

@@ -20,7 +20,6 @@ use crate::joints::serialize::serialize_b2_motor_joint::*;
 use crate::joints::serialize::serialize_b2_prismatic_joint::*;
 use crate::joints::serialize::serialize_b2_pulley_joint::*;
 use crate::joints::serialize::serialize_b2_revolute_joint::*;
-use crate::joints::serialize::serialize_b2_rope_joint::*;
 use crate::joints::serialize::serialize_b2_weld_joint::*;
 use crate::joints::serialize::serialize_b2_wheel_joint::*;
 
@@ -108,11 +107,6 @@ impl<D: UserDataType> Serialize for B2jointsArrayContext<D>
                         joint_def: def,
                     })?;
                 }
-                JointAsDerived::ERopeJoint(joint) => {let def = joint.get_def();
-                    state.serialize_element(&JointWithType {
-                        jtype: def.base.jtype,
-                        joint_def: def,
-                    })?;}
                 JointAsDerived::EPrismaticJoint(joint) => {
                     let def = joint.get_def();
                     state.serialize_element(&JointWithType {

@@ -27,8 +27,7 @@ use bitflags::bitflags;
 pub enum B2bodyType {
 	B2StaticBody = 0,
 	B2KinematicBody,
-	B2DynamicBody, // TODO_ERIN
-	                //b2_bulletBody
+	B2DynamicBody,
 }
 
 impl Default for B2bodyType {

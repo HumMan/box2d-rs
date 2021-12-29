@@ -1,6 +1,7 @@
 use crate::b2_collision::*;
 use crate::b2_math::*;
 use crate::shapes::b2_polygon_shape::*;
+use crate::b2_common::*;
 use crate::b2_settings::*;
 use crate::b2_shape::*;
 

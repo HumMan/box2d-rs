@@ -2,7 +2,7 @@
 use crate::b2_collision::*;
 use crate::b2_math::*;
 use crate::shapes::b2_polygon_shape::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 
 // Find the max separation between poly1 and poly2 using edge normals from poly1.
 fn b2_find_max_separation(

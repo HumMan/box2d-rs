@@ -2,7 +2,7 @@ use crate::b2_body::*;
 use crate::b2_joint::*;
 use crate::b2_math::*;
 use crate::b2_draw::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2rs_common::UserDataType;
 use crate::b2_time_step::*;
 use crate::private::dynamics::joints::b2_wheel_joint as private;
@@ -405,7 +405,7 @@ impl<D: UserDataType> B2jointTraitDyn<D> for B2wheelJoint<D> {
 	/// Get the reaction force given the inverse time step.
 	/// Unit is n.
 	fn get_reaction_force(&self, inv_dt: f32) -> B2vec2 {
-		return inv_dt * (self.m_impulse * self.m_ay + self.m_spring_impulse * self.m_ax);
+		return inv_dt * (self.m_impulse * self.m_ay + (self.m_spring_impulse + self.m_lower_impulse - self.m_upper_impulse) * self.m_ax);
 	}
 
 	fn get_reaction_torque(&self, inv_dt: f32) -> f32 {

@@ -16,6 +16,7 @@ pub enum B2bendingModel {
 	B2XpbdAngleBendingModel,
 	B2PbdDistanceBendingModel,
 	B2PbdHeightBendingModel,
+	B2PbdTriangleBendingModel,
 }
 
 #[derive(Clone, Copy)]

@@ -1,7 +1,7 @@
 use crate::b2_body::*;
 use crate::b2_fixture::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2rs_common::*;
 use crate::b2_shape::*;
 use crate::b2_world::*;
@@ -441,6 +441,9 @@ pub fn set_transform<D: UserDataType>(self_: &mut B2body<D>, position: B2vec2, a
 		f.borrow_mut()
 			.synchronize(&mut broad_phase, self_.m_xf, self_.m_xf);
 	}
+
+	// Check for new contacts the next step
+	world.borrow_mut().m_new_contacts = true;
 }
 
 pub fn synchronize_fixtures<D: UserDataType>(self_: &mut B2body<D>) {

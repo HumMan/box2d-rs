@@ -1,7 +1,7 @@
 use super::b2_edge_shape::B2edgeShape;
 use crate::b2_collision::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2_shape::*;
 use crate::private::collision::b2_chain_shape as private;
 #[cfg(feature="serde_support")]

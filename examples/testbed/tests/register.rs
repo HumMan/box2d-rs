@@ -48,7 +48,6 @@ use super::ray_cast::RayCast;
 use super::restitution::Restitution;
 use super::revolute_joint::RevoluteJoint;
 use super::rope::Rope;
-use super::rope_joint::RopeJoint;
 use super::sensor::Sensors;
 use super::shape_cast::ShapeCast;
 use super::shape_editing::ShapeEditing;
@@ -59,7 +58,9 @@ use super::theo_jansen::TheoJansen;
 use super::tiles::Tiles;
 use super::time_of_impact::TimeOfImpact;
 use super::tumbler::Tumbler;
+use super::web::Web;
 use super::wheel_joint::WheelJoint;
+use super::wrecking_ball::WreckingBall;
 
 macro_rules! add_test {
     ($vec_name:ident, $cat:expr, $name:expr, $constr:ident) => {
@@ -120,7 +121,6 @@ pub(crate) fn get_tests_list<'a, F: Facade>() -> Vec<TestEntry<'a, UserDataTypes
     add_test!(r, "Collision", "Ray Cast", RayCast);
     add_test!(r, "Forces", "Restitution", Restitution);
     add_test!(r, "Joints", "Revolute", RevoluteJoint);
-    add_test!(r, "Joints", "Rope", RopeJoint);
     add_test!(r, "Rope", "Bending", Rope);
     add_test!(r, "Collision", "Sensors", Sensors);
     add_test!(r, "Collision", "Shape Cast", ShapeCast);
@@ -132,7 +132,9 @@ pub(crate) fn get_tests_list<'a, F: Facade>() -> Vec<TestEntry<'a, UserDataTypes
     add_test!(r, "Benchmark", "Tiles", Tiles);
     add_test!(r, "Collision", "Time of Impact", TimeOfImpact);
     add_test!(r, "Benchmark", "Tumbler", Tumbler);
+    add_test!(r, "Examples", "Web", Web);
     add_test!(r, "Joints", "Wheel", WheelJoint);
+    add_test!(r, "Examples", "Wrecking Ball", WreckingBall);
 
     r.sort_by(|a, b| a.category.cmp(b.category).then(a.name.cmp(b.name)));
 

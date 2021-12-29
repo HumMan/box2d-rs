@@ -1,7 +1,7 @@
 use crate::b2_collision::*;
 use crate::b2_dynamic_tree::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use std::convert::TryInto;
 
 pub fn b2_dynamic_tree<T: Clone + Default>() -> B2dynamicTree<T> {
@@ -26,7 +26,6 @@ pub fn b2_dynamic_tree<T: Clone + Default>() -> B2dynamicTree<T> {
 		m_node_count,
 		m_nodes,
 		m_free_list: 0,
-		m_path: 0,
 		m_insertion_count: 0,
 	};
 }

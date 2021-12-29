@@ -1,6 +1,6 @@
 use crate::b2_joint::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2rs_common::UserDataType;
 use crate::b2_time_step::*;
 
@@ -15,8 +15,8 @@ impl<D: UserDataType> Default for B2mouseJointDef<D> {
 			},
 			target: B2vec2::zero(),
 			max_force: 0.0,
-			frequency_hz: 5.0,
-			damping_ratio: 0.7,
+			stiffness: 0.0,
+			damping: 0.0,
 		};
 	}
 }
@@ -45,11 +45,11 @@ pub struct B2mouseJointDef<D: UserDataType> {
 	/// as some multiple of the weight (multiplier * mass * gravity).
 	pub max_force: f32,
 
-	/// The response speed.
-	pub frequency_hz: f32,
+	/// The linear stiffness in N/m
+	pub stiffness: f32,
 
-	/// The damping ratio. 0 = no damping, 1 = critical damping.
-	pub damping_ratio: f32,
+	/// The linear damping in N*s/m
+	pub damping: f32,
 }
 
 impl<D: UserDataType> B2jointTraitDyn<D> for B2mouseJoint<D> {
@@ -130,27 +130,16 @@ impl<D: UserDataType> B2mouseJoint<D> {
 		return self.m_max_force;
 	}
 
-	/// Set/get the frequency in Hertz.
-	pub fn set_frequency(&mut self, hz: f32) {
-		self.m_frequency_hz = hz;
-	}
-	pub fn get_frequency(&self) -> f32 {
-		return self.m_frequency_hz;
-	}
+	/// Set/get the linear stiffness in N/m
+	pub fn SetStiffness(&mut self, stiffness: f32) { self.m_stiffness = stiffness; }
+	pub fn GetStiffness(&self) -> f32 { return self.m_stiffness; }
 
-	/// Set/get the damping ratio (dimensionless).
-	pub fn set_damping_ratio(&mut self, ratio: f32) {
-		self.m_damping_ratio = ratio;
-	}
-	pub fn get_damping_ratio(&self) -> f32 {
-		return self.m_damping_ratio;
-	}
+	/// Set/get linear damping in N*s/m
+	pub fn SetDamping(&mut self, damping: f32) { self.m_damping = damping; }
+	pub fn GetDamping(&self) -> f32 { return self.m_damping; }
+	
 
 	pub fn new(def: &B2mouseJointDef<D>) -> Self {
-		b2_assert(def.target.is_valid());
-		b2_assert(b2_is_valid(def.max_force) && def.max_force >= 0.0);
-		b2_assert(b2_is_valid(def.frequency_hz) && def.frequency_hz >= 0.0);
-		b2_assert(b2_is_valid(def.damping_ratio) && def.damping_ratio >= 0.0);
 		let m_target_a = def.target;
 		let body_b_transform = def.base.body_b.as_ref().unwrap().borrow().get_transform();
 		return B2mouseJoint {
@@ -162,8 +151,8 @@ impl<D: UserDataType> B2mouseJoint<D> {
 			m_max_force: def.max_force,
 			m_impulse: B2vec2::zero(),
 
-			m_frequency_hz: def.frequency_hz,
-			m_damping_ratio: def.damping_ratio,
+			m_stiffness: def.stiffness,
+			m_damping: def.damping,
 
 			m_beta: 0.0,
 			m_gamma: 0.0,
@@ -190,8 +179,8 @@ pub struct B2mouseJoint<D: UserDataType> {
 	pub(crate) base: B2joint<D>,
 	pub(crate) m_local_anchor_b: B2vec2,
 	pub(crate) m_target_a: B2vec2,
-	pub(crate) m_frequency_hz: f32,
-	pub(crate) m_damping_ratio: f32,
+	pub(crate) m_stiffness: f32,
+	pub(crate) m_damping: f32,
 	pub(crate) m_beta: f32,
 
 	// Solver shared

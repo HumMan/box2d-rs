@@ -2,7 +2,7 @@ use crate::b2_body::*;
 use crate::b2_draw::*;
 use crate::b2_joint::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2rs_common::UserDataType;
 use crate::b2_time_step::*;
 use crate::private::dynamics::joints::b2_prismatic_joint as private;
@@ -287,7 +287,7 @@ impl<D: UserDataType> B2jointTraitDyn<D> for B2prismaticJoint<D> {
     fn get_reaction_force(&self, inv_dt: f32) -> B2vec2 {
         return inv_dt
             * (self.m_impulse.x * self.m_perp
-                + (self.m_motor_impulse + self.m_lower_impulse + self.m_upper_impulse) * self.m_axis);
+                + (self.m_motor_impulse + self.m_lower_impulse - self.m_upper_impulse) * self.m_axis);
     }
 
     fn get_reaction_torque(&self, inv_dt: f32) -> f32 {

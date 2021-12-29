@@ -1,7 +1,7 @@
 use crate::b2_collision::*;
 use crate::shapes::b2_edge_shape::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2_shape::*;
 
 pub fn b2_set_one_sided(this: &mut B2edgeShape, v0: B2vec2, v1: B2vec2, v2: B2vec2, v3: B2vec2) {

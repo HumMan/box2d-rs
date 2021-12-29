@@ -1,7 +1,7 @@
 //TODO_humman пока тут не ясно с константами в параметрах, поэтому у массива фиксированная длинна
 //#![feature(const_generics)]
 
-use crate::b2_settings::*;
+use crate::b2_common::*;
 
 const B2_GROWABLE_STACK_SIZE: usize = 256;
 

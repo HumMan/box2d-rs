@@ -6,7 +6,7 @@ use box2d_rs::b2_collision::*;
 use box2d_rs::b2_contact::*;
 use box2d_rs::b2_fixture::*;
 use box2d_rs::b2_math::*;
-use box2d_rs::b2_settings::*;
+use box2d_rs::b2_common::*;
 use box2d_rs::b2rs_common::UserDataType;
 use box2d_rs::b2_world::*;
 use box2d_rs::b2_world_callbacks::*;
@@ -16,6 +16,9 @@ use box2d_rs::shapes::b2_edge_shape::*;
 use glium::backend::Facade;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+use imgui::im_str;
+use imgui::sys;
 
 struct B2contactListenerCustom<D: UserDataType> {
 	base: B2testContactListenerDefault<D>,
@@ -55,6 +58,7 @@ impl B2contactListener<UserDataTypes> for B2contactListenerCustom<UserDataTypes>
 		}
 	}
 	fn end_contact(&mut self, contact: &mut dyn B2contactDynTrait<UserDataTypes>) {
+
 		self.base.end_contact(contact);
 
 		let mut test_data = self.test_data.borrow_mut();
@@ -108,6 +112,7 @@ pub(crate) struct TestData<D: UserDataType> {
 	pub(crate) m_sensor: Option<FixturePtr<D>>,
 	m_bodies: Vec<BodyPtr<D>>,
 	m_touching: Vec<bool>,
+	m_force: f32
 }
 
 pub(crate) struct Sensors<D: UserDataType> {
@@ -216,12 +221,31 @@ impl Sensors<UserDataTypes> {
 				test_data.m_bodies.push(body);
 			}
 		}
+		test_data.m_force = 100.0;
 	}
 }
 
 impl<D: UserDataType, F: Facade> TestDyn<D, F> for Sensors<D> {
 	fn get_base(&self) -> TestBasePtr<D> {
 		return self.base.clone();
+	}
+	fn update_ui(&mut self, ui: &imgui::Ui<'_>) {
+		imgui::Window::new(im_str!("Sensor Controls"))
+			.flags(imgui::WindowFlags::NO_MOVE | imgui::WindowFlags::NO_RESIZE)
+			.position([10.0, 100.0], imgui::Condition::Always)
+			.size([200.0, 60.0], imgui::Condition::Always)
+			.build(&ui, || unsafe {
+				let mut test_data = self.test_data.borrow_mut();
+
+				sys::igSliderFloat(
+					im_str!("Force").as_ptr(),
+					&mut test_data.m_force,
+					0.0,
+					2000.0,
+					im_str!("%.0f").as_ptr(),
+					1.0,
+				);
+			});
 	}
 	fn step(
 		&mut self,
@@ -263,7 +287,7 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for Sensors<D> {
 			}
 
 			d.normalize();
-			let f: B2vec2 = 100.0 * d;
+			let f: B2vec2 =test_data.m_force * d;
 			body.borrow_mut().apply_force(f, position, false);
 		}
 	}

@@ -1,7 +1,7 @@
 use crate::b2_collision::*;
 use crate::b2_math::*;
 use crate::b2_time_step::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2rs_common::UserDataType;
 use crate::b2_contact::*;
 
@@ -34,6 +34,7 @@ pub(crate) struct B2contactVelocityConstraint
 	pub(crate) inv_ib: f32,
 	pub(crate) friction: f32,
 	pub(crate) restitution: f32,
+	pub(crate) threshold: f32,
 	pub(crate) tangent_speed: f32,
 	pub(crate) point_count: i32,
 	pub(crate) contact_index: i32,

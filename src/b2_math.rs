@@ -1,4 +1,4 @@
-use crate::b2_settings::{b2_assert, B2_PI};
+use crate::b2_common::{b2_assert, B2_PI};
 use crate::private::common::b2_math as private;
 use std::f32::EPSILON;
 use std::ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign};
@@ -354,8 +354,8 @@ impl B2Mat33 {
 #[cfg_attr(feature = "serde_support", derive(Serialize, Deserialize))]
 pub struct B2Rot {
     /// Sine and cosine
-    s: f32,
-    c: f32,
+    pub s: f32,
+    pub c: f32,
 }
 
 impl B2Rot {
@@ -762,9 +762,10 @@ pub fn b2_is_power_of_two(x: u32) -> bool {
     return result;
 }
 
+// https://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
 pub fn b2_sweep_get_transform(this: B2Sweep, xf: &mut B2Transform, beta: f32) {
-    xf.p = this.c0 + beta * (this.c - this.c0);
-    let angle: f32 = this.a0 + beta * (this.a - this.a0);
+    xf.p = (1.0 - beta) * this.c0 + beta * this.c;
+	let angle: f32 = (1.0 - beta) * this.a0 + beta * this.a;
     xf.q.set(angle);
 
     // Shift to origin

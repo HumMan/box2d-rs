@@ -1,7 +1,7 @@
 use crate::b2_collision::*;
 use crate::b2_distance::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2_shape::*;
 
 pub fn b2_world_manifold_initialize(

@@ -1,7 +1,7 @@
 use crate::b2_collision::*;
 use crate::b2_growable_stack::B2growableStack;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::private::collision::b2_dynamic_tree as private;
 
 pub const B2_NULL_NODE: i32 = -1;
@@ -72,9 +72,6 @@ pub struct B2dynamicTree<UserDataType> {
 	pub(crate) m_node_capacity: i32,
 
 	pub(crate) m_free_list: i32,
-
-	/// This is used to incrementally traverse the tree for re-balancing.
-	pub(crate) m_path: u32,
 
 	pub(crate) m_insertion_count: i32,
 }

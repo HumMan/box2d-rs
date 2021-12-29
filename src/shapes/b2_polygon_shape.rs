@@ -1,6 +1,7 @@
 use crate::b2_collision::*;
-use crate::b2_math::*;
 use crate::b2_settings::*;
+use crate::b2_math::*;
+use crate::b2_common::*;
 use crate::b2_shape::*;
 use crate::private::collision::b2_polygon_shape as private;
 use std::rc::Rc;

@@ -9,6 +9,7 @@ use box2d_rs::b2_body::*;
 use box2d_rs::b2_fixture::*;
 use box2d_rs::b2_math::*;
 use box2d_rs::b2_settings::*;
+use box2d_rs::b2_common::*;
 use box2d_rs::b2rs_common::UserDataType;
 
 use box2d_rs::b2_draw::*;
@@ -23,24 +24,26 @@ use glium::glutin::event::{ElementState, KeyboardInput, VirtualKeyCode};
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use imgui::im_str;
+use imgui::sys;
+
 pub(crate) struct RayCast<D: UserDataType> {
 	base: TestBasePtr<D>,
 	destruction_listener: B2destructionListenerPtr<D>,
 	contact_listener: B2contactListenerPtr<D>,
 
 	m_bodies: Vec<BodyPtr<D>>,
-	m_user_data: Vec<i32>,
 	m_polygons: [B2polygonShape; 4],
 	m_circle: B2circleShape,
 	m_edge: B2edgeShape,
-	m_angle: f32,
+	m_degrees: f32,
 	m_mode: Mode,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 enum Mode {
-	EClosest,
 	EAny,
+	EClosest,	
 	EMultiple,
 }
 
@@ -59,11 +62,10 @@ impl RayCast<UserDataTypes> {
 			})),
 
 			m_bodies: Vec::with_capacity(Self::E_MAX_BODIES),
-			m_user_data: Vec::with_capacity(Self::E_MAX_BODIES),
 			m_polygons: Default::default(),
 			m_circle: B2circleShape::default(),
 			m_edge: B2edgeShape::default(),
-			m_angle: 0.0,
+			m_degrees: 0.0,
 			m_mode: Mode::EClosest,
 		}));
 
@@ -152,12 +154,6 @@ impl RayCast<UserDataTypes> {
 		bd.position.set(x, y);
 		bd.angle = random_float_range(-B2_PI, B2_PI);
 
-		//let m_body_index = self.m_bodies.len();
-
-		bd.user_data = Some(FixtureData::Int(index));
-
-		self.m_user_data.push(index);
-
 		if index == 4 {
 			bd.angular_damping = 0.02;
 		}
@@ -169,18 +165,19 @@ impl RayCast<UserDataTypes> {
 			let mut fd = B2fixtureDef::default();
 			fd.shape = Some(Rc::new(RefCell::new(self.m_polygons[index as usize])));
 			fd.friction = 0.3;
+			fd.user_data = Some(FixtureData::Int(index+1));
 			B2body::create_fixture(new_body.clone(), &fd);
 		} else if index < 5 {
 			let mut fd = B2fixtureDef::default();
 			fd.shape = Some(Rc::new(RefCell::new(self.m_circle)));
 			fd.friction = 0.3;
-
+			fd.user_data = Some(FixtureData::Int(index+1));
 			B2body::create_fixture(new_body.clone(), &fd);
 		} else {
 			let mut fd = B2fixtureDef::default();
 			fd.shape = Some(Rc::new(RefCell::new(self.m_edge)));
 			fd.friction = 0.3;
-
+			fd.user_data = Some(FixtureData::Int(index+1));
 			B2body::create_fixture(new_body.clone(), &fd);
 		}
 
@@ -198,43 +195,72 @@ impl<F: Facade> TestDyn<UserDataTypes, F> for RayCast<UserDataTypes> {
 	fn get_base(&self) -> TestBasePtr<UserDataTypes> {
 		return self.base.clone();
 	}
-	fn keyboard(&mut self, key: &KeyboardInput) {
-		if key.state == ElementState::Pressed {
-			match key.virtual_keycode {
-				Some(VirtualKeyCode::Key1) => {
+
+	fn update_ui(&mut self, ui: &imgui::Ui<'_>)
+	{
+		imgui::Window::new(im_str!("Ray-cast Controls"))
+			.flags(
+				imgui::WindowFlags::NO_MOVE
+					| imgui::WindowFlags::NO_RESIZE
+			)
+			.position([10.0, 100.0], imgui::Condition::Always)
+			.size([210.0, 285.0], imgui::Condition::Always)
+			.build(&ui, || unsafe {
+				if sys::igSmallButton(im_str!("Shape 1").as_ptr())
+				{
 					self.create(0);
 				}
-				Some(VirtualKeyCode::Key2) => {
+				if sys::igSmallButton(im_str!("Shape 2").as_ptr())
+				{
 					self.create(1);
 				}
-				Some(VirtualKeyCode::Key3) => {
+				if sys::igSmallButton(im_str!("Shape 3").as_ptr())
+				{
 					self.create(2);
 				}
-				Some(VirtualKeyCode::Key4) => {
+				if sys::igSmallButton(im_str!("Shape 4").as_ptr())
+				{
 					self.create(3);
 				}
-				Some(VirtualKeyCode::Key5) => {
+				if sys::igSmallButton(im_str!("Shape 5").as_ptr())
+				{
 					self.create(4);
 				}
-				Some(VirtualKeyCode::Key6) => {
+				if sys::igSmallButton(im_str!("Shape 6").as_ptr())
+				{
 					self.create(5);
 				}
-				Some(VirtualKeyCode::D) => {
+				if sys::igSmallButton(im_str!("Destroy Shape").as_ptr())
+				{
 					self.destroy_body();
 				}
-				Some(VirtualKeyCode::M) => {
-					if self.m_mode == Mode::EClosest {
-						self.m_mode = Mode::EAny;
-					} else if self.m_mode == Mode::EAny {
-						self.m_mode = Mode::EMultiple;
-					} else if self.m_mode == Mode::EMultiple {
-						self.m_mode = Mode::EClosest;
-					}
+
+				if sys::igRadioButtonBool(im_str!("Any").as_ptr(),  self.m_mode == Mode::EAny) {
+					self.m_mode = Mode::EAny;
 				}
-				_ => (),
-			}
-		}
+
+				if sys::igRadioButtonBool(im_str!("Any").as_ptr(),  self.m_mode == Mode::EClosest) {
+					self.m_mode = Mode::EClosest;
+				}
+
+				if sys::igRadioButtonBool(im_str!("Any").as_ptr(),  self.m_mode == Mode::EMultiple) {
+					self.m_mode = Mode::EMultiple;
+				}
+
+				sys::igSliderFloat(
+					im_str!("Angle").as_ptr(),
+					&mut self.m_degrees,
+					0.0,
+					360.0,
+					im_str!("%.0f").as_ptr(),
+					1.0,
+				);
+			});
+
+		
+
 	}
+
 	fn step(
 		&mut self,
 		ui: &imgui::Ui<'_>,
@@ -243,7 +269,6 @@ impl<F: Facade> TestDyn<UserDataTypes, F> for RayCast<UserDataTypes> {
 		settings: &mut Settings,
 		camera: &mut Camera,
 	) {
-		let advance_ray: bool = settings.m_pause == false || settings.m_single_step;
 		Test::step(self.base.clone(), ui, display, target, settings, *camera);
 
 		let m_world = self.base.borrow().m_world.clone();
@@ -252,7 +277,7 @@ impl<F: Facade> TestDyn<UserDataTypes, F> for RayCast<UserDataTypes> {
 		base.g_debug_draw.borrow().draw_string(
 			ui,
 			B2vec2::new(5.0, base.m_text_line as f32),
-			"Press 1-6 to drop stuff, m to change the mode",
+			"Shape 1 is intentionally ignored by the ray",
 		);
 		base.m_text_line += base.m_text_increment;
 
@@ -282,9 +307,10 @@ impl<F: Facade> TestDyn<UserDataTypes, F> for RayCast<UserDataTypes> {
 
 		base.m_text_line += base.m_text_increment;
 
+		let angle: f32 = B2_PI * self.m_degrees / 180.0;
 		let l: f32 = 11.0;
 		let point1 = B2vec2::new(0.0, 10.0);
-		let d = B2vec2::new(l * f32::cos(self.m_angle), l * f32::sin(self.m_angle));
+		let d = B2vec2::new(l * f32::cos(angle), l * f32::sin(angle));
 		let point2: B2vec2 = point1 + d;
 
 		match self.m_mode {
@@ -468,10 +494,6 @@ impl<F: Facade> TestDyn<UserDataTypes, F> for RayCast<UserDataTypes> {
 					);
 				}
 			}
-		}
-
-		if advance_ray {
-			self.m_angle += 0.25 * B2_PI / 180.0;
 		}
 
 		if false {

@@ -1,7 +1,7 @@
 use crate::b2_body::*;
 use crate::b2_draw::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2rs_common::UserDataType;
 use crate::b2_time_step::*;
 
@@ -22,7 +22,6 @@ use crate::joints::b2_mouse_joint::*;
 use crate::joints::b2_prismatic_joint::*;
 use crate::joints::b2_pulley_joint::*;
 use crate::joints::b2_revolute_joint::*;
-use crate::joints::b2_rope_joint::*;
 use crate::joints::b2_weld_joint::*;
 use crate::joints::b2_wheel_joint::*;
 
@@ -36,7 +35,6 @@ pub enum B2JointDefEnum<D: UserDataType> {
 	MotorJoint(B2motorJointDef<D>),
 	PulleyJoint(B2pulleyJointDef<D>),
 	RevoluteJoint(B2revoluteJointDef<D>),
-	RopeJoint(B2ropeJointDef<D>),
 	PrismaticJoint(B2prismaticJointDef<D>),
 	WeldJoint(B2weldJointDef<D>),
 	WheelJoint(B2wheelJointDef<D>),
@@ -55,7 +53,6 @@ pub enum B2jointType {
 	EPrismaticJoint,
 	EPulleyJoint,
 	ERevoluteJoint,
-	ERopeJoint,
 	EWeldJoint,
 	EWheelJoint,	
 }
@@ -300,7 +297,6 @@ pub enum JointAsDerived<'a, D: UserDataType> {
 	EMotorJoint(&'a B2motorJoint<D>),
 	EPulleyJoint(&'a B2pulleyJoint<D>),
 	ERevoluteJoint(&'a B2revoluteJoint<D>),
-	ERopeJoint(&'a B2ropeJoint<D>),
 	EPrismaticJoint(&'a B2prismaticJoint<D>),
 	EWeldJoint(&'a B2weldJoint<D>),
 	EWheelJoint(&'a B2wheelJoint<D>),
@@ -314,7 +310,6 @@ pub enum JointAsDerivedMut<'a, D: UserDataType> {
 	EMotorJoint(&'a mut B2motorJoint<D>),
 	EPulleyJoint(&'a mut B2pulleyJoint<D>),
 	ERevoluteJoint(&'a mut B2revoluteJoint<D>),
-	ERopeJoint(&'a mut B2ropeJoint<D>),
 	EPrismaticJoint(&'a mut B2prismaticJoint<D>),
 	EWeldJoint(&'a mut B2weldJoint<D>),
 	EWheelJoint(&'a mut B2wheelJoint<D>),

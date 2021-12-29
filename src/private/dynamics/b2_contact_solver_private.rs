@@ -1,8 +1,9 @@
 use super::b2_contact_solver::*;
 use crate::b2_contact::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2rs_common::*;
+use crate::b2_settings::*;
 use crate::b2_time_step::*;
 use crate::b2_collision::*;
 
@@ -48,6 +49,7 @@ pub(crate) fn new<D: UserDataType>(def: &B2contactSolverDef, contacts: &Vec<Cont
 		let mut vc = &mut result.m_velocity_constraints[i];
 		vc.friction = contact.m_friction;
 		vc.restitution = contact.m_restitution;
+		vc.threshold = contact.m_restitutionThreshold;
 		vc.tangent_speed = contact.m_tangent_speed;
 		vc.index_a = body_a.m_island_index;
 		vc.index_b = body_b.m_island_index;
@@ -180,7 +182,7 @@ pub(crate) fn initialize_velocity_constraints<D: UserDataType>(this: &mut B2cont
 			// Setup a velocity bias for restitution.
 			vcp.velocity_bias = 0.0;
 			let v_rel: f32 =b2_dot(vc.normal, v_b + b2_cross_scalar_by_vec(w_b, vcp.r_b) - v_a - b2_cross_scalar_by_vec(w_a, vcp.r_a));
-			if v_rel < -B2_VELOCITY_THRESHOLD
+			if v_rel < - vc.threshold
 			{
 				vcp.velocity_bias = -vc.restitution * v_rel;
 			}

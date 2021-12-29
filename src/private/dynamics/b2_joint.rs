@@ -1,6 +1,6 @@
 use crate::b2_joint::*;
 use crate::b2_draw::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2rs_common::UserDataType;
 use crate::b2_math::*;
 use crate::b2_body::*;
@@ -13,7 +13,6 @@ use crate::joints::b2_mouse_joint::*;
 use crate::joints::b2_prismatic_joint::*;
 use crate::joints::b2_pulley_joint::*;
 use crate::joints::b2_revolute_joint::*;
-use crate::joints::b2_rope_joint::*;
 use crate::joints::b2_weld_joint::*;
 use crate::joints::b2_wheel_joint::*;
 
@@ -82,7 +81,6 @@ pub(crate) fn create<D: UserDataType>(def: &B2JointDefEnum<D>) -> B2jointPtr<D>
 		B2JointDefEnum::MotorJoint(ref def)=> Rc::new(RefCell::new(B2motorJoint::new(def))),
 		B2JointDefEnum::PulleyJoint(ref def)=> Rc::new(RefCell::new(B2pulleyJoint::new(def))),
 		B2JointDefEnum::RevoluteJoint(ref def)=> Rc::new(RefCell::new(B2revoluteJoint::new(def))),
-		B2JointDefEnum::RopeJoint(ref def)=> Rc::new(RefCell::new(B2ropeJoint::new(def))),
 		B2JointDefEnum::PrismaticJoint(ref def)=> Rc::new(RefCell::new(B2prismaticJoint::new(def))),
 		B2JointDefEnum::WeldJoint(ref def)=> Rc::new(RefCell::new(B2weldJoint::new(def))),
 		B2JointDefEnum::WheelJoint(ref def)=> Rc::new(RefCell::new(B2wheelJoint::new(def))),	

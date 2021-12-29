@@ -4,6 +4,7 @@ use super::super::test::*;
 use box2d_rs::b2_distance::*;
 use box2d_rs::b2_draw::*;
 use box2d_rs::b2_math::*;
+use box2d_rs::b2_common::*;
 use box2d_rs::b2_settings::*;
 use box2d_rs::b2rs_common::UserDataType;
 use box2d_rs::b2_world_callbacks::*;
@@ -24,6 +25,11 @@ pub(crate) struct ShapeCast<D: UserDataType> {
 	m_v_bs: [B2vec2; B2_MAX_POLYGON_VERTICES],
 	m_count_b: i32,
 	m_radius_b: f32,
+
+	m_transform_a: B2Transform,
+	m_transform_b: B2Transform,
+	m_translationB: B2vec2,
+
 }
 
 impl ShapeCast<UserDataTypes> {
@@ -44,6 +50,9 @@ impl ShapeCast<UserDataTypes> {
 			m_v_bs: Default::default(),
 			m_count_b: 0,
 			m_radius_b: 0.0,
+			m_transform_a: B2Transform::default(),
+			m_transform_b: B2Transform::default(),
+			m_translationB: B2vec2::default(),
 		}));
 
 		{
@@ -74,7 +83,15 @@ impl ShapeCast<UserDataTypes> {
 			self.m_v_bs[3].set(-0.5, 0.5);
 			self.m_count_b = 4;
 			self.m_radius_b = B2_POLYGON_RADIUS;
-		} else {
+
+			
+			self.m_transform_a.p.set(0.0, 0.25);
+			self.m_transform_a.q.set_identity();
+			self.m_transform_b.p.set(-4.0, 0.0);
+			self.m_transform_b.q.set_identity();
+			self.m_translationB.set(8.0, 0.0);
+		}
+		else if false {
 			self.m_v_as[0].set(0.0, 0.0);
 			self.m_count_a = 1;
 			self.m_radius_a = 0.5;
@@ -82,6 +99,31 @@ impl ShapeCast<UserDataTypes> {
 			self.m_v_bs[0].set(0.0, 0.0);
 			self.m_count_b = 1;
 			self.m_radius_b = 0.5;
+
+			self.m_transform_a.p.set(0.0, 0.25);
+			self.m_transform_a.q.set_identity();
+			self.m_transform_b.p.set(-4.0, 0.0);
+			self.m_transform_b.q.set_identity();
+			self.m_translationB.set(8.0, 0.0);
+		}
+		else
+		{
+			self.m_v_as[0].set(0.0, 0.0);
+			self.m_v_as[1].set(2.0, 0.0);
+			self.m_count_a = 2;
+			self.m_radius_a = B2_POLYGON_RADIUS;
+	
+			self.m_v_bs[0].set(0.0, 0.0);
+			self.m_count_b = 1;
+			self.m_radius_b = 0.25;
+	
+			// Initial overlap
+			self.m_transform_a.p.set(0.0, 0.0);
+			self.m_transform_a.q.set_identity();
+			self.m_transform_b.p.set(-0.244360745, 0.05999358);
+			self.m_transform_b.q.set_identity();
+			self.m_translationB.set(0.0, 0.0399999991);
+	
 		}
 	}
 }
@@ -100,12 +142,6 @@ impl<F: Facade> TestDyn<UserDataTypes, F> for ShapeCast<UserDataTypes> {
 	) {
 		Test::step(self.base.clone(), ui, display, target, settings, *camera);
 
-		let mut transform_a = B2Transform::default();
-		transform_a.p = B2vec2::new(0.0, 0.25);
-		transform_a.q.set_identity();
-
-		let mut transform_b = B2Transform::default();
-		transform_b.set_identity();
 
 		let mut input = B2shapeCastInput::default();
 		input
@@ -114,17 +150,19 @@ impl<F: Facade> TestDyn<UserDataTypes, F> for ShapeCast<UserDataTypes> {
 		input
 			.proxy_b
 			.set_vertices(&self.m_v_bs[..self.m_count_b as usize], self.m_radius_b);
-		input.transform_a = transform_a;
-		input.transform_b = transform_b;
-		input.translation_b.set(8.0, 0.0);
+
+		input.transform_a = self.m_transform_a;
+		input.transform_b = self.m_transform_b;
+		input.translation_b = self.m_translationB;	
 
 		let mut output = B2shapeCastOutput::default();
 
 		let hit: bool = b2_shape_cast(&mut output, input.clone());
 
 		let mut transform_b2 = B2Transform::default();
-		transform_b2.q = transform_b.q;
-		transform_b2.p = transform_b.p + output.lambda * input.translation_b;
+		transform_b2.q = self.m_transform_b.q;
+		transform_b2.p = self.m_transform_b.p + output.lambda * input.translation_b;
+
 
 		let mut distance_input = B2distanceInput::default();
 		distance_input
@@ -133,7 +171,8 @@ impl<F: Facade> TestDyn<UserDataTypes, F> for ShapeCast<UserDataTypes> {
 		distance_input
 			.proxy_b
 			.set_vertices(&self.m_v_bs[..self.m_count_b as usize], self.m_radius_b);
-		distance_input.transform_a = transform_a;
+			distance_input.transform_a = self.m_transform_a;
+
 		distance_input.transform_b = transform_b2;
 		distance_input.use_radii = false;
 		let mut simplex_cache = B2simplexCache::default();
@@ -158,33 +197,66 @@ impl<F: Facade> TestDyn<UserDataTypes, F> for ShapeCast<UserDataTypes> {
 		let mut vertices = <[B2vec2; B2_MAX_POLYGON_VERTICES]>::default();
 
 		for i in 0..self.m_count_a {
-			vertices[i as usize] = b2_mul_transform_by_vec2(transform_a, self.m_v_as[i as usize]);
+			vertices[i as usize] = b2_mul_transform_by_vec2(self.m_transform_a, self.m_v_as[i as usize]);
 		}
-		//g_debug_draw.draw_circle(vertices[0], m_radius_a, B2color::new(0.9, 0.9, 0.9));
-		base.g_debug_draw.borrow_mut().draw_polygon(
-			&vertices[..self.m_count_a as usize],
-			B2color::new(0.9, 0.9, 0.9),
-		);
+		if self.m_count_a == 1
+		{
+			base.g_debug_draw.borrow_mut().draw_circle(
+				vertices[0],
+				self.m_radius_a,
+				B2color::new(0.9, 0.9, 0.9),
+			);
+		}
+		else
+		{
+			base.g_debug_draw.borrow_mut().draw_polygon(
+				&vertices[..self.m_count_a as usize],
+				B2color::new(0.9, 0.9, 0.9),
+			);
+		}
 
 		for i in 0..self.m_count_b {
-			vertices[i as usize] = b2_mul_transform_by_vec2(transform_b, self.m_v_bs[i as usize]);
+			vertices[i as usize] = b2_mul_transform_by_vec2(self.m_transform_b, self.m_v_bs[i as usize]);
 		}
-		//g_debug_draw.draw_circle(vertices[0], m_radius_b, B2color::new(0.5, 0.9, 0.5));
-		base.g_debug_draw.borrow_mut().draw_polygon(
-			&vertices[..self.m_count_b as usize],
-			B2color::new(0.5, 0.9, 0.5),
-		);
+
+		if self.m_count_b == 1
+		{
+			base.g_debug_draw.borrow_mut().draw_circle(
+				vertices[0],
+				self.m_radius_b,
+				B2color::new(0.5, 0.9, 0.5),
+			);
+		}
+		else
+		{
+			base.g_debug_draw.borrow_mut().draw_polygon(
+				&vertices[..self.m_count_b as usize],
+				B2color::new(0.5, 0.9, 0.5),
+			);
+		}
 
 		for i in 0..self.m_count_b {
 			vertices[i as usize] = b2_mul_transform_by_vec2(transform_b2, self.m_v_bs[i as usize]);
 		}
-		//g_debug_draw.draw_circle(vertices[0], m_radius_b, B2color::new(0.5, 0.7, 0.9));
-		base.g_debug_draw.borrow_mut().draw_polygon(
-			&vertices[..self.m_count_b as usize],
-			B2color::new(0.5, 0.7, 0.9),
-		);
 
-		if hit {
+		if self.m_count_b == 1
+		{
+			base.g_debug_draw.borrow_mut().draw_circle(
+				vertices[0],
+				self.m_radius_b,
+				B2color::new(0.5, 0.7, 0.9),
+			);
+		}
+		else
+		{
+			base.g_debug_draw.borrow_mut().draw_polygon(
+				&vertices[..self.m_count_b as usize],
+				B2color::new(0.5, 0.7, 0.9),
+			);
+		}
+
+		if hit
+		{
 			let p1: B2vec2 = output.point;
 			base.g_debug_draw
 				.borrow_mut()
@@ -194,6 +266,7 @@ impl<F: Facade> TestDyn<UserDataTypes, F> for ShapeCast<UserDataTypes> {
 				.borrow_mut()
 				.draw_segment(p1, p2, B2color::new(0.9, 0.3, 0.3));
 		}
+
 	}
 }
 

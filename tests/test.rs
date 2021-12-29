@@ -15,17 +15,11 @@ mod test {
 
     #[derive(Default, Copy, Clone, Debug, PartialEq)]
     #[cfg_attr(feature = "serde_support", derive(Serialize, Deserialize))]
-    struct FixtureData {
-        id: i32,
-    }
-
-    #[derive(Default, Copy, Clone, Debug, PartialEq)]
-    #[cfg_attr(feature = "serde_support", derive(Serialize, Deserialize))]
     struct UserDataTypes;
     impl UserDataType for UserDataTypes {
-        type Fixture = FixtureData;
-        type Body = FixtureData;
-        type Joint = FixtureData;
+        type Fixture = i32;
+        type Body = i32;
+        type Joint = i32;
     }
 
     #[test]

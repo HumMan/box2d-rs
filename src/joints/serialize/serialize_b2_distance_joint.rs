@@ -27,6 +27,8 @@ impl<D: UserDataType> B2DistanceJoinToDef<D> for B2distanceJoint<D> {
             local_anchor_a:  self.m_local_anchor_a,
             local_anchor_b:  self.m_local_anchor_b,
             length: self.m_length,
+            minLength: self.m_minLength,
+            maxLength: self.m_maxLength,
             stiffness: self.m_stiffness,
             damping: self.m_damping
         };
@@ -43,6 +45,8 @@ impl<D: UserDataType> Serialize for B2distanceJointDef<D> {
         state.serialize_field("local_anchor_a", &self.local_anchor_a)?;
         state.serialize_field("local_anchor_b", &self.local_anchor_b)?;
         state.serialize_field("length", &self.length)?;
+        state.serialize_field("minlength", &self.minLength)?;
+        state.serialize_field("maxlength", &self.maxLength)?;
         state.serialize_field("stiffness", &self.stiffness)?;
         state.serialize_field("damping", &self.damping)?;
         state.end()
@@ -70,6 +74,8 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2distanceJointDefContext<U>
             local_anchor_a,
             local_anchor_b,
             length,
+            minLength,
+            maxLength,
             stiffness,
             damping
         }
@@ -107,6 +113,14 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2distanceJointDefContext<U>
                     .next_element()?
                     .ok_or_else(|| de::Error::invalid_length(0, &self))?,
 
+                    minLength: seq
+                    .next_element()?
+                    .ok_or_else(|| de::Error::invalid_length(0, &self))?,
+
+                    maxLength: seq
+                    .next_element()?
+                    .ok_or_else(|| de::Error::invalid_length(0, &self))?,
+
                     stiffness: seq
                     .next_element()?
                     .ok_or_else(|| de::Error::invalid_length(0, &self))?,
@@ -140,6 +154,12 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2distanceJointDefContext<U>
                         }
                         Field::length => {
                             joint_def.length = map.next_value()?;
+                        }
+                        Field::minLength => {
+                            joint_def.minLength = map.next_value()?;
+                        }
+                        Field::maxLength => {
+                            joint_def.maxLength = map.next_value()?;
                         }
                         Field::stiffness => {
                             joint_def.stiffness = map.next_value()?;

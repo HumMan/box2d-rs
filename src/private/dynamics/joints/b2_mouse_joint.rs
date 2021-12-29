@@ -1,6 +1,6 @@
 use crate::joints::b2_mouse_joint::*;
 use crate::b2_time_step::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2rs_common::UserDataType;
 use crate::b2_math::*;
 
@@ -29,14 +29,8 @@ pub(crate) fn  init_velocity_constraints<D: UserDataType>(this: &mut B2mouseJoin
 
 	let mass: f32 =m_body_b.get_mass();
 
-	// Frequency
-	let omega: f32 =2.0 * B2_PI * this.m_frequency_hz;
-
-	// Damping coefficient
-	let d: f32 =2.0 * mass * this.m_damping_ratio * omega;
-
-	// Spring stiffness
-	let k: f32 =mass * (omega * omega);
+	let d:f32 = this.m_damping;
+	let k:f32 = this.m_stiffness;
 
 	// magic formulas
 	// gamma has units of inverse mass.

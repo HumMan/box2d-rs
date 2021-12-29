@@ -1,10 +1,11 @@
 
 use crate::joints::b2_gear_joint::*;
 use crate::b2_time_step::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2rs_common::UserDataType;
 use crate::b2_math::*;
 use crate::b2_joint::*;
+use crate::b2_body::B2bodyType;
 
 
 // Gear Joint:
@@ -45,6 +46,9 @@ pub(crate) fn new<D: UserDataType>(def: &B2gearJointDef<D>)->B2gearJoint<D>
 	let m_body_c = m_joint1.borrow().get_base().get_body_a();
 	let m_body_a = m_joint1.borrow().get_base().get_body_b();
 
+	// Body B on joint1 must be dynamic
+	b2_assert(m_body_a.borrow().m_type == B2bodyType::B2DynamicBody);
+
 	// Get geometry of joint1
 	let xf_a: B2Transform = m_body_a.borrow().m_xf;
 	let a_a: f32 =m_body_a.borrow().m_sweep.a;
@@ -81,6 +85,9 @@ pub(crate) fn new<D: UserDataType>(def: &B2gearJointDef<D>)->B2gearJoint<D>
 
 	let m_body_d = m_joint2.borrow().get_base().get_body_a();
 	let m_body_b = m_joint2.borrow().get_base().get_body_b();
+
+	// Body B on joint2 must be dynamic
+	b2_assert(m_body_b.borrow().m_type == B2bodyType::B2DynamicBody);
 
 	// Get geometry of joint2
 	let xf_b: B2Transform = m_body_b.borrow().m_xf;

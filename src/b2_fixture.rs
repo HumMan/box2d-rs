@@ -2,8 +2,9 @@ use crate::b2_body::*;
 use crate::b2_broad_phase::*;
 use crate::b2_collision::*;
 use crate::b2_math::*;
-use crate::b2_settings::*;
+use crate::b2_common::*;
 use crate::b2rs_common::UserDataType;
+use crate::b2_settings::*;
 use crate::b2_shape::*;
 use crate::linked_list::*;
 use crate::private::dynamics::b2_fixture as private;
@@ -48,6 +49,7 @@ impl<D: UserDataType> Default for B2fixtureDef<D> {
 			user_data: None,
 			friction: 0.2,
 			restitution: 0.0,
+			restitutionThreshold: 1.0 * B2_LENGTH_UNITS_PER_METER,
 			density: 0.0,
 			is_sensor: false,
 			filter: B2filter::default(),
@@ -71,6 +73,10 @@ pub struct B2fixtureDef<D: UserDataType> {
 
 	/// The restitution (elasticity) usually in the range [0,1].
 	pub restitution: f32,
+
+	/// Restitution velocity threshold, usually in m/s. Collisions above this
+	/// speed have restitution applied (will bounce).
+	pub restitutionThreshold: f32,
 
 	/// The density, usually in kg/m^2.
 	pub density: f32,
@@ -126,6 +132,7 @@ pub struct B2fixture<D: UserDataType> {
 
 	pub(crate) m_friction: f32,
 	pub(crate) m_restitution: f32,
+	pub(crate) m_restitutionThreshold: f32,
 
 	pub(crate) m_proxies: Vec<FixtureProxyPtr<D>>,
 	pub(crate) m_proxy_count: i32,
@@ -261,6 +268,18 @@ impl<D: UserDataType> B2fixture<D> {
 		inline::set_restitution(self, restitution);
 	}
 
+	/// Get the restitution velocity threshold.
+	pub fn  GetRestitutionThreshold(&self)-> f32{
+		return inline::GetRestitutionThreshold(self);
+	}
+
+	/// Set the restitution threshold. This will _not_ change the restitution threshold of
+	/// existing contacts.
+	pub fn  SetRestitutionThreshold(&mut self,threshold:f32)
+	{
+		inline::SetRestitutionThreshold(self, threshold)
+	}
+
 	/// Get the fixture's AABB. This AABB may be enlarge and/or stale.
 	/// If you need a more accurate AABB, compute it using the shape and
 	/// the body transform.
@@ -365,6 +384,16 @@ mod inline {
 
 	pub fn set_restitution<T: UserDataType>(this: &mut B2fixture<T>, restitution: f32) {
 		this.m_restitution = restitution;
+	}
+
+	pub fn GetRestitutionThreshold<T: UserDataType>(this: &B2fixture<T>) ->f32
+	{
+		return this.m_restitutionThreshold;
+	}
+
+	pub fn SetRestitutionThreshold<T: UserDataType>(this: &mut B2fixture<T>, threshold:f32)
+	{
+		this.m_restitutionThreshold = threshold;
 	}
 
 	pub fn test_point<T: UserDataType>(this: &B2fixture<T>, p: B2vec2) -> bool {

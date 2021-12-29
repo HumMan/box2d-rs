@@ -8,7 +8,7 @@ use box2d_rs::b2_draw::*;
 use box2d_rs::b2_fixture::*;
 use box2d_rs::b2_joint::*;
 use box2d_rs::b2_math::*;
-use box2d_rs::b2_settings::*;
+use box2d_rs::b2_common::B2_MAX_MANIFOLD_POINTS;
 use box2d_rs::b2rs_common::UserDataType;
 use box2d_rs::b2_shape::*;
 use box2d_rs::b2_time_step::*;
@@ -113,11 +113,12 @@ pub(crate) fn mouse_down<D: UserDataType>(self_: &mut Test<D>, p: B2vec2) {
 
 	if let Some(fixture) = fixture_found {
 		let body_ptr = fixture.borrow().get_body();
-		let md;
+		let mut jd;
 		{
-			
-			let body = body_ptr.borrow_mut();
-			md = B2JointDefEnum::<D>::MouseJoint(B2mouseJointDef {
+			let frequencyHz: f32 = 5.0;
+			let dampingRatio: f32 = 0.7;
+	
+			jd = B2mouseJointDef {
 				base: B2jointDef {
 					jtype: B2jointType::EMouseJoint,
 					body_a: Some(self_.m_ground_body.clone()),
@@ -125,12 +126,13 @@ pub(crate) fn mouse_down<D: UserDataType>(self_: &mut Test<D>, p: B2vec2) {
 					..Default::default()
 				},
 				target: p,
-				max_force: 1000.0 * body.get_mass(),
+				max_force: 1000.0 * body_ptr.borrow().get_mass(),
 				..Default::default()
-			});
+			};
+			b2_linear_stiffness(&mut jd.stiffness, &mut jd.damping, frequencyHz, dampingRatio, jd.base.body_a.clone().unwrap(), jd.base.body_b.clone().unwrap());
 		}
 
-		self_.m_mouse_joint = Some(self_.m_world.borrow_mut().create_joint(&md));
+		self_.m_mouse_joint = Some(self_.m_world.borrow_mut().create_joint(&B2JointDefEnum::<D>::MouseJoint(jd)));
 		body_ptr.borrow_mut().set_awake(true);
 	}
 }

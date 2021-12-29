@@ -92,13 +92,13 @@ impl<D: UserDataType> Rope<D> {
 		self.m_tuning1.bend_hertz = 30.0;
 		self.m_tuning1.bend_damping = 4.0;
 		self.m_tuning1.bend_stiffness = 1.0;
-		self.m_tuning1.bending_model = B2bendingModel::B2XpbdAngleBendingModel;
+		self.m_tuning1.bending_model = B2bendingModel::B2PbdTriangleBendingModel;
 		self.m_tuning1.isometric = true;
 
 		self.m_tuning1.stretch_hertz = 30.0;
 		self.m_tuning1.stretch_damping = 4.0;
 		self.m_tuning1.stretch_stiffness = 1.0;
-		self.m_tuning1.stretching_model = B2stretchingModel::B2XpbdStretchingModel;
+		self.m_tuning1.stretching_model = B2stretchingModel::B2PbdStretchingModel;
 
 		self.m_tuning2.bend_hertz = 30.0;
 		self.m_tuning2.bend_damping = 0.7;
@@ -147,7 +147,7 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for Rope<D> {
 
 				sys::igPushItemWidth(sys::igGetWindowWidth() * 0.5);
 				const COMBO_FLAGS: sys::ImGuiComboFlags = 0;
-				let bend_models = ["Spring", "PBD Ang", "XPBD Ang", "PBD Dist", "PBD Height"];
+				let bend_models = ["Spring", "PBD Ang", "XPBD Ang", "PBD Dist", "PBD Height", "PBD Triangle"];
 				let stretch_models = ["PBD", "XPBD"];
 
 				sys::igText(im_str!("Rope 1").as_ptr());
@@ -184,6 +184,9 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for Rope<D> {
 									}
 									4 => {
 										*bend_model1 = B2bendingModel::B2PbdHeightBendingModel;
+									}
+									5 => {
+										*bend_model1 = B2bendingModel::B2PbdTriangleBendingModel;
 									}
 									_ => {}
 								}

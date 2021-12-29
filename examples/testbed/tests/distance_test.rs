@@ -4,6 +4,7 @@ use box2d_rs::b2rs_common::UserDataType;
 use super::super::test::*;
 use box2d_rs::b2_math::*;
 use box2d_rs::b2_settings::*;
+use box2d_rs::b2_common::*;
 use box2d_rs::b2_world_callbacks::*;
 use box2d_rs::shapes::b2_polygon_shape::*;
 
