@@ -18,8 +18,8 @@ use crate::joints::b2_friction_joint::*;
 
 pub(crate) fn init_velocity_constraints<D: UserDataType>(
 	this: &mut B2frictionJoint<D>,
-	data: &mut B2solverData,
-	positions: &mut [B2position],
+	data: &B2solverData,
+	positions: &[B2position],
 	velocities: &mut [B2velocity],
 ) {
 	this.m_index_a = this.base.m_body_a.borrow().m_island_index;
@@ -95,7 +95,7 @@ pub(crate) fn init_velocity_constraints<D: UserDataType>(
 
 pub(crate) fn solve_velocity_constraints<D: UserDataType>(
 	this: &mut B2frictionJoint<D>,
-	data: &mut B2solverData,
+	data: &B2solverData,
 	velocities: &mut [B2velocity],
 ) {
 	let mut v_a: B2vec2 = velocities[this.m_index_a as usize].v;
@@ -158,7 +158,7 @@ pub(crate) fn solve_velocity_constraints<D: UserDataType>(
 
 pub(crate) fn solve_position_constraints<D: UserDataType>(
 	_this: &B2frictionJoint<D>,
-	data: &mut B2solverData,
+	data: &B2solverData,
 	_positions: &mut [B2position],
 ) -> bool {
 	b2_not_used(data);

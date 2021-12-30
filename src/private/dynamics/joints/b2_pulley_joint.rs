@@ -64,8 +64,8 @@ pub(crate) fn new<D: UserDataType>(def: &B2pulleyJointDef<D>) -> B2pulleyJoint<D
 
 pub(crate) fn init_velocity_constraints<D: UserDataType>(
 	this: &mut B2pulleyJoint<D>,
-	data: &mut B2solverData,
-	positions: &mut [B2position],
+	data: &B2solverData,
+	positions: &[B2position],
 	velocities: &mut [B2velocity],
 ) {
 	let m_body_a = this.base.m_body_a.borrow();
@@ -166,7 +166,7 @@ pub(crate) fn init_velocity_constraints<D: UserDataType>(
 
 pub(crate) fn solve_velocity_constraints<D: UserDataType>(
 	this: &mut B2pulleyJoint<D>,
-	_data: &mut B2solverData,
+	_data: &B2solverData,
 	velocities: &mut [B2velocity],
 ) {
 	let B2velocity {
@@ -199,7 +199,7 @@ pub(crate) fn solve_velocity_constraints<D: UserDataType>(
 
 pub(crate) fn solve_position_constraints<D: UserDataType>(
 	this: &B2pulleyJoint<D>,
-	_data: &mut B2solverData,
+	_data: &B2solverData,
 	positions: &mut [B2position],
 ) -> bool {
 

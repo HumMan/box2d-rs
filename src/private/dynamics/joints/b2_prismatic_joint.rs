@@ -119,8 +119,8 @@ pub(crate) fn new<D: UserDataType>(def: &B2prismaticJointDef<D>) -> B2prismaticJ
 
 pub(crate) fn init_velocity_constraints<D: UserDataType>(
 	this: &mut B2prismaticJoint<D>,
-	data: &mut B2solverData,
-	positions: &mut [B2position],
+	data: &B2solverData,
+	positions: &[B2position],
 	velocities: &mut [B2velocity],
 ) {
 	let m_body_a = this.base.m_body_a.borrow();
@@ -230,7 +230,7 @@ pub(crate) fn init_velocity_constraints<D: UserDataType>(
 
 pub(crate) fn solve_velocity_constraints<D: UserDataType>(
 	this: &mut B2prismaticJoint<D>,
-	data: &mut B2solverData,
+	data: &B2solverData,
 	velocities: &mut [B2velocity],
 ) {
 	let mut v_a: B2vec2 = velocities[this.m_index_a as usize].v;
@@ -340,7 +340,7 @@ pub(crate) fn solve_velocity_constraints<D: UserDataType>(
 // solver indicates the limit is inactive.
 pub(crate) fn solve_position_constraints<D: UserDataType>(
 	this: &B2prismaticJoint<D>,
-	_data: &mut B2solverData,
+	_data: &B2solverData,
 	positions: &mut [B2position],
 ) -> bool {
 	let mut c_a: B2vec2 = positions[this.m_index_a as usize].c;

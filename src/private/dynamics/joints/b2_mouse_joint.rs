@@ -12,7 +12,7 @@ use crate::b2_math::*;
 // // Identity used:
 // // w k % (rx i + ry j) = w * (-ry i + rx j)
 
-pub(crate) fn  init_velocity_constraints<D: UserDataType>(this: &mut B2mouseJoint<D>,data: &B2solverData, positions: &mut [B2position], velocities: &mut [B2velocity]) 
+pub(crate) fn  init_velocity_constraints<D: UserDataType>(this: &mut B2mouseJoint<D>,data: &B2solverData, positions: &[B2position], velocities: &mut [B2velocity]) 
 {
 	let m_body_b = this.base.m_body_b.borrow();
 	this.m_index_b = m_body_b.m_island_index;

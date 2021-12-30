@@ -185,7 +185,7 @@ pub(crate) fn new<D: UserDataType>(def: &B2gearJointDef<D>)->B2gearJoint<D>
 }
 
 pub(crate) fn init_velocity_constraints<D: UserDataType>(this: &mut B2gearJoint<D>, 
-	data: &mut B2solverData, positions: &mut [B2position], velocities: &mut [B2velocity])
+	data: &B2solverData, positions: &[B2position], velocities: &mut [B2velocity])
 {
 	let m_body_a = this.base.m_body_a.borrow();
 	let m_body_b = this.base.m_body_b.borrow();
@@ -295,7 +295,7 @@ pub(crate) fn init_velocity_constraints<D: UserDataType>(this: &mut B2gearJoint<
 }
 
 pub(crate) fn solve_velocity_constraints<D: UserDataType>(this: &mut B2gearJoint<D>, 
-	_data: &mut B2solverData, velocities: &mut [B2velocity])
+	_data: &B2solverData, velocities: &mut [B2velocity])
 {
 	let mut v_a: B2vec2 =velocities[this.m_index_a as usize].v;
 	let mut w_a: f32 =velocities[this.m_index_a as usize].w;
@@ -332,7 +332,7 @@ pub(crate) fn solve_velocity_constraints<D: UserDataType>(this: &mut B2gearJoint
 }
 
 pub(crate) fn solve_position_constraints<D: UserDataType>(this: &B2gearJoint<D>,
-	_data: &mut B2solverData, positions: &mut [B2position])->bool
+	_data: &B2solverData, positions: &mut [B2position])->bool
 {
 	let mut c_a: B2vec2 =positions[this.m_index_a as usize].c;
 	let mut a_a: f32 =positions[this.m_index_a as usize].a;

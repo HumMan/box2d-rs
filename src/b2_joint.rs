@@ -266,20 +266,20 @@ pub trait B2jointTraitDyn<D: UserDataType>: ToDerivedJoint<D> {
 
 	fn init_velocity_constraints(
 		&mut self,
-		data: &mut B2solverData,
-		positions: &mut [B2position],
+		data: &B2solverData,
+		positions: &[B2position],
 		velocities: &mut [B2velocity],
 	);
 	fn solve_velocity_constraints(
 		&mut self,
-		data: &mut B2solverData,
+		data: &B2solverData,
 		velocities: &mut [B2velocity],
 	);
 
 	// This returns true if the position errors are within tolerance.
 	fn solve_position_constraints(
 		&mut self,
-		data: &mut B2solverData,
+		data: &B2solverData,
 		positions: &mut [B2position],
 	) -> bool;
 }

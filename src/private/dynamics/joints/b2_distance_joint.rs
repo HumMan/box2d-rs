@@ -78,7 +78,7 @@ pub(crate) fn b2_distance_joint_new<D: UserDataType>(
 pub(crate) fn init_velocity_constraints<D: UserDataType>(
 	this: &mut B2distanceJoint<D>,
 	data: &B2solverData,
-	positions: &mut [B2position],
+	positions: &[B2position],
 	velocities: &mut [B2velocity],
 ) {
 	let m_body_a = this.base.m_body_a.borrow();

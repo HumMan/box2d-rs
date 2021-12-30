@@ -414,22 +414,22 @@ impl<D: UserDataType> B2jointTraitDyn<D> for B2wheelJoint<D> {
 
 	fn init_velocity_constraints(
 		&mut self,
-		data: &mut B2solverData,
-		positions: &mut [B2position],
+		data: &B2solverData,
+		positions: &[B2position],
 		velocities: &mut [B2velocity],
 	) {
 		private::init_velocity_constraints(self, data, positions, velocities);
 	}
 	fn solve_velocity_constraints(
 		&mut self,
-		data: &mut B2solverData,
+		data: &B2solverData,
 		velocities: &mut [B2velocity],
 	) {
 		private::solve_velocity_constraints(self, data, velocities);
 	}
 	fn solve_position_constraints(
 		&mut self,
-		data: &mut B2solverData,
+		data: &B2solverData,
 		positions: &mut [B2position],
 	) -> bool {
 		return private::solve_position_constraints(self, data, positions);
