@@ -26,7 +26,7 @@ use crate::joints::serialize::serialize_b2_wheel_joint::*;
 use strum::VariantNames;
 use strum_macros::EnumVariantNames;
 
-use crate::serialize_b2_body::*;
+use crate::serialize::serialize_b2_body::*;
 
 struct JointWithType<T: Serialize> {
     jtype: B2jointType,

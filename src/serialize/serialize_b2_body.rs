@@ -25,7 +25,7 @@ use crate::joints::serialize::serialize_b2_revolute_joint::*;
 use crate::joints::serialize::serialize_b2_weld_joint::*;
 use crate::joints::serialize::serialize_b2_wheel_joint::*;
 
-use crate::serialize_b2_fixture::*;
+use crate::serialize::serialize_b2_fixture::*;
 
 use strum::VariantNames;
 use strum_macros::EnumVariantNames;

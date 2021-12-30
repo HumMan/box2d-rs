@@ -1,6 +1,6 @@
 use box2d_rs::b2rs_common::UserDataType;
 use box2d_rs::b2_world::*;
-use box2d_rs::serialize_b2_world::*;
+use box2d_rs::serialize::serialize_b2_world::*;
 
 use bincode;
 use serde_json;

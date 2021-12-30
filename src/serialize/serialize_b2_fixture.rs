@@ -1,4 +1,4 @@
-use super::b2_fixture::*;
+use crate::b2_fixture::*;
 use crate::b2_body::*;
 use crate::b2rs_common::UserDataType;
 use crate::b2_shape::*;
