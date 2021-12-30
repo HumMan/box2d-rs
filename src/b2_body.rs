@@ -748,15 +748,11 @@ mod inline {
 	}
 
 	pub fn set_bullet<D: UserDataType>(this: &mut B2body<D>, flag: bool) {
-		if flag {
-			this.m_flags |= BodyFlags::E_BULLET_FLAG;
-		} else {
-			this.m_flags &= !BodyFlags::E_BULLET_FLAG;
-		}
+		this.m_flags.set(BodyFlags::E_BULLET_FLAG, flag);
 	}
 
 	pub fn is_bullet<D: UserDataType>(this: &B2body<D>) -> bool {
-		return (this.m_flags & BodyFlags::E_BULLET_FLAG) == BodyFlags::E_BULLET_FLAG;
+		return this.m_flags.contains(BodyFlags::E_BULLET_FLAG);
 	}
 
 	pub fn set_awake<D: UserDataType>(this: &mut B2body<D>, flag: bool) {
@@ -767,11 +763,10 @@ mod inline {
 	
 		}
 
+		this.m_flags.set(BodyFlags::E_AWAKE_FLAG, flag);
 		if flag {
-			this.m_flags |= BodyFlags::E_AWAKE_FLAG;
 			this.m_sleep_time = 0.0;
 		} else {
-			this.m_flags &= !BodyFlags::E_AWAKE_FLAG;
 			this.m_sleep_time = 0.0;
 			this.m_linear_velocity.set_zero();
 			this.m_angular_velocity = 0.0;
@@ -781,30 +776,27 @@ mod inline {
 	}
 
 	pub fn is_awake<D: UserDataType>(this: &B2body<D>) -> bool {
-		return (this.m_flags & BodyFlags::E_AWAKE_FLAG) == BodyFlags::E_AWAKE_FLAG;
+		return this.m_flags.contains(BodyFlags::E_AWAKE_FLAG);
 	}
 
 	pub fn is_enabled<D: UserDataType>(this: &B2body<D>) -> bool {
-		//TODO_humman поправить проверку на contains
-		return (this.m_flags & BodyFlags::E_ENABLED_FLAG) == BodyFlags::E_ENABLED_FLAG;
+		return this.m_flags.contains(BodyFlags::E_ENABLED_FLAG);
 	}
 
 	pub fn is_fixed_rotation<D: UserDataType>(this: &B2body<D>) -> bool {
-		return (this.m_flags & BodyFlags::E_FIXED_ROTATION_FLAG)
-			== BodyFlags::E_FIXED_ROTATION_FLAG;
+		return this.m_flags.contains(BodyFlags::E_FIXED_ROTATION_FLAG);
 	}
 
 	pub fn set_sleeping_allowed<D: UserDataType>(this: &mut B2body<D>, flag: bool) {
+		this.m_flags.set(BodyFlags::E_AUTO_SLEEP_FLAG, flag);
 		if flag {
-			this.m_flags |= BodyFlags::E_AUTO_SLEEP_FLAG;
 		} else {
-			this.m_flags &= !BodyFlags::E_AUTO_SLEEP_FLAG;
 			this.set_awake(true);
 		}
 	}
 
 	pub fn is_sleeping_allowed<D: UserDataType>(this: &B2body<D>) -> bool {
-		return (this.m_flags & BodyFlags::E_AUTO_SLEEP_FLAG) == BodyFlags::E_AUTO_SLEEP_FLAG;
+		return this.m_flags.contains(BodyFlags::E_AUTO_SLEEP_FLAG);
 	}
 
 	// pub fn get_fixture_list_mut<D: UserDataType>(

@@ -26,16 +26,16 @@ pub fn b2_body<D: UserDataType>(bd: &B2bodyDef<D>, world: B2worldPtr<D>) -> B2bo
 		m_flags.insert(BodyFlags::E_BULLET_FLAG);
 	}
 	if bd.fixed_rotation {
-		m_flags |= BodyFlags::E_FIXED_ROTATION_FLAG;
+		m_flags.insert(BodyFlags::E_FIXED_ROTATION_FLAG);
 	}
 	if bd.allow_sleep {
-		m_flags |= BodyFlags::E_AUTO_SLEEP_FLAG;
+		m_flags.insert(BodyFlags::E_AUTO_SLEEP_FLAG);
 	}
 	if bd.awake && bd.body_type != B2bodyType::B2StaticBody {
-		m_flags |= BodyFlags::E_AWAKE_FLAG;
+		m_flags.insert(BodyFlags::E_AWAKE_FLAG);
 	}
 	if bd.enabled {
-		m_flags |= BodyFlags::E_ENABLED_FLAG;
+		m_flags.insert(BodyFlags::E_ENABLED_FLAG);
 	}
 
 	let m_xf = B2Transform::new(bd.position, B2Rot::new(bd.angle));
@@ -234,9 +234,6 @@ pub fn destroy_fixture<D: UserDataType>(self_: BodyPtr<D>, fixture: FixturePtr<D
 
 	// Remove the fixture from self_ body's singly linked list.
 	b2_assert(m_fixture_count > 0);
-
-	//TODO_humman имеет смысл сделать списки как https://www.reddit.com/r/rust/comments/7zsy72/writing_a_doubly_linked_list_in_rust_is_easy/
-	//+ сюда же попадает enum вместо dyn trait
 
 	self_.borrow_mut().m_fixture_list.remove(fixture.clone());
 
