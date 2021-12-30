@@ -1,4 +1,4 @@
-//TODO_humman пока тут не ясно с константами в параметрах, поэтому у массива фиксированная длинна
+//box2d-rs: waiting const_generics feature
 //#![feature(const_generics)]
 
 use crate::b2_common::*;

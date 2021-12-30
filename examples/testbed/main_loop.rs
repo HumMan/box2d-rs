@@ -125,8 +125,6 @@ impl System {
         } = self;
         let mut last_frame = Instant::now();
 
-        //TODO_humman перенести все переменные в TestBedState
-
         let mut g_camera = Camera::default();
         let g_debug_draw = Rc::new(RefCell::new(TestBedDebugDraw::new()));
 

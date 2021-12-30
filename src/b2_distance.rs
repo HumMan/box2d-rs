@@ -14,8 +14,9 @@ pub static B2_GJK_MAX_ITERS: AtomicUsize = AtomicUsize::new(0);
 #[derive(Default, Clone, Debug)]
 pub struct B2distanceProxy {
     pub m_buffer: [B2vec2; 2],
-    //TODO_humman тут была константная ссылка на шейп, а стала копия
+    //box2d-rs: reference to shape vertices replaced by copy, because of borrowing/lifetime problems
     pub m_vertices: Vec<B2vec2>,
+    //const b2Vec2* m_vertices;
     pub m_radius: f32,
 }
 

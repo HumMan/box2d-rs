@@ -38,6 +38,14 @@ pub struct B2velocity {
 	pub(crate) w: f32,
 }
 
+//box2d-rs: not using struct because of borrowing and mutability
+// struct B2_API b2SolverData
+// {
+// 	b2TimeStep step;
+// 	b2Position* positions;
+// 	b2Velocity* velocities;
+// };
+
 /// Solver Data
 #[derive(Default, Debug)]
 pub struct B2solverData {

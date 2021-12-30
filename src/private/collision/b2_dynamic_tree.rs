@@ -53,7 +53,7 @@ pub fn allocate_node<T: Clone + Default>(this: &mut B2dynamicTree<T>) -> i32 {
 	}
 
 	// Peel a node off the free list.
-	let node_id: usize = (this.m_free_list).try_into().unwrap(); //TODO_humman может имеет смысл все преобразования заменить на безопасные
+	let node_id: usize = (this.m_free_list).try_into().unwrap();
 	this.m_free_list = this.m_nodes[node_id].parent_or_next; //next
 	this.m_nodes[node_id].parent_or_next = B2_NULL_NODE; //parent
 	this.m_nodes[node_id].child1 = B2_NULL_NODE;
@@ -367,7 +367,6 @@ pub fn balance<T: Clone + Default>(this: &mut B2dynamicTree<T>, i_a: i32) -> i32
 	b2_assert(0 <= i_b && i_b < this.m_node_capacity);
 	b2_assert(0 <= i_c && i_c < this.m_node_capacity);
 
-	//TODO_humman заменить clone на get_five_mut(A b c f G D E)
 	let mut b = this.m_nodes[i_b as usize].clone();
 	let mut c = this.m_nodes[i_c as usize].clone();
 
@@ -422,7 +421,7 @@ pub fn balance<T: Clone + Default>(this: &mut B2dynamicTree<T>, i_a: i32) -> i32
 			c.height = 1 + b2_max(a.height, g.height);
 		}
 
-		//TODO_humman тут пришлось клонировать и записывать обратно, т.к. мутабельность
+		//box2d-rs: because of borrowing and lifetime problems
 		this.m_nodes[i_a as usize] = a;
 		this.m_nodes[i_c as usize] = c;
 		this.m_nodes[i_f as usize] = f;
@@ -477,7 +476,7 @@ pub fn balance<T: Clone + Default>(this: &mut B2dynamicTree<T>, i_a: i32) -> i32
 			b.height = 1 + b2_max(a.height, e.height);
 		}
 
-		//TODO_humman тут пришлось клонировать и записывать обратно, т.к. мутабельность
+		//box2d-rs: because of borrowing and lifetime problems
 		this.m_nodes[i_a as usize] = a;
 		this.m_nodes[i_b as usize] = b;
 		this.m_nodes[i_e as usize] = e;

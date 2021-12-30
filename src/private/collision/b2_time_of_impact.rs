@@ -263,7 +263,8 @@ pub fn b2_time_of_impact(output: &mut B2toioutput, input: &B2toiinput) {
 	let mut cache = B2simplexCache::default();
 	cache.count = 0;
 	let mut distance_input = B2distanceInput::default();
-	//TODO_humman тут что-то с копированием, попробовать заменить клонирование из-за Vec
+
+	//box2d-rs: because of borrowing and lifetime problems
 	distance_input.proxy_a = input.proxy_a.clone();
 	distance_input.proxy_b = input.proxy_b.clone();
 	distance_input.use_radii = false;

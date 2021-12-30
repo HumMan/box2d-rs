@@ -66,7 +66,6 @@ impl<UserDataType> B2treeNode<UserDataType> {
 pub struct B2dynamicTree<UserDataType> {
 	pub(crate) m_root: i32,
 
-	//TODO_humman а надо ли нам тут Rc RefCell - указателей больше нет, только индексы
 	pub(crate) m_nodes: Vec<B2treeNode<UserDataType>>,
 	pub(crate) m_node_count: i32,
 	pub(crate) m_node_capacity: i32,

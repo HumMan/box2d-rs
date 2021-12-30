@@ -669,8 +669,6 @@ pub fn b2_mul_transform(a: B2Transform, b: B2Transform) -> B2Transform {
     return c;
 }
 
-//TODO_humman крупные типы через ссылки
-
 // v2 = A.q' * (b.q * v1 + b.p - A.p)
 //    = A.q' * b.q * v1 + A.q' * (b.p - A.p)
 pub fn b2_mul_t_transform(a: B2Transform, b: B2Transform) -> B2Transform {

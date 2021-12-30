@@ -18,6 +18,12 @@ use crate::private::dynamics::b2_contact as private;
 
 use bitflags::bitflags;
 
+use std::sync::atomic::{AtomicBool};
+
+//box2d-rs: from \src\private\dynamics\b2_contact_solver_private.rs
+//not sure should it be public and atomic as it used only in box_stack example
+pub static G_BLOCK_SOLVE: AtomicBool = AtomicBool::new(true);
+
 /// Friction mixing law. The idea is to allow either fixture to drive the friction to zero.
 /// For example, anything slides on ice.
 pub fn b2_mix_friction(friction1: f32, friction2: f32) -> f32 {
@@ -313,7 +319,6 @@ pub struct B2contact<D: UserDataType> {
 	pub(crate) m_next: Option<ContactPtr<D>>,
 
 	// Nodes for connecting bodies.
-	//TODO_humman тут пришлось сделать ноды указателями, т.к. они используются в списках body.contact_list
 	pub(crate) m_node_a: Option<ContactEdgePtr<D>>,
 	pub(crate) m_node_b: Option<ContactEdgePtr<D>>,
 

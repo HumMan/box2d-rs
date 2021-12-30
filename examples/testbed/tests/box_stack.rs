@@ -3,6 +3,7 @@ use super::super::settings::*;
 use super::super::test::*;
 use box2d_rs::b2_body::*;
 use box2d_rs::b2_fixture::*;
+use box2d_rs::b2_contact::G_BLOCK_SOLVE;
 use box2d_rs::b2_math::*;
 use box2d_rs::b2_common::*;
 use box2d_rs::b2rs_common::UserDataType;
@@ -17,6 +18,8 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use glium::glutin::event::{ElementState, KeyboardInput, VirtualKeyCode};
+
+use std::sync::atomic::Ordering;
 
 pub(crate) struct BoxStack<D: UserDataType> {
 	base: TestBasePtr<D>,
@@ -147,9 +150,9 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for BoxStack<D> {
 							.set_linear_velocity(B2vec2::new(400.0, 0.0));
 					}
 				}
-				Some(VirtualKeyCode::B) => {
-					//TODO_humman
-					//g_blockSolve = !g_blockSolve;
+				Some(VirtualKeyCode::B) => {					
+					let g_block_solve: bool = G_BLOCK_SOLVE.load(Ordering::SeqCst);
+					G_BLOCK_SOLVE.store(!g_block_solve, Ordering::SeqCst);
 				}
 				_ => (),
 			}
@@ -164,17 +167,50 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for BoxStack<D> {
 		camera: &mut Camera,
 	) {
 		Test::step(self.base.clone(), ui, display, target, settings, *camera);
+		let g_block_solve: bool = G_BLOCK_SOLVE.load(Ordering::SeqCst);
 
-		//for i in 0..E_COUNT
+		let mut base = self.base.borrow_mut();
+
+			base.g_debug_draw.borrow().draw_string(
+				ui,
+				B2vec2::new(5.0, base.m_text_line as f32),
+				"Press: (,) to launch a bullet.",
+			);
+			base.m_text_line += base.m_text_increment;
+			base.g_debug_draw.borrow().draw_string(
+				ui,
+				B2vec2::new(5.0, base.m_text_line as f32),
+				&format!("Blocksolve = {0}", g_block_solve),
+			);
+			base.m_text_line += base.m_text_increment;
+
+		//if (m_stepCount == 300)
 		//{
-		//	printf("%g ", m_bodies[i]->get_world_center().y);
-		//}
+		//	if (m_bullet != NULL)
+		//	{
+		//		m_world->DestroyBody(m_bullet);
+		//		m_bullet = NULL;
+		//	}
 
-		//for i in 0..E_COUNT
-		//{
-		//	printf("%g ", m_bodies[i]->get_linear_velocity().y);
-		//}
+		//	{
+		//		b2CircleShape shape;
+		//		shape.m_radius = 0.25f;
 
-		//printf("\n");
+		//		b2FixtureDef fd;
+		//		fd.shape = &shape;
+		//		fd.density = 20.0f;
+		//		fd.restitution = 0.05f;
+
+		//		b2BodyDef bd;
+		//		bd.type = b2_dynamicBody;
+		//		bd.bullet = true;
+		//		bd.position.Set(-31.0f, 5.0f);
+
+		//		m_bullet = m_world->CreateBody(&bd);
+		//		m_bullet->CreateFixture(&fd);
+
+		//		m_bullet->SetLinearVelocity(b2Vec2(400.0f, 0.0f));
+		//	}
+		//}
 	}
 }

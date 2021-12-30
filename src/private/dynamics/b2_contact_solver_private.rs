@@ -6,10 +6,13 @@ use crate::b2rs_common::*;
 use crate::b2_time_step::*;
 use crate::b2_collision::*;
 
+use std::sync::atomic::Ordering;
+
 // Solver debugging is normally disabled because the block solver sometimes has to deal with a poorly conditioned effective mass matrix.
 const B2_DEBUG_SOLVER: bool = false;
 
-const G_BLOCK_SOLVE: bool = true;
+//box2d-rs: moved to b2_contact to make it public
+//pub static G_BLOCK_SOLVE: AtomicBool = AtomicBool::new(true);
 
 //struct B2contactPositionConstraint
 //moved to header
@@ -188,7 +191,8 @@ pub(crate) fn initialize_velocity_constraints<D: UserDataType>(this: &mut B2cont
 		}
 
 		// If we have two points, then prepare the block solver.
-		if vc.point_count == 2 && G_BLOCK_SOLVE
+		let g_block_solve: bool = G_BLOCK_SOLVE.load(Ordering::SeqCst);
+		if vc.point_count == 2 && g_block_solve
 		{
 			let vcp1: &B2velocityConstraintPoint = &vc.points[0];
 			let vcp2: &B2velocityConstraintPoint = &vc.points[1];
@@ -316,7 +320,8 @@ pub(crate) fn solve_velocity_constraints(this: &mut B2contactSolver, m_velocitie
 		}
 
 		// solve normal constraints
-		if point_count == 1 || G_BLOCK_SOLVE == false
+		let g_block_solve: bool = G_BLOCK_SOLVE.load(Ordering::SeqCst);
+		if point_count == 1 || g_block_solve == false
 		{
 			for j in 0..point_count
 			{

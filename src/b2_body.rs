@@ -158,8 +158,10 @@ pub struct B2body<D: UserDataType>
 
 	pub(crate) m_island_index: i32,
 
-	pub(crate) m_xf: B2Transform, // the body origin transform
-	pub(crate) m_sweep: B2Sweep,  // the swept motion for CCD
+	/// the body origin transform
+	pub(crate) m_xf: B2Transform, 
+	/// the swept motion for CCD
+	pub(crate) m_sweep: B2Sweep,  
 
 	pub(crate) m_linear_velocity: B2vec2,
 	pub(crate) m_angular_velocity: f32,
@@ -180,7 +182,7 @@ pub struct B2body<D: UserDataType>
 	pub(crate) m_mass: f32,
 	pub(crate) m_inv_mass: f32,
 
-	// Rotational inertia about the center of mass.
+	/// Rotational inertia about the center of mass.
 	pub(crate) m_i: f32,
 	pub(crate) m_inv_i: f32,
 
@@ -616,7 +618,6 @@ impl<D: UserDataType> B2body<D> {
 	}
 }
 
-//TODO_humman остальные модули так же переделать
 mod inline {
 	use super::*;
 
