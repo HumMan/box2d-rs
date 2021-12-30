@@ -63,142 +63,142 @@ pub(crate) fn new<D: UserDataType>(def: &B2pulleyJointDef<D>) -> B2pulleyJoint<D
 }
 
 pub(crate) fn init_velocity_constraints<D: UserDataType>(
-	this: &mut B2pulleyJoint<D>,
+	self_: &mut B2pulleyJoint<D>,
 	data: &B2solverData,
 	positions: &[B2position],
 	velocities: &mut [B2velocity],
 ) {
-	let m_body_a = this.base.m_body_a.borrow();
-	let m_body_b = this.base.m_body_b.borrow();
-	this.m_index_a = m_body_a.m_island_index;
-	this.m_index_b = m_body_b.m_island_index;
-	this.m_local_center_a = m_body_a.m_sweep.local_center;
-	this.m_local_center_b = m_body_b.m_sweep.local_center;
-	this.m_inv_mass_a = m_body_a.m_inv_mass;
-	this.m_inv_mass_b = m_body_b.m_inv_mass;
-	this.m_inv_ia = m_body_a.m_inv_i;
-	this.m_inv_ib = m_body_b.m_inv_i;
+	let m_body_a = self_.base.m_body_a.borrow();
+	let m_body_b = self_.base.m_body_b.borrow();
+	self_.m_index_a = m_body_a.m_island_index;
+	self_.m_index_b = m_body_b.m_island_index;
+	self_.m_local_center_a = m_body_a.m_sweep.local_center;
+	self_.m_local_center_b = m_body_b.m_sweep.local_center;
+	self_.m_inv_mass_a = m_body_a.m_inv_mass;
+	self_.m_inv_mass_b = m_body_b.m_inv_mass;
+	self_.m_inv_ia = m_body_a.m_inv_i;
+	self_.m_inv_ib = m_body_b.m_inv_i;
 
 	let B2position {
 		c: c_a,
 		a: a_a,
-	} = positions[this.m_index_a as usize];
+	} = positions[self_.m_index_a as usize];
 	let B2velocity {
 		v: mut v_a,
 		w: mut w_a,
-	} = velocities[this.m_index_a as usize];
+	} = velocities[self_.m_index_a as usize];
 
 	let B2position {
 		c: c_b,
 		a: a_b,
-	} = positions[this.m_index_b as usize];
+	} = positions[self_.m_index_b as usize];
 	let B2velocity {
 		v: mut v_b,
 		w: mut w_b,
-	} = velocities[this.m_index_b as usize];
+	} = velocities[self_.m_index_b as usize];
 
 	let (q_a, q_b) = (B2Rot::new(a_a), B2Rot::new(a_b));
 
-	this.m_r_a = b2_mul_rot_by_vec2(q_a, this.m_local_anchor_a - this.m_local_center_a);
-	this.m_r_b = b2_mul_rot_by_vec2(q_b, this.m_local_anchor_b - this.m_local_center_b);
+	self_.m_r_a = b2_mul_rot_by_vec2(q_a, self_.m_local_anchor_a - self_.m_local_center_a);
+	self_.m_r_b = b2_mul_rot_by_vec2(q_b, self_.m_local_anchor_b - self_.m_local_center_b);
 
 	// Get the pulley axes.
-	this.m_u_a = c_a + this.m_r_a - this.m_ground_anchor_a;
-	this.m_u_b = c_b + this.m_r_b - this.m_ground_anchor_b;
+	self_.m_u_a = c_a + self_.m_r_a - self_.m_ground_anchor_a;
+	self_.m_u_b = c_b + self_.m_r_b - self_.m_ground_anchor_b;
 
-	let length_a: f32 = this.m_u_a.length();
-	let length_b: f32 = this.m_u_b.length();
+	let length_a: f32 = self_.m_u_a.length();
+	let length_b: f32 = self_.m_u_b.length();
 
 	if length_a > 10.0 * B2_LINEAR_SLOP
 	{
-		this.m_u_a *= 1.0 / length_a;
+		self_.m_u_a *= 1.0 / length_a;
 	}
 	else
 	{
-		this.m_u_a.set_zero();
+		self_.m_u_a.set_zero();
 	}
 
 	if length_b > 10.0 * B2_LINEAR_SLOP
 	{
-		this.m_u_b *= 1.0 / length_b;
+		self_.m_u_b *= 1.0 / length_b;
 	}
 	else
 	{
-		this.m_u_b.set_zero();
+		self_.m_u_b.set_zero();
 	}
 
 	// Compute effective mass.
-	let ru_a: f32 =b2_cross(this.m_r_a, this.m_u_a);
-	let ru_b: f32 =b2_cross(this.m_r_b, this.m_u_b);
+	let ru_a: f32 =b2_cross(self_.m_r_a, self_.m_u_a);
+	let ru_b: f32 =b2_cross(self_.m_r_b, self_.m_u_b);
 
-	let m_a: f32 =this.m_inv_mass_a + this.m_inv_ia * ru_a * ru_a;
-	let m_b: f32 =this.m_inv_mass_b + this.m_inv_ib * ru_b * ru_b;
+	let m_a: f32 =self_.m_inv_mass_a + self_.m_inv_ia * ru_a * ru_a;
+	let m_b: f32 =self_.m_inv_mass_b + self_.m_inv_ib * ru_b * ru_b;
 
-	this.m_mass = m_a + this.m_ratio * this.m_ratio * m_b;
+	self_.m_mass = m_a + self_.m_ratio * self_.m_ratio * m_b;
 
-	if this.m_mass > 0.0
+	if self_.m_mass > 0.0
 	{
-		this.m_mass = 1.0 / this.m_mass;
+		self_.m_mass = 1.0 / self_.m_mass;
 	}
 
 	if data.step.warm_starting
 	{
 		// Scale impulses to support variable time steps.
-		this.m_impulse *= data.step.dt_ratio;
+		self_.m_impulse *= data.step.dt_ratio;
 
 		// Warm starting.
-		let pa: B2vec2 =-(this.m_impulse) * this.m_u_a;
-		let pb: B2vec2 =(-this.m_ratio * this.m_impulse) * this.m_u_b;
+		let pa: B2vec2 =-(self_.m_impulse) * self_.m_u_a;
+		let pb: B2vec2 =(-self_.m_ratio * self_.m_impulse) * self_.m_u_b;
 
-		v_a += this.m_inv_mass_a * pa;
-		w_a += this.m_inv_ia * b2_cross(this.m_r_a, pa);
-		v_b += this.m_inv_mass_b * pb;
-		w_b += this.m_inv_ib * b2_cross(this.m_r_b, pb);
+		v_a += self_.m_inv_mass_a * pa;
+		w_a += self_.m_inv_ia * b2_cross(self_.m_r_a, pa);
+		v_b += self_.m_inv_mass_b * pb;
+		w_b += self_.m_inv_ib * b2_cross(self_.m_r_b, pb);
 	}
 	else
 	{
-		this.m_impulse = 0.0;
+		self_.m_impulse = 0.0;
 	}
 
-	velocities[this.m_index_a as usize] = B2velocity {v: v_a, w: w_a};
-	velocities[this.m_index_b as usize] = B2velocity {v: v_b, w: w_b};
+	velocities[self_.m_index_a as usize] = B2velocity {v: v_a, w: w_a};
+	velocities[self_.m_index_b as usize] = B2velocity {v: v_b, w: w_b};
 }
 
 pub(crate) fn solve_velocity_constraints<D: UserDataType>(
-	this: &mut B2pulleyJoint<D>,
+	self_: &mut B2pulleyJoint<D>,
 	_data: &B2solverData,
 	velocities: &mut [B2velocity],
 ) {
 	let B2velocity {
 		v: mut v_a,
 		w: mut w_a,
-	} = velocities[this.m_index_a as usize];
+	} = velocities[self_.m_index_a as usize];
 
 	let B2velocity {
 		v: mut v_b,
 		w: mut w_b,
-	} = velocities[this.m_index_b as usize];
+	} = velocities[self_.m_index_b as usize];
 
-	let vp_a: B2vec2 =v_a + b2_cross_scalar_by_vec(w_a, this.m_r_a);
-	let vp_b: B2vec2 =v_b + b2_cross_scalar_by_vec(w_b, this.m_r_b);
+	let vp_a: B2vec2 =v_a + b2_cross_scalar_by_vec(w_a, self_.m_r_a);
+	let vp_b: B2vec2 =v_b + b2_cross_scalar_by_vec(w_b, self_.m_r_b);
 
-	let cdot: f32 =-b2_dot(this.m_u_a, vp_a) - this.m_ratio * b2_dot(this.m_u_b, vp_b);
-	let impulse: f32 =-this.m_mass * cdot;
-	this.m_impulse += impulse;
+	let cdot: f32 =-b2_dot(self_.m_u_a, vp_a) - self_.m_ratio * b2_dot(self_.m_u_b, vp_b);
+	let impulse: f32 =-self_.m_mass * cdot;
+	self_.m_impulse += impulse;
 
-	let pa: B2vec2 =-impulse * this.m_u_a;
-	let pb: B2vec2 =-this.m_ratio * impulse * this.m_u_b;
-	v_a += this.m_inv_mass_a * pa;
-	w_a += this.m_inv_ia * b2_cross(this.m_r_a, pa);
-	v_b += this.m_inv_mass_b * pb;
-	w_b += this.m_inv_ib * b2_cross(this.m_r_b, pb);
+	let pa: B2vec2 =-impulse * self_.m_u_a;
+	let pb: B2vec2 =-self_.m_ratio * impulse * self_.m_u_b;
+	v_a += self_.m_inv_mass_a * pa;
+	w_a += self_.m_inv_ia * b2_cross(self_.m_r_a, pa);
+	v_b += self_.m_inv_mass_b * pb;
+	w_b += self_.m_inv_ib * b2_cross(self_.m_r_b, pb);
 
-	velocities[this.m_index_a as usize] = B2velocity {v: v_a, w: w_a};
-	velocities[this.m_index_b as usize] = B2velocity {v: v_b, w: w_b};
+	velocities[self_.m_index_a as usize] = B2velocity {v: v_a, w: w_a};
+	velocities[self_.m_index_b as usize] = B2velocity {v: v_b, w: w_b};
 }
 
 pub(crate) fn solve_position_constraints<D: UserDataType>(
-	this: &B2pulleyJoint<D>,
+	self_: &B2pulleyJoint<D>,
 	_data: &B2solverData,
 	positions: &mut [B2position],
 ) -> bool {
@@ -206,21 +206,21 @@ pub(crate) fn solve_position_constraints<D: UserDataType>(
 	let B2position {
 		c: mut c_a,
 		a: mut a_a,
-	} = positions[this.m_index_a as usize];
+	} = positions[self_.m_index_a as usize];
 
 	let B2position {
 		c: mut c_b,
 		a: mut a_b,
-	} = positions[this.m_index_b as usize];
+	} = positions[self_.m_index_b as usize];
 
 	let (q_a, q_b) = (B2Rot::new(a_a), B2Rot::new(a_b));
 
-	let r_a: B2vec2 =b2_mul_rot_by_vec2(q_a, this.m_local_anchor_a - this.m_local_center_a);
-	let r_b: B2vec2 =b2_mul_rot_by_vec2(q_b, this.m_local_anchor_b - this.m_local_center_b);
+	let r_a: B2vec2 =b2_mul_rot_by_vec2(q_a, self_.m_local_anchor_a - self_.m_local_center_a);
+	let r_b: B2vec2 =b2_mul_rot_by_vec2(q_b, self_.m_local_anchor_b - self_.m_local_center_b);
 
 	// Get the pulley axes.
-	let mut u_a: B2vec2 =c_a + r_a - this.m_ground_anchor_a;
-	let mut u_b: B2vec2 =c_b + r_b - this.m_ground_anchor_b;
+	let mut u_a: B2vec2 =c_a + r_a - self_.m_ground_anchor_a;
+	let mut u_b: B2vec2 =c_b + r_b - self_.m_ground_anchor_b;
 
 	let length_a: f32 =u_a.length();
 	let length_b: f32 =u_b.length();
@@ -247,31 +247,31 @@ pub(crate) fn solve_position_constraints<D: UserDataType>(
 	let ru_a: f32 =b2_cross(r_a, u_a);
 	let ru_b: f32 =b2_cross(r_b, u_b);
 
-	let m_a: f32 =this.m_inv_mass_a + this.m_inv_ia * ru_a * ru_a;
-	let m_b: f32 =this.m_inv_mass_b + this.m_inv_ib * ru_b * ru_b;
+	let m_a: f32 =self_.m_inv_mass_a + self_.m_inv_ia * ru_a * ru_a;
+	let m_b: f32 =self_.m_inv_mass_b + self_.m_inv_ib * ru_b * ru_b;
 
-	let mut mass: f32 =m_a + this.m_ratio * this.m_ratio * m_b;
+	let mut mass: f32 =m_a + self_.m_ratio * self_.m_ratio * m_b;
 
 	if mass > 0.0
 	{
 		mass = 1.0 / mass;
 	}
 
-	let c: f32 = this.m_constant - length_a - this.m_ratio * length_b;
+	let c: f32 = self_.m_constant - length_a - self_.m_ratio * length_b;
 	let linear_error: f32 =b2_abs(c);
 
 	let impulse: f32 =-mass * c;
 
 	let pa: B2vec2 =-impulse * u_a;
-	let pb: B2vec2 =-this.m_ratio * impulse * u_b;
+	let pb: B2vec2 =-self_.m_ratio * impulse * u_b;
 
-	c_a += this.m_inv_mass_a * pa;
-	a_a += this.m_inv_ia * b2_cross(r_a, pa);
-	c_b += this.m_inv_mass_b * pb;
-	a_b += this.m_inv_ib * b2_cross(r_b, pb);
+	c_a += self_.m_inv_mass_a * pa;
+	a_a += self_.m_inv_ia * b2_cross(r_a, pa);
+	c_b += self_.m_inv_mass_b * pb;
+	a_b += self_.m_inv_ib * b2_cross(r_b, pb);
 
-	positions[this.m_index_a as usize] = B2position{c: c_a, a: a_a};
-	positions[this.m_index_b as usize] = B2position{c: c_b, a: a_b};
+	positions[self_.m_index_a as usize] = B2position{c: c_a, a: a_a};
+	positions[self_.m_index_b as usize] = B2position{c: c_b, a: a_b};
 
 	return linear_error < B2_LINEAR_SLOP;
 }

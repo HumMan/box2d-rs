@@ -56,51 +56,51 @@ pub(crate) fn b2_world_new<D: UserDataType>(gravity: B2vec2) -> B2worldPtr<D> {
 }
 
 pub(crate) fn set_destruction_listener<D: UserDataType>(
-	this: &mut B2world<D>,
+	self_: &mut B2world<D>,
 	listener: B2destructionListenerPtr<D>,
 ) {
-	this.m_destruction_listener = Some(listener);
+	self_.m_destruction_listener = Some(listener);
 }
 
 pub(crate) fn set_contact_filter<D: UserDataType>(
-	this: &mut B2world<D>,
+	self_: &mut B2world<D>,
 	filter: B2contactFilterPtr<D>,
 ) {
-	this.m_contact_manager.borrow_mut().m_contact_filter = Some(filter);
+	self_.m_contact_manager.borrow_mut().m_contact_filter = Some(filter);
 }
 
 pub(crate) fn set_contact_listener<D: UserDataType>(
-	this: &mut B2world<D>,
+	self_: &mut B2world<D>,
 	listener: B2contactListenerPtr<D>,
 ) {
-	this.m_contact_manager.borrow_mut().m_contact_listener = Some(listener);
+	self_.m_contact_manager.borrow_mut().m_contact_listener = Some(listener);
 }
 
-pub(crate) fn set_debug_draw<D: UserDataType>(this: &mut B2world<D>, debug_draw: B2drawTraitPtr) {
-	this.m_debug_draw = Some(debug_draw);
+pub(crate) fn set_debug_draw<D: UserDataType>(self_: &mut B2world<D>, debug_draw: B2drawTraitPtr) {
+	self_.m_debug_draw = Some(debug_draw);
 }
 
-pub(crate) fn create_body<D: UserDataType>(this: B2worldPtr<D>, def: &B2bodyDef<D>) -> BodyPtr<D> {
-	b2_assert(this.borrow().is_locked() == false);
-	if this.borrow().is_locked() {
+pub(crate) fn create_body<D: UserDataType>(self_: B2worldPtr<D>, def: &B2bodyDef<D>) -> BodyPtr<D> {
+	b2_assert(self_.borrow().is_locked() == false);
+	if self_.borrow().is_locked() {
 		panic!();
 	}
-	let b = Rc::new(RefCell::new(B2body::new(def, this.clone())));
+	let b = Rc::new(RefCell::new(B2body::new(def, self_.clone())));
 
 	// Add to world doubly linked list.
 	{
-		let mut this = this.borrow_mut();
-		this.m_body_list.push_front(b.clone());
-		this.m_body_count += 1;
+		let mut self_ = self_.borrow_mut();
+		self_.m_body_list.push_front(b.clone());
+		self_.m_body_count += 1;
 	}
 
 	return b;
 }
 
-pub(crate) fn destroy_body<D: UserDataType>(this: &mut B2world<D>, b: BodyPtr<D>) {
-	b2_assert(this.m_body_count > 0);
-	b2_assert(this.is_locked() == false);
-	if this.is_locked() {
+pub(crate) fn destroy_body<D: UserDataType>(self_: &mut B2world<D>, b: BodyPtr<D>) {
+	b2_assert(self_.m_body_count > 0);
+	b2_assert(self_.is_locked() == false);
+	if self_.is_locked() {
 		panic!();
 	}
 
@@ -108,20 +108,20 @@ pub(crate) fn destroy_body<D: UserDataType>(this: &mut B2world<D>, b: BodyPtr<D>
 	let m_joint_list = b.borrow().m_joint_list.clone();
 	for je in m_joint_list.iter() {
 		let joint = upgrade(&je.borrow().joint);
-		if let Some(ref m_destruction_listener) = this.m_destruction_listener {
+		if let Some(ref m_destruction_listener) = self_.m_destruction_listener {
 			m_destruction_listener
 				.borrow_mut()
 				.say_goodbye_joint(joint.clone());
 		}
 
-		destroy_joint(this, joint);
+		destroy_joint(self_, joint);
 	}
 	b.borrow_mut().m_joint_list.clear();
 
 	// Delete the attached contacts.
 	let m_contact_list = b.borrow().m_contact_list.clone();
 	for ce in m_contact_list.iter() {
-		this.m_contact_manager
+		self_.m_contact_manager
 			.borrow_mut()
 			.destroy(ce.borrow().contact.upgrade().unwrap().clone());
 	}
@@ -130,14 +130,14 @@ pub(crate) fn destroy_body<D: UserDataType>(this: &mut B2world<D>, b: BodyPtr<D>
 	// Delete the attached fixtures. This destroys broad-phase proxies.
 	let m_fixture_list = b.borrow().m_fixture_list.clone();
 	for f in m_fixture_list.iter() {
-		if let Some(ref m_destruction_listener) = this.m_destruction_listener {
+		if let Some(ref m_destruction_listener) = self_.m_destruction_listener {
 			m_destruction_listener
 				.borrow_mut()
 				.say_goodbye_fixture(f.clone());
 		}
 
 		f.borrow_mut()
-			.destroy_proxies(&mut this.m_contact_manager.borrow().m_broad_phase.borrow_mut());
+			.destroy_proxies(&mut self_.m_contact_manager.borrow().m_broad_phase.borrow_mut());
 
 		b.borrow_mut().m_fixture_count -= 1;
 	}
@@ -148,17 +148,17 @@ pub(crate) fn destroy_body<D: UserDataType>(this: &mut B2world<D>, b: BodyPtr<D>
 	}
 
 	// Remove world body list.
-	this.m_body_list.remove(b);
+	self_.m_body_list.remove(b);
 
-	this.m_body_count -= 1;
+	self_.m_body_count -= 1;
 }
 
 pub(crate) fn create_joint<D: UserDataType>(
-	this: &mut B2world<D>,
+	self_: &mut B2world<D>,
 	def: &B2JointDefEnum<D>,
 ) -> B2jointPtr<D> {
-	b2_assert(this.is_locked() == false);
-	if this.is_locked() {
+	b2_assert(self_.is_locked() == false);
+	if self_.is_locked() {
 		panic!();
 	}
 
@@ -166,8 +166,8 @@ pub(crate) fn create_joint<D: UserDataType>(
 
 	// Connect to the world list.
 	{
-		this.m_joint_list.push_front(j.clone());
-		this.m_joint_count += 1;
+		self_.m_joint_list.push_front(j.clone());
+		self_.m_joint_count += 1;
 	}
 
 	// Connect to the bodies' doubly linked lists.
@@ -275,9 +275,9 @@ pub(crate) fn create_joint<D: UserDataType>(
 	return j;
 }
 
-pub(crate) fn destroy_joint<D: UserDataType>(this: &mut B2world<D>, j: B2jointPtr<D>) {
-	b2_assert(this.is_locked() == false);
-	if this.is_locked() {
+pub(crate) fn destroy_joint<D: UserDataType>(self_: &mut B2world<D>, j: B2jointPtr<D>) {
+	b2_assert(self_.is_locked() == false);
+	if self_.is_locked() {
 		panic!();
 	}
 
@@ -293,7 +293,7 @@ pub(crate) fn destroy_joint<D: UserDataType>(this: &mut B2world<D>, j: B2jointPt
 	}
 
 	// Remove from the doubly linked list.
-	this.m_joint_list.remove(j.clone());
+	self_.m_joint_list.remove(j.clone());
 
 	// Disconnect from island graph.
 
@@ -319,8 +319,8 @@ pub(crate) fn destroy_joint<D: UserDataType>(this: &mut B2world<D>, j: B2jointPt
 
 	//B2joint::destroy(j, &m_blockAllocator);
 
-	b2_assert(this.m_joint_count > 0);
-	this.m_joint_count -= 1;
+	b2_assert(self_.m_joint_count > 0);
+	self_.m_joint_count -= 1;
 
 	// If the joint prevents collisions, then flag any contacts for filtering.
 	if collide_connected == false {
@@ -339,33 +339,33 @@ pub(crate) fn destroy_joint<D: UserDataType>(this: &mut B2world<D>, j: B2jointPt
 }
 
 //
-pub(crate) fn set_allow_sleeping<D: UserDataType>(this: &mut B2world<D>, flag: bool) {
-	if flag == this.m_allow_sleep {
+pub(crate) fn set_allow_sleeping<D: UserDataType>(self_: &mut B2world<D>, flag: bool) {
+	if flag == self_.m_allow_sleep {
 		return;
 	}
 
-	this.m_allow_sleep = flag;
-	if this.m_allow_sleep == false {
-		for b in this.m_body_list.iter() {
+	self_.m_allow_sleep = flag;
+	if self_.m_allow_sleep == false {
+		for b in self_.m_body_list.iter() {
 			b.borrow_mut().set_awake(true);
 		}
 	}
 }
 
 // Find islands, integrate and solve constraints, solve position constraints
-pub(crate) fn solve<D: UserDataType>(this: &mut B2world<D>, step: B2timeStep) {
-	this.m_profile.solve_init = 0.0;
-	this.m_profile.solve_velocity = 0.0;
-	this.m_profile.solve_position = 0.0;
+pub(crate) fn solve<D: UserDataType>(self_: &mut B2world<D>, step: B2timeStep) {
+	self_.m_profile.solve_init = 0.0;
+	self_.m_profile.solve_velocity = 0.0;
+	self_.m_profile.solve_position = 0.0;
 
 	let mut island;
 	{
-		let contact_manager = this.m_contact_manager.borrow();
+		let contact_manager = self_.m_contact_manager.borrow();
 		// Size the island for the worst case.
 		island = B2island::new(
-			this.m_body_count,
+			self_.m_body_count,
 			contact_manager.m_contact_count as usize,
-			this.m_joint_count,
+			self_.m_joint_count,
 			contact_manager
 				.m_contact_listener
 				.clone()
@@ -373,22 +373,22 @@ pub(crate) fn solve<D: UserDataType>(this: &mut B2world<D>, step: B2timeStep) {
 	}
 
 	// clear all the island flags.
-	for b in this.m_body_list.iter() {
+	for b in self_.m_body_list.iter() {
 		b.borrow_mut().m_flags.remove(BodyFlags::E_ISLAND_FLAG);
 	}
-	for c in this.m_contact_manager.borrow().m_contact_list.iter() {
+	for c in self_.m_contact_manager.borrow().m_contact_list.iter() {
 		c.borrow_mut()
 			.get_base_mut()
 			.m_flags
 			.remove(ContactFlags::E_ISLAND_FLAG);
 	}
-	for j in this.m_joint_list.iter() {
+	for j in self_.m_joint_list.iter() {
 		j.borrow_mut().get_base_mut().m_island_flag = false;
 	}
 
 	// Build and simulate all awake islands.
-	let mut stack = Vec::<BodyPtr<D>>::with_capacity(this.m_body_count as usize);
-	for seed in this.m_body_list.iter() {
+	let mut stack = Vec::<BodyPtr<D>>::with_capacity(self_.m_body_count as usize);
+	for seed in self_.m_body_list.iter() {
 		{
 			let seed = seed.borrow();
 			if seed.m_flags.contains(BodyFlags::E_ISLAND_FLAG) {
@@ -491,10 +491,10 @@ pub(crate) fn solve<D: UserDataType>(this: &mut B2world<D>, step: B2timeStep) {
 		}
 
 		let mut profile = B2Profile::default();
-		island.solve(&mut profile, &step, this.m_gravity, this.m_allow_sleep);
-		this.m_profile.solve_init += profile.solve_init;
-		this.m_profile.solve_velocity += profile.solve_velocity;
-		this.m_profile.solve_position += profile.solve_position;
+		island.solve(&mut profile, &step, self_.m_gravity, self_.m_allow_sleep);
+		self_.m_profile.solve_init += profile.solve_init;
+		self_.m_profile.solve_velocity += profile.solve_velocity;
+		self_.m_profile.solve_position += profile.solve_position;
 
 		// Post solve cleanup.
 		for b in &island.m_bodies {
@@ -509,7 +509,7 @@ pub(crate) fn solve<D: UserDataType>(this: &mut B2world<D>, step: B2timeStep) {
 	{
 		let timer = B2timer::default();
 		// synchronize fixtures, check for out of range bodies.
-		for b in this.m_body_list.iter() {
+		for b in self_.m_body_list.iter() {
 			let mut b = b.borrow_mut();
 			// If a body was not in an island then it did not move.
 			if !b.m_flags.contains(BodyFlags::E_ISLAND_FLAG) {
@@ -521,35 +521,35 @@ pub(crate) fn solve<D: UserDataType>(this: &mut B2world<D>, step: B2timeStep) {
 			}
 
 			// update fixtures (for broad-phase).
-			b.synchronize_fixtures_by_world(this);
+			b.synchronize_fixtures_by_world(self_);
 		}
 
 		// Look for new contacts.
-		this.m_contact_manager.borrow_mut().find_new_contacts();
-		this.m_profile.broadphase = timer.get_milliseconds();
+		self_.m_contact_manager.borrow_mut().find_new_contacts();
+		self_.m_profile.broadphase = timer.get_milliseconds();
 	}
 }
 
 // Find TOI contacts and solve them.
-pub(crate) fn solve_toi<D: UserDataType>(this: &mut B2world<D>, step: B2timeStep) {
+pub(crate) fn solve_toi<D: UserDataType>(self_: &mut B2world<D>, step: B2timeStep) {
 	let mut island = B2island::new(
 		2 * B2_MAX_TOICONTACTS,
 		B2_MAX_TOICONTACTS,
 		0,
-		this.m_contact_manager
+		self_.m_contact_manager
 			.borrow()
 			.m_contact_listener
 			.clone()
 	);
 
-	if this.m_step_complete {
-		for b in this.m_body_list.iter() {
+	if self_.m_step_complete {
+		for b in self_.m_body_list.iter() {
 			let mut b = b.borrow_mut();
 			b.m_flags.remove(BodyFlags::E_ISLAND_FLAG);
 			b.m_sweep.alpha0 = 0.0;
 		}
 
-		for c in this.m_contact_manager.borrow().m_contact_list.iter() {
+		for c in self_.m_contact_manager.borrow().m_contact_list.iter() {
 			let mut c = c.borrow_mut();
 			let c = c.get_base_mut();
 			// Invalidate TOI
@@ -566,7 +566,7 @@ pub(crate) fn solve_toi<D: UserDataType>(this: &mut B2world<D>, step: B2timeStep
 		let mut min_contact: Option<ContactPtr<D>> = None;
 		let mut min_alpha: f32 = 1.0;
 
-		for c_ptr in this.m_contact_manager.borrow().m_contact_list.iter() {
+		for c_ptr in self_.m_contact_manager.borrow().m_contact_list.iter() {
 			let mut c = c_ptr.borrow_mut();
 			let mut c_base = c.get_base_mut();
 			// Is this contact disabled?
@@ -675,7 +675,7 @@ pub(crate) fn solve_toi<D: UserDataType>(this: &mut B2world<D>, step: B2timeStep
 
 		if min_contact.is_none() || 1.0 - 10.0 * B2_EPSILON < min_alpha {
 			// No more TOI events. Done!
-			this.m_step_complete = true;
+			self_.m_step_complete = true;
 			break;
 		}
 
@@ -696,7 +696,7 @@ pub(crate) fn solve_toi<D: UserDataType>(this: &mut B2world<D>, step: B2timeStep
 		// The TOI contact likely has some new contact points.
 		B2contact::update(
 			&mut *min_contact.borrow_mut(),
-			this
+			self_
 				.m_contact_manager
 				.borrow()
 				.m_contact_listener.clone(),
@@ -799,7 +799,7 @@ pub(crate) fn solve_toi<D: UserDataType>(this: &mut B2world<D>, step: B2timeStep
 					// update the contact points
 					B2contact::update(
 						&mut *contact,
-						this
+						self_
 							.m_contact_manager
 							.borrow()
 							.m_contact_listener
@@ -876,7 +876,7 @@ pub(crate) fn solve_toi<D: UserDataType>(this: &mut B2world<D>, step: B2timeStep
 				continue;
 			}
 
-			body.synchronize_fixtures_by_world(this);
+			body.synchronize_fixtures_by_world(self_);
 
 			// Invalidate all contact TOIs on this displaced body.
 			for ce in body.m_contact_list.iter() {
@@ -891,17 +891,17 @@ pub(crate) fn solve_toi<D: UserDataType>(this: &mut B2world<D>, step: B2timeStep
 
 		// Commit fixture proxy movements to the broad-phase so that new contacts are created.
 		// Also, some contacts can be destroyed.
-		this.m_contact_manager.borrow_mut().find_new_contacts();
+		self_.m_contact_manager.borrow_mut().find_new_contacts();
 
-		if this.m_sub_stepping {
-			this.m_step_complete = false;
+		if self_.m_sub_stepping {
+			self_.m_step_complete = false;
 			break;
 		}
 	}
 }
 
 pub(crate) fn step<D: UserDataType>(
-	this: &mut B2world<D>,
+	self_: &mut B2world<D>,
 	dt: f32,
 	velocity_iterations: i32,
 	position_iterations: i32,
@@ -909,57 +909,57 @@ pub(crate) fn step<D: UserDataType>(
 	let step_timer = B2timer::default();
 
 	// If new fixtures were added, we need to find the new contacts.
-	if this.m_new_contacts {
-		this.m_contact_manager.borrow_mut().find_new_contacts();
-		this.m_new_contacts = false;
+	if self_.m_new_contacts {
+		self_.m_contact_manager.borrow_mut().find_new_contacts();
+		self_.m_new_contacts = false;
 	}
 
-	this.m_locked = true;
+	self_.m_locked = true;
 
 	let step = B2timeStep {
 		dt: dt,
 		velocity_iterations: velocity_iterations,
 		position_iterations: position_iterations,
 		inv_dt: if dt > 0.0 { 1.0 / dt } else { 0.0 },
-		dt_ratio: this.m_inv_dt0 * dt,
-		warm_starting: this.m_warm_starting,
+		dt_ratio: self_.m_inv_dt0 * dt,
+		warm_starting: self_.m_warm_starting,
 	};
 	// update contacts. This is where some contacts are destroyed.
 	{
 		let timer = B2timer::default();
-		B2contactManager::collide(this.m_contact_manager.clone());
-		this.m_profile.collide = timer.get_milliseconds();
+		B2contactManager::collide(self_.m_contact_manager.clone());
+		self_.m_profile.collide = timer.get_milliseconds();
 	}
 
 	// Integrate velocities, solve velocity constraints, and integrate positions.
-	if this.m_step_complete && step.dt > 0.0 {
+	if self_.m_step_complete && step.dt > 0.0 {
 		let timer = B2timer::default();
-		this.solve(step);
-		this.m_profile.solve = timer.get_milliseconds();
+		self_.solve(step);
+		self_.m_profile.solve = timer.get_milliseconds();
 	}
 
 	// Handle TOI events.
-	if this.m_continuous_physics && step.dt > 0.0 {
+	if self_.m_continuous_physics && step.dt > 0.0 {
 		let timer = B2timer::default();
-		this.solve_toi(step);
-		this.m_profile.solve_toi = timer.get_milliseconds();
+		self_.solve_toi(step);
+		self_.m_profile.solve_toi = timer.get_milliseconds();
 	}
 
 	if step.dt > 0.0 {
-		this.m_inv_dt0 = step.inv_dt;
+		self_.m_inv_dt0 = step.inv_dt;
 	}
 
-	if this.m_clear_forces {
-		this.clear_forces();
+	if self_.m_clear_forces {
+		self_.clear_forces();
 	}
 
-	this.m_locked = false;
+	self_.m_locked = false;
 
-	this.m_profile.step = step_timer.get_milliseconds();
+	self_.m_profile.step = step_timer.get_milliseconds();
 }
 
-pub(crate) fn clear_forces<D: UserDataType>(this: &mut B2world<D>) {
-	for body in this.m_body_list.iter() {
+pub(crate) fn clear_forces<D: UserDataType>(self_: &mut B2world<D>) {
+	for body in self_.m_body_list.iter() {
 		let mut body = body.borrow_mut();
 		body.m_force.set_zero();
 		body.m_torque = 0.0;
@@ -967,11 +967,11 @@ pub(crate) fn clear_forces<D: UserDataType>(this: &mut B2world<D>) {
 }
 
 pub(crate) fn query_aabb<D: UserDataType, F: B2queryCallback<D>>(
-	this: &B2world<D>,
+	self_: &B2world<D>,
 	mut callback: F,
 	aabb: B2AABB,
 ) {
-	let broad_phase_ptr = this.m_contact_manager.borrow().m_broad_phase.clone();
+	let broad_phase_ptr = self_.m_contact_manager.borrow().m_broad_phase.clone();
 	let broad_phase = broad_phase_ptr.borrow();
 	broad_phase.query(|proxy_id:i32|->bool{
 		let proxy = broad_phase.get_user_data(proxy_id);
@@ -1015,13 +1015,13 @@ pub(crate) fn query_aabb<D: UserDataType, F: B2queryCallback<D>>(
 // }
 
 pub(crate) fn ray_cast<D: UserDataType, F: B2rayCastCallback<D>>(
-	this: &B2world<D>,
+	self_: &B2world<D>,
 	mut callback: F,
 	point1: B2vec2,
 	point2: B2vec2,
 ) {
 
-	let broad_phase_ptr = this.m_contact_manager.borrow().m_broad_phase.clone();
+	let broad_phase_ptr = self_.m_contact_manager.borrow().m_broad_phase.clone();
 	let broad_phase = broad_phase_ptr.borrow();
 	// let mut wrapper = B2worldRayCastWrapper::<D, f> {
 	// 	broad_phase: &*broad_phase,
@@ -1056,12 +1056,12 @@ pub(crate) fn ray_cast<D: UserDataType, F: B2rayCastCallback<D>>(
 }
 
 pub(crate) fn draw_shape<D: UserDataType>(
-	this: &B2world<D>,
+	self_: &B2world<D>,
 	fixture: FixturePtr<D>,
 	xf: &B2Transform,
 	color: &B2color,
 ) {
-	let mut m_debug_draw = this.m_debug_draw.as_ref().unwrap().borrow_mut();
+	let mut m_debug_draw = self_.m_debug_draw.as_ref().unwrap().borrow_mut();
 	match fixture.borrow().get_shape().as_derived()
 	{
 		ShapeAsDerived::AsCircle(circle) =>
@@ -1115,14 +1115,14 @@ pub(crate) fn draw_shape<D: UserDataType>(
 	}
 }
 
-pub(crate) fn debug_draw<D: UserDataType>(this: &B2world<D>) {
-	if this.m_debug_draw.is_none()
+pub(crate) fn debug_draw<D: UserDataType>(self_: &B2world<D>) {
+	if self_.m_debug_draw.is_none()
 	{
 		return;
 	}
 
 	let flags = {
-		let m_debug_draw_ptr = this.m_debug_draw.as_ref().unwrap().clone();
+		let m_debug_draw_ptr = self_.m_debug_draw.as_ref().unwrap().clone();
 		let m_debug_draw = m_debug_draw_ptr.borrow_mut();
 
 		m_debug_draw.get_base().get_flags()
@@ -1130,7 +1130,7 @@ pub(crate) fn debug_draw<D: UserDataType>(this: &B2world<D>) {
 
 	if flags.contains(B2drawShapeFlags::SHAPE_BIT)
 	{
-		for b in this.m_body_list.iter()
+		for b in self_.m_body_list.iter()
 		{
 			let b = b.borrow();
 			let xf:B2Transform = b.get_transform();
@@ -1139,39 +1139,39 @@ pub(crate) fn debug_draw<D: UserDataType>(this: &B2world<D>) {
 				if b.get_type() == B2bodyType::B2DynamicBody && b.m_mass == 0.0
 				{
 					// Bad body
-					this.draw_shape(f, &xf, &B2color::new(1.0, 0.0, 0.0));
+					self_.draw_shape(f, &xf, &B2color::new(1.0, 0.0, 0.0));
 				}
 				else if b.is_enabled() == false
 				{
-					this.draw_shape(f, &xf, &B2color::new(0.5, 0.5, 0.3));
+					self_.draw_shape(f, &xf, &B2color::new(0.5, 0.5, 0.3));
 				}
 				else if b.get_type() == B2bodyType::B2StaticBody
 				{
-					this.draw_shape(f, &xf, &B2color::new(0.5, 0.9, 0.5));
+					self_.draw_shape(f, &xf, &B2color::new(0.5, 0.9, 0.5));
 				}
 				else if b.get_type() == B2bodyType::B2KinematicBody
 				{
-					this.draw_shape(f, &xf, &B2color::new(0.5, 0.5, 0.9));
+					self_.draw_shape(f, &xf, &B2color::new(0.5, 0.5, 0.9));
 				}
 				else if b.is_awake() == false
 				{
-					this.draw_shape(f, &xf, &B2color::new(0.6, 0.6, 0.6));
+					self_.draw_shape(f, &xf, &B2color::new(0.6, 0.6, 0.6));
 				}
 				else
 				{
-					this.draw_shape(f, &xf, &B2color::new(0.9, 0.7, 0.7));
+					self_.draw_shape(f, &xf, &B2color::new(0.9, 0.7, 0.7));
 				}
 			}
 		}
 	}
 
-	let m_debug_draw_ptr = this.m_debug_draw.as_ref().unwrap().clone();
+	let m_debug_draw_ptr = self_.m_debug_draw.as_ref().unwrap().clone();
 	let mut m_debug_draw = m_debug_draw_ptr.borrow_mut();
 
 	if flags.contains(B2drawShapeFlags::JOINT_BIT)
 	{
 
-		for j in this.m_joint_list.iter()
+		for j in self_.m_joint_list.iter()
 		{
 			j.borrow().draw(&mut *m_debug_draw);
 		}
@@ -1180,7 +1180,7 @@ pub(crate) fn debug_draw<D: UserDataType>(this: &B2world<D>) {
 	if flags.contains(B2drawShapeFlags::PAIR_BIT)
 	{
 		let color = B2color::new(0.3, 0.9, 0.9);
-		for c in this.m_contact_manager.borrow().m_contact_list.iter()
+		for c in self_.m_contact_manager.borrow().m_contact_list.iter()
 		{
 			let c = c.borrow();
 			let c_base = c.get_base();
@@ -1198,10 +1198,10 @@ pub(crate) fn debug_draw<D: UserDataType>(this: &B2world<D>) {
 	if flags.contains(B2drawShapeFlags::AABB_BIT)
 	{
 		let color = B2color::new(0.9, 0.3, 0.9);
-		let bp_ptr = this.m_contact_manager.borrow().m_broad_phase.clone();
+		let bp_ptr = self_.m_contact_manager.borrow().m_broad_phase.clone();
 		let bp = bp_ptr.borrow();
 
-		for b in this.m_body_list.iter()
+		for b in self_.m_body_list.iter()
 		{
 			let b = b.borrow();
 			if b.is_enabled() == false
@@ -1229,7 +1229,7 @@ pub(crate) fn debug_draw<D: UserDataType>(this: &B2world<D>) {
 
 	if flags.contains(B2drawShapeFlags::CENTER_OF_MASS_BIT)
 	{
-		for b in this.m_body_list.iter()
+		for b in self_.m_body_list.iter()
 		{
 			let b = b.borrow();
 			let mut xf = b.get_transform();
@@ -1239,8 +1239,8 @@ pub(crate) fn debug_draw<D: UserDataType>(this: &B2world<D>) {
 	}
 }
 
-pub(crate) fn get_proxy_count<D: UserDataType>(this: &B2world<D>) -> i32 {
-	return this
+pub(crate) fn get_proxy_count<D: UserDataType>(self_: &B2world<D>) -> i32 {
+	return self_
 		.m_contact_manager
 		.borrow()
 		.m_broad_phase
@@ -1248,8 +1248,8 @@ pub(crate) fn get_proxy_count<D: UserDataType>(this: &B2world<D>) -> i32 {
 		.get_proxy_count();
 }
 
-pub(crate) fn get_tree_height<D: UserDataType>(this: &B2world<D>) -> i32 {
-	return this
+pub(crate) fn get_tree_height<D: UserDataType>(self_: &B2world<D>) -> i32 {
+	return self_
 		.m_contact_manager
 		.borrow()
 		.m_broad_phase
@@ -1257,8 +1257,8 @@ pub(crate) fn get_tree_height<D: UserDataType>(this: &B2world<D>) -> i32 {
 		.get_tree_height();
 }
 
-pub(crate) fn get_tree_balance<D: UserDataType>(this: &B2world<D>) -> i32 {
-	return this
+pub(crate) fn get_tree_balance<D: UserDataType>(self_: &B2world<D>) -> i32 {
+	return self_
 		.m_contact_manager
 		.borrow()
 		.m_broad_phase
@@ -1266,8 +1266,8 @@ pub(crate) fn get_tree_balance<D: UserDataType>(this: &B2world<D>) -> i32 {
 		.get_tree_balance();
 }
 
-pub(crate) fn get_tree_quality<D: UserDataType>(this: &B2world<D>) -> f32 {
-	return this
+pub(crate) fn get_tree_quality<D: UserDataType>(self_: &B2world<D>) -> f32 {
+	return self_
 		.m_contact_manager
 		.borrow()
 		.m_broad_phase
@@ -1275,23 +1275,23 @@ pub(crate) fn get_tree_quality<D: UserDataType>(this: &B2world<D>) -> f32 {
 		.get_tree_quality();
 }
 
-pub(crate) fn shift_origin<D: UserDataType>(this: &B2world<D>, new_origin: B2vec2) {
-	b2_assert(this.is_locked() == false);
-	if this.is_locked() {
+pub(crate) fn shift_origin<D: UserDataType>(self_: &B2world<D>, new_origin: B2vec2) {
+	b2_assert(self_.is_locked() == false);
+	if self_.is_locked() {
 		panic!();
 	}
 
-	for b in this.m_body_list.iter() {
+	for b in self_.m_body_list.iter() {
 		let mut b = b.borrow_mut();
 		b.m_xf.p -= new_origin;
 		b.m_sweep.c0 -= new_origin;
 		b.m_sweep.c -= new_origin;
 	}
-	for j in this.m_joint_list.iter() {
+	for j in self_.m_joint_list.iter() {
 		j.borrow_mut().shift_origin(new_origin);
 	}
 
-	this.m_contact_manager
+	self_.m_contact_manager
 		.borrow()
 		.m_broad_phase
 		.borrow_mut()

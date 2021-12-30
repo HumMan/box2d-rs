@@ -2,22 +2,22 @@ use crate::b2_math::{b2_cross_vec3, b2_dot_vec3, B2Mat33, B2vec2, B2Vec3};
 
 /// solve A * x = b, where b is a column vector. This is more efficient
 /// than computing the inverse in one-shot cases.
-pub fn solve33(this: B2Mat33, b: B2Vec3) -> B2Vec3 {
-    let mut det: f32 = b2_dot_vec3(this.ex, b2_cross_vec3(this.ey, this.ez));
+pub fn solve33(self_: B2Mat33, b: B2Vec3) -> B2Vec3 {
+    let mut det: f32 = b2_dot_vec3(self_.ex, b2_cross_vec3(self_.ey, self_.ez));
     if det != 0.0 {
         det = 1.0 / det;
     }
     let x = B2Vec3 {
-        x: det * b2_dot_vec3(b, b2_cross_vec3(this.ey, this.ez)),
-        y: det * b2_dot_vec3(this.ex, b2_cross_vec3(b, this.ez)),
-        z: det * b2_dot_vec3(this.ex, b2_cross_vec3(this.ey, b)),
+        x: det * b2_dot_vec3(b, b2_cross_vec3(self_.ey, self_.ez)),
+        y: det * b2_dot_vec3(self_.ex, b2_cross_vec3(b, self_.ez)),
+        z: det * b2_dot_vec3(self_.ex, b2_cross_vec3(self_.ey, b)),
     };
     return x;
 }
 /// solve A * x = b, where b is a column vector. This is more efficient
 /// than computing the inverse in one-shot cases.
-pub fn solve22(this: B2Mat33, b: B2vec2) -> B2vec2 {
-    let (a11, a12, a21, a22) = (this.ex.x, this.ey.x, this.ex.y, this.ey.y);
+pub fn solve22(self_: B2Mat33, b: B2vec2) -> B2vec2 {
+    let (a11, a12, a21, a22) = (self_.ex.x, self_.ey.x, self_.ex.y, self_.ey.y);
     let mut det: f32 = a11 * a22 - a12 * a21;
     if det != 0.0 {
         det = 1.0 / det;
@@ -29,8 +29,8 @@ pub fn solve22(this: B2Mat33, b: B2vec2) -> B2vec2 {
     return x;
 }
 ///
-pub fn get_inverse22(this: B2Mat33, m: &mut B2Mat33) {
-    let (a, b, c, d) = (this.ex.x, this.ey.x, this.ex.y, this.ey.y);
+pub fn get_inverse22(self_: B2Mat33, m: &mut B2Mat33) {
+    let (a, b, c, d) = (self_.ex.x, self_.ey.x, self_.ex.y, self_.ey.y);
     let mut det: f32 = a * d - b * c;
     if det != 0.0 {
         det = 1.0 / det;
@@ -47,15 +47,15 @@ pub fn get_inverse22(this: B2Mat33, m: &mut B2Mat33) {
     m.ez.z = 0.0;
 }
 /// Returns the zero matrix if singular.
-pub fn get_sym_inverse33(this: B2Mat33, m: &mut B2Mat33) {
-    let mut det = b2_dot_vec3(this.ex, b2_cross_vec3(this.ey, this.ez));
+pub fn get_sym_inverse33(self_: B2Mat33, m: &mut B2Mat33) {
+    let mut det = b2_dot_vec3(self_.ex, b2_cross_vec3(self_.ey, self_.ez));
     if det != 0.0 {
         det = 1.0 / det;
     }
 
-    let (a11, a12, a13) = (this.ex.x, this.ey.x, this.ez.x);
-    let (a22, a23) = (this.ey.y, this.ez.y);
-    let a33 = this.ez.z;
+    let (a11, a12, a13) = (self_.ex.x, self_.ey.x, self_.ez.x);
+    let (a22, a23) = (self_.ey.y, self_.ez.y);
+    let a33 = self_.ez.z;
 
     m.ex.x = det * (a22 * a33 - a23 * a23);
     m.ex.y = det * (a13 * a23 - a12 * a33);

@@ -294,20 +294,20 @@ impl<D: UserDataType> B2fixture<D> {
 	// We need separation create/destroy functions from the constructor/destructor because
 	// the destructor cannot access the allocator (no destructor arguments allowed by c++).
 	pub(crate) fn create(
-		this: &mut B2fixture<D>,
+		self_: &mut B2fixture<D>,
 		body: BodyPtr<D>,
 		def: &B2fixtureDef<D>,
 	) {
-		private::b2_fixture_create(this, body, def);
+		private::b2_fixture_create(self_, body, def);
 	}
 
 	// These support body activation/deactivation.
 	pub(crate) fn create_proxies(
-		this_ptr: FixturePtr<D>,
+		self_ptr: FixturePtr<D>,
 		broad_phase: &mut B2broadPhase<FixtureProxyPtr<D>>,
 		xf: &B2Transform,
 	) {
-		private::b2_fixture_create_proxies(this_ptr, broad_phase, xf);
+		private::b2_fixture_create_proxies(self_ptr, broad_phase, xf);
 	}
 	pub(crate) fn destroy_proxies(
 		&mut self,
@@ -329,76 +329,76 @@ impl<D: UserDataType> B2fixture<D> {
 mod inline {
 	use super::*;
 
-	pub fn get_type<T: UserDataType>(this: &B2fixture<T>) -> B2ShapeType {
-		return this.m_shape.as_ref().unwrap().get_type();
+	pub fn get_type<T: UserDataType>(self_: &B2fixture<T>) -> B2ShapeType {
+		return self_.m_shape.as_ref().unwrap().get_type();
 	}
 
-	pub fn get_shape<T: UserDataType>(this: &B2fixture<T>) -> ShapePtr {
-		return this.m_shape.as_ref().unwrap().clone();
+	pub fn get_shape<T: UserDataType>(self_: &B2fixture<T>) -> ShapePtr {
+		return self_.m_shape.as_ref().unwrap().clone();
 	}
 
-	pub fn is_sensor<T: UserDataType>(this: &B2fixture<T>) -> bool {
-		return this.m_is_sensor;
+	pub fn is_sensor<T: UserDataType>(self_: &B2fixture<T>) -> bool {
+		return self_.m_is_sensor;
 	}
 
-	pub fn get_filter_data<T: UserDataType>(this: &B2fixture<T>) -> B2filter {
-		return this.m_filter;
+	pub fn get_filter_data<T: UserDataType>(self_: &B2fixture<T>) -> B2filter {
+		return self_.m_filter;
 	}
 
-	pub fn get_user_data<D: UserDataType>(this: &B2fixture<D>) -> Option<D::Fixture> {
-		return this.m_user_data.clone();
+	pub fn get_user_data<D: UserDataType>(self_: &B2fixture<D>) -> Option<D::Fixture> {
+		return self_.m_user_data.clone();
 	}
 
-	pub fn set_user_data<D: UserDataType>(this: &mut B2fixture<D>, data: &D::Fixture) {
-		this.m_user_data = Some(data.clone());
+	pub fn set_user_data<D: UserDataType>(self_: &mut B2fixture<D>, data: &D::Fixture) {
+		self_.m_user_data = Some(data.clone());
 	}
 
-	pub fn get_body<T: UserDataType>(this: &B2fixture<T>) -> BodyPtr<T> {
-		return this.m_body.as_ref().unwrap().upgrade().unwrap();
+	pub fn get_body<T: UserDataType>(self_: &B2fixture<T>) -> BodyPtr<T> {
+		return self_.m_body.as_ref().unwrap().upgrade().unwrap();
 	}
 
-	pub fn get_next<T: UserDataType>(this: &B2fixture<T>) -> Option<FixturePtr<T>> {
-		return this.m_next.clone();
+	pub fn get_next<T: UserDataType>(self_: &B2fixture<T>) -> Option<FixturePtr<T>> {
+		return self_.m_next.clone();
 	}
 
-	pub fn set_density<T: UserDataType>(this: &mut B2fixture<T>, density: f32) {
+	pub fn set_density<T: UserDataType>(self_: &mut B2fixture<T>, density: f32) {
 		b2_assert(b2_is_valid(density) && density >= 0.0);
-		this.m_density = density;
+		self_.m_density = density;
 	}
 
-	pub fn get_density<T: UserDataType>(this: &B2fixture<T>) -> f32 {
-		return this.m_density;
+	pub fn get_density<T: UserDataType>(self_: &B2fixture<T>) -> f32 {
+		return self_.m_density;
 	}
 
-	pub fn get_friction<T: UserDataType>(this: &B2fixture<T>) -> f32 {
-		return this.m_friction;
+	pub fn get_friction<T: UserDataType>(self_: &B2fixture<T>) -> f32 {
+		return self_.m_friction;
 	}
 
-	pub fn set_friction<T: UserDataType>(this: &mut B2fixture<T>, friction: f32) {
-		this.m_friction = friction;
+	pub fn set_friction<T: UserDataType>(self_: &mut B2fixture<T>, friction: f32) {
+		self_.m_friction = friction;
 	}
 
-	pub fn get_restitution<T: UserDataType>(this: &B2fixture<T>) -> f32 {
-		return this.m_restitution;
+	pub fn get_restitution<T: UserDataType>(self_: &B2fixture<T>) -> f32 {
+		return self_.m_restitution;
 	}
 
-	pub fn set_restitution<T: UserDataType>(this: &mut B2fixture<T>, restitution: f32) {
-		this.m_restitution = restitution;
+	pub fn set_restitution<T: UserDataType>(self_: &mut B2fixture<T>, restitution: f32) {
+		self_.m_restitution = restitution;
 	}
 
-	pub fn get_restitution_threshold<T: UserDataType>(this: &B2fixture<T>) ->f32
+	pub fn get_restitution_threshold<T: UserDataType>(self_: &B2fixture<T>) ->f32
 	{
-		return this.m_restitution_threshold;
+		return self_.m_restitution_threshold;
 	}
 
-	pub fn set_restitution_threshold<T: UserDataType>(this: &mut B2fixture<T>, threshold:f32)
+	pub fn set_restitution_threshold<T: UserDataType>(self_: &mut B2fixture<T>, threshold:f32)
 	{
-		this.m_restitution_threshold = threshold;
+		self_.m_restitution_threshold = threshold;
 	}
 
-	pub fn test_point<T: UserDataType>(this: &B2fixture<T>, p: B2vec2) -> bool {
-		return this.m_shape.as_ref().unwrap().test_point(
-			this.m_body
+	pub fn test_point<T: UserDataType>(self_: &B2fixture<T>, p: B2vec2) -> bool {
+		return self_.m_shape.as_ref().unwrap().test_point(
+			self_.m_body
 				.as_ref()
 				.unwrap()
 				.upgrade()
@@ -410,15 +410,15 @@ mod inline {
 	}
 
 	pub fn ray_cast<T: UserDataType>(
-		this: &B2fixture<T>,
+		self_: &B2fixture<T>,
 		output: &mut B2rayCastOutput,
 		input: &B2rayCastInput,
 		child_index: i32,
 	) -> bool {
-		return this.m_shape.as_ref().unwrap().ray_cast(
+		return self_.m_shape.as_ref().unwrap().ray_cast(
 			output,
 			input,
-			this.m_body
+			self_.m_body
 				.as_ref()
 				.unwrap()
 				.upgrade()
@@ -429,15 +429,15 @@ mod inline {
 		);
 	}
 
-	pub fn get_mass_data<T: UserDataType>(this: &B2fixture<T>, mass_data: &mut B2massData) {
-		this.m_shape
+	pub fn get_mass_data<T: UserDataType>(self_: &B2fixture<T>, mass_data: &mut B2massData) {
+		self_.m_shape
 			.as_ref()
 			.unwrap()
-			.compute_mass(mass_data, this.m_density);
+			.compute_mass(mass_data, self_.m_density);
 	}
 
-	pub fn get_aabb<T: UserDataType>(this: &B2fixture<T>, child_index: i32) -> B2AABB {
-		b2_assert(0 <= child_index && child_index < this.m_proxies.len() as i32);
-		return this.m_proxies[child_index as usize].as_ref().borrow().aabb;
+	pub fn get_aabb<T: UserDataType>(self_: &B2fixture<T>, child_index: i32) -> B2AABB {
+		b2_assert(0 <= child_index && child_index < self_.m_proxies.len() as i32);
+		return self_.m_proxies[child_index as usize].as_ref().borrow().aabb;
 	}
 }

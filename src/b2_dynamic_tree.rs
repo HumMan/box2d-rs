@@ -220,44 +220,44 @@ mod inline {
 	use super::*;
 
 	pub fn get_user_data<UserDataType: Clone + Default>(
-		this: &B2dynamicTree<UserDataType>,
+		self_: &B2dynamicTree<UserDataType>,
 		proxy_id: i32,
 	) -> Option<UserDataType> {
-		//b2_assert(0 <= proxy_id && proxy_id < this.m_nodeCapacity);
-		return this.m_nodes[proxy_id as usize].user_data.clone();
+		//b2_assert(0 <= proxy_id && proxy_id < self_.m_nodeCapacity);
+		return self_.m_nodes[proxy_id as usize].user_data.clone();
 	}
 
 	pub fn was_moved<UserDataType: Clone + Default>(
-		this: &B2dynamicTree<UserDataType>,
+		self_: &B2dynamicTree<UserDataType>,
 		proxy_id: i32,
 	) -> bool {
-		//b2_assert(0 <= proxy_id && proxy_id < this.m_nodeCapacity);
-		return this.m_nodes[proxy_id as usize].moved;
+		//b2_assert(0 <= proxy_id && proxy_id < self_.m_nodeCapacity);
+		return self_.m_nodes[proxy_id as usize].moved;
 	}
 
 	pub fn clear_moved<UserDataType: Clone + Default>(
-		this: &mut B2dynamicTree<UserDataType>,
+		self_: &mut B2dynamicTree<UserDataType>,
 		proxy_id: i32,
 	) {
-		//b2_assert(0 <= proxy_id && proxy_id < this.m_nodeCapacity);
-		this.m_nodes[proxy_id as usize].moved = false;
+		//b2_assert(0 <= proxy_id && proxy_id < self_.m_nodeCapacity);
+		self_.m_nodes[proxy_id as usize].moved = false;
 	}
 
 	pub fn get_fat_aabb<UserDataType: Clone + Default>(
-		this: &B2dynamicTree<UserDataType>,
+		self_: &B2dynamicTree<UserDataType>,
 		proxy_id: i32,
 	) -> B2AABB {
-		//b2_assert(0 <= proxy_id && proxy_id < this.m_nodeCapacity);
-		return this.m_nodes[proxy_id as usize].aabb;
+		//b2_assert(0 <= proxy_id && proxy_id < self_.m_nodeCapacity);
+		return self_.m_nodes[proxy_id as usize].aabb;
 	}
 
 	pub fn query<UserDataType, F:  QueryCallback>(
-		this: &B2dynamicTree<UserDataType>,
+		self_: &B2dynamicTree<UserDataType>,
 		mut callback: F,
 		aabb: B2AABB,
 	) {
 		let mut stack = B2growableStack::<i32>::new();
-		stack.push(&this.m_root);
+		stack.push(&self_.m_root);
 
 		while stack.get_count() > 0 {
 			let node_id: i32 = stack.pop();
@@ -265,7 +265,7 @@ mod inline {
 				continue;
 			}
 
-			let node = &this.m_nodes[node_id as usize];
+			let node = &self_.m_nodes[node_id as usize];
 
 			if b2_test_overlap(node.aabb, aabb) {
 				if node.is_leaf() {
@@ -282,7 +282,7 @@ mod inline {
 	}
 
 	pub fn ray_cast<T: RayCastCallback, UserDataType>(
-		this: &B2dynamicTree<UserDataType>,
+		self_: &B2dynamicTree<UserDataType>,
 		mut callback: T,
 		input: &B2rayCastInput,
 	) {
@@ -310,7 +310,7 @@ mod inline {
 		}
 
 		let mut stack = B2growableStack::<i32>::new();
-		stack.push(&this.m_root);
+		stack.push(&self_.m_root);
 
 		while stack.get_count() > 0 {
 			let node_id: i32 = stack.pop();
@@ -318,7 +318,7 @@ mod inline {
 				continue;
 			}
 
-			let node = &this.m_nodes[node_id as usize];
+			let node = &self_.m_nodes[node_id as usize];
 
 			if b2_test_overlap(node.aabb, segment_aabb) == false {
 				continue;

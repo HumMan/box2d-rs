@@ -110,13 +110,13 @@ pub(crate) fn new<D: UserDataType>(def: &B2contactSolverDef, contacts: &Vec<Cont
 }
 
 // initialize position dependent portions of the velocity constraints.
-pub(crate) fn initialize_velocity_constraints<D: UserDataType>(this: &mut B2contactSolver,
+pub(crate) fn initialize_velocity_constraints<D: UserDataType>(self_: &mut B2contactSolver,
 	 m_positions: &[B2position], m_velocities: &[B2velocity], m_contacts: &[ContactPtr<D>])
 {
 	for i in 0..m_contacts.len()
 	{
-		let vc = &mut this.m_velocity_constraints[i];
-		let pc = &mut this.m_position_constraints[i];
+		let vc = &mut self_.m_velocity_constraints[i];
+		let pc = &mut self_.m_position_constraints[i];
 
 		let radius_a: f32 =pc.radius_a;
 		let radius_b: f32 =pc.radius_b;
@@ -225,12 +225,12 @@ pub(crate) fn initialize_velocity_constraints<D: UserDataType>(this: &mut B2cont
 	}
 }
 
-pub(crate) fn warm_start(this: &mut B2contactSolver, m_velocities: &mut [B2velocity])
+pub(crate) fn warm_start(self_: &mut B2contactSolver, m_velocities: &mut [B2velocity])
 {
 	// Warm start.
-	for i in 0..this.m_velocity_constraints.len()
+	for i in 0..self_.m_velocity_constraints.len()
 	{
-		let vc = &this.m_velocity_constraints[i];
+		let vc = &self_.m_velocity_constraints[i];
 
 		let index_a: i32 =vc.index_a;
 		let index_b: i32 =vc.index_b;
@@ -265,11 +265,11 @@ pub(crate) fn warm_start(this: &mut B2contactSolver, m_velocities: &mut [B2veloc
 	}
 }
 
-pub(crate) fn solve_velocity_constraints(this: &mut B2contactSolver, m_velocities: &mut [B2velocity])
+pub(crate) fn solve_velocity_constraints(self_: &mut B2contactSolver, m_velocities: &mut [B2velocity])
 {
-	for i in 0..this.m_velocity_constraints.len()
+	for i in 0..self_.m_velocity_constraints.len()
 	{
-		let vc = &mut this.m_velocity_constraints[i];
+		let vc = &mut self_.m_velocity_constraints[i];
 
 		let index_a: i32 =vc.index_a;
 		let index_b: i32 =vc.index_b;
@@ -581,9 +581,9 @@ if B2_DEBUG_SOLVER
 	}
 }
 
-pub(crate) fn store_impulses<D:UserDataType>(this: &mut B2contactSolver, m_contacts: &[ContactPtr<D>])
+pub(crate) fn store_impulses<D:UserDataType>(self_: &mut B2contactSolver, m_contacts: &[ContactPtr<D>])
 {
-	for vc in &this.m_velocity_constraints
+	for vc in &self_.m_velocity_constraints
 	{
 		let mut contact = m_contacts[vc.contact_index as usize].borrow_mut();
 		let mut manifold = contact.get_base_mut().get_manifold_mut();
@@ -649,13 +649,13 @@ struct B2positionSolverManifold
 }
 
 // Sequential solver.
-pub(crate) fn  solve_position_constraints(this: &mut B2contactSolver, m_positions: &mut [B2position])-> bool
+pub(crate) fn  solve_position_constraints(self_: &mut B2contactSolver, m_positions: &mut [B2position])-> bool
 {
 	let mut min_separation: f32 =0.0;
 
-	for i in 0..this.m_position_constraints.len()
+	for i in 0..self_.m_position_constraints.len()
 	{
-		let pc = &this.m_position_constraints[i];
+		let pc = &self_.m_position_constraints[i];
 
 		let index_a: i32 =pc.index_a;
 		let index_b: i32 =pc.index_b;
@@ -729,14 +729,14 @@ pub(crate) fn  solve_position_constraints(this: &mut B2contactSolver, m_position
 }
 
 // Sequential position solver for position constraints.
-pub(crate) fn solve_toiposition_constraints(this: &mut B2contactSolver, toi_index_a: i32, toi_index_b: i32, 
+pub(crate) fn solve_toiposition_constraints(self_: &mut B2contactSolver, toi_index_a: i32, toi_index_b: i32, 
 	m_positions: &mut [B2position]) -> bool
 {
 	let mut min_separation: f32 =0.0;
 
-	for i in 0..this.m_position_constraints.len()
+	for i in 0..self_.m_position_constraints.len()
 	{
-		let pc = &this.m_position_constraints[i];
+		let pc = &self_.m_position_constraints[i];
 
 		let index_a: i32 =pc.index_a;
 		let index_b: i32 =pc.index_b;

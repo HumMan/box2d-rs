@@ -5,7 +5,7 @@ use crate::b2_common::*;
 use crate::b2_shape::*;
 
 pub fn b2_world_manifold_initialize(
-	this: &mut B2worldManifold,
+	self_: &mut B2worldManifold,
 	manifold: &B2manifold,
 	xf_a: B2Transform,
 	radius_a: f32,
@@ -18,51 +18,51 @@ pub fn b2_world_manifold_initialize(
 
 	match manifold.manifold_type {
 		B2manifoldType::ECircles => {
-			this.normal.set(1.0, 0.0);
+			self_.normal.set(1.0, 0.0);
 			let point_a: B2vec2 = b2_mul_transform_by_vec2(xf_a, manifold.local_point);
 			let point_b: B2vec2 = b2_mul_transform_by_vec2(xf_b, manifold.points[0].local_point);
 			if b2_distance_vec2_squared(point_a, point_b) > B2_EPSILON * B2_EPSILON {
-				this.normal = point_b - point_a;
-				this.normal.normalize();
+				self_.normal = point_b - point_a;
+				self_.normal.normalize();
 			}
 
-			let c_a: B2vec2 = point_a + radius_a * this.normal;
-			let c_b: B2vec2 = point_b - radius_b * this.normal;
-			this.points[0] = 0.5 * (c_a + c_b);
-			this.separations[0] = b2_dot(c_b - c_a, this.normal);
+			let c_a: B2vec2 = point_a + radius_a * self_.normal;
+			let c_b: B2vec2 = point_b - radius_b * self_.normal;
+			self_.points[0] = 0.5 * (c_a + c_b);
+			self_.separations[0] = b2_dot(c_b - c_a, self_.normal);
 		}
 
 		B2manifoldType::EFaceA => {
-			this.normal = b2_mul_rot_by_vec2(xf_a.q, manifold.local_normal);
+			self_.normal = b2_mul_rot_by_vec2(xf_a.q, manifold.local_normal);
 			let plane_point: B2vec2 = b2_mul_transform_by_vec2(xf_a, manifold.local_point);
 
 			for i in 0..manifold.point_count {
 				let clip_point: B2vec2 =
 					b2_mul_transform_by_vec2(xf_b, manifold.points[i].local_point);
 				let c_a: B2vec2 = clip_point
-					+ (radius_a - b2_dot(clip_point - plane_point, this.normal)) * this.normal;
-				let c_b: B2vec2 = clip_point - radius_b * this.normal;
-				this.points[i] = 0.5 * (c_a + c_b);
-				this.separations[i] = b2_dot(c_b - c_a, this.normal);
+					+ (radius_a - b2_dot(clip_point - plane_point, self_.normal)) * self_.normal;
+				let c_b: B2vec2 = clip_point - radius_b * self_.normal;
+				self_.points[i] = 0.5 * (c_a + c_b);
+				self_.separations[i] = b2_dot(c_b - c_a, self_.normal);
 			}
 		}
 
 		B2manifoldType::EFaceB => {
-			this.normal = b2_mul_rot_by_vec2(xf_b.q, manifold.local_normal);
+			self_.normal = b2_mul_rot_by_vec2(xf_b.q, manifold.local_normal);
 			let plane_point: B2vec2 = b2_mul_transform_by_vec2(xf_b, manifold.local_point);
 
 			for i in 0..manifold.point_count {
 				let clip_point: B2vec2 =
 					b2_mul_transform_by_vec2(xf_a, manifold.points[i].local_point);
 				let c_b: B2vec2 = clip_point
-					+ (radius_b - b2_dot(clip_point - plane_point, this.normal)) * this.normal;
-				let c_a: B2vec2 = clip_point - radius_a * this.normal;
-				this.points[i] = 0.5 * (c_a + c_b);
-				this.separations[i] = b2_dot(c_a - c_b, this.normal);
+					+ (radius_b - b2_dot(clip_point - plane_point, self_.normal)) * self_.normal;
+				let c_a: B2vec2 = clip_point - radius_a * self_.normal;
+				self_.points[i] = 0.5 * (c_a + c_b);
+				self_.separations[i] = b2_dot(c_a - c_b, self_.normal);
 			}
 
 			// Ensure normal points from A to b.
-			this.normal = -this.normal;
+			self_.normal = -self_.normal;
 		}
 	}
 }
@@ -110,7 +110,7 @@ pub fn b2_get_point_states(
 }
 
 // From Real-time Collision Detection, p179.
-pub fn b2_aabb_ray_cast(this: B2AABB, output: &mut B2rayCastOutput, input: &B2rayCastInput) -> bool {
+pub fn b2_aabb_ray_cast(self_: B2AABB, output: &mut B2rayCastOutput, input: &B2rayCastInput) -> bool {
 	let mut tmin: f32 = -B2_MAX_FLOAT;
 	let mut tmax: f32 = B2_MAX_FLOAT;
 
@@ -123,13 +123,13 @@ pub fn b2_aabb_ray_cast(this: B2AABB, output: &mut B2rayCastOutput, input: &B2ra
 	for i in 0..2 {
 		if abs_d.get(i) < B2_EPSILON {
 			// Parallel.
-			if p.get(i) < this.lower_bound.get(i) || this.upper_bound.get(i) < p.get(i) {
+			if p.get(i) < self_.lower_bound.get(i) || self_.upper_bound.get(i) < p.get(i) {
 				return false;
 			}
 		} else {
 			let inv_d: f32 = 1.0 / d.get(i);
-			let mut t1: f32 = (this.lower_bound.get(i) - p.get(i)) * inv_d;
-			let mut t2: f32 = (this.upper_bound.get(i) - p.get(i)) * inv_d;
+			let mut t1: f32 = (self_.lower_bound.get(i) - p.get(i)) * inv_d;
+			let mut t2: f32 = (self_.upper_bound.get(i) - p.get(i)) * inv_d;
 
 			// Sign of the normal vector.
 			let mut s: f32 = -1.0;

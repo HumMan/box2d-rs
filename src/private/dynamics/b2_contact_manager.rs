@@ -170,19 +170,19 @@ pub fn b2_contact_manager_collide<D: UserDataType>(self_: B2contactManagerPtr<D>
 	}
 }
 
-pub fn b2_contact_manager_find_new_contacts<D: UserDataType>(this: &mut B2contactManager<D>) {
-	let broad_phase = this.m_broad_phase.clone();
-	broad_phase.borrow_mut().update_pairs(this);
+pub fn b2_contact_manager_find_new_contacts<D: UserDataType>(self_: &mut B2contactManager<D>) {
+	let broad_phase = self_.m_broad_phase.clone();
+	broad_phase.borrow_mut().update_pairs(self_);
 }
 
 pub fn b2_contact_manager_add_pair<D: UserDataType>(
-	this: &mut B2contactManager<D>,
+	self_: &mut B2contactManager<D>,
 	proxy_user_data_a: Option<FixtureProxyPtr<D>>,
 	proxy_user_data_b: Option<FixtureProxyPtr<D>>,
 ) {
 
 	
-	//assert!(this.m_contact_count==this.m_contact_list.len());
+	//assert!(self_.m_contact_count==self_.m_contact_list.len());
 
 	let proxy_a = proxy_user_data_a;
 	let proxy_b = proxy_user_data_b;
@@ -240,8 +240,8 @@ pub fn b2_contact_manager_add_pair<D: UserDataType>(
 	}
 
 	// Check user filtering.
-	if this.m_contact_filter.is_some()
-		&& this
+	if self_.m_contact_filter.is_some()
+		&& self_
 			.m_contact_filter
 			.as_ref()
 			.unwrap()
@@ -253,7 +253,7 @@ pub fn b2_contact_manager_add_pair<D: UserDataType>(
 	}
 
 	// Call the factory.
-	let c = B2contact::create(&*this, fixture_a, index_a, fixture_b, index_b);
+	let c = B2contact::create(&*self_, fixture_a, index_a, fixture_b, index_b);
 
 	// Contact creation may swap fixtures.
 	let fixture_a = c.borrow().get_base().get_fixture_a();
@@ -266,7 +266,7 @@ pub fn b2_contact_manager_add_pair<D: UserDataType>(
 	let body_b = fixture_b.borrow().get_body();
 
 	// Insert into the world.
-	this.m_contact_list.push_front(c.clone());
+	self_.m_contact_list.push_front(c.clone());
 
 	// Connect to island graph.
 
@@ -296,7 +296,7 @@ pub fn b2_contact_manager_add_pair<D: UserDataType>(
 		body_b.borrow_mut().m_contact_list.push_front(m_node_b_rc);
 	}
 
-	this.m_contact_count += 1;
+	self_.m_contact_count += 1;
 	
-	//assert!(this.m_contact_count==this.m_contact_list.len());
+	//assert!(self_.m_contact_count==self_.m_contact_list.len());
 }

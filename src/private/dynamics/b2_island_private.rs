@@ -126,14 +126,14 @@ This might be faster than computing sin+cos.
 However, we can compute sin+cos of the same angle fast.
 */
 
-pub(crate) fn solve<D: UserDataType>(this: &mut B2island<D>, profile: &mut B2Profile, step: &B2timeStep, gravity: B2vec2, allow_sleep: bool)
+pub(crate) fn solve<D: UserDataType>(self_: &mut B2island<D>, profile: &mut B2Profile, step: &B2timeStep, gravity: B2vec2, allow_sleep: bool)
 {
 	let mut timer = B2timer::default();
 
 	let h: f32 = step.dt;
 
 	// Integrate velocities and apply damping. initialize the body state.
-	for (i, b) in (&this.m_bodies).iter().enumerate()
+	for (i, b) in (&self_.m_bodies).iter().enumerate()
 	{
 		let mut b = b.borrow_mut();
 
@@ -163,10 +163,10 @@ pub(crate) fn solve<D: UserDataType>(this: &mut B2island<D>, profile: &mut B2Pro
 			w *= 1.0 / (1.0 + h * b.m_angular_damping);
 		}
 
-		this.m_positions[i].c = c;
-		this.m_positions[i].a = a;
-		this.m_velocities[i].v = v;
-		this.m_velocities[i].w = w;
+		self_.m_positions[i].c = c;
+		self_.m_positions[i].a = a;
+		self_.m_velocities[i].v = v;
+		self_.m_velocities[i].w = w;
 	}
 
 	timer.reset();
@@ -174,30 +174,30 @@ pub(crate) fn solve<D: UserDataType>(this: &mut B2island<D>, profile: &mut B2Pro
 	// Solver data
 	let mut solver_data = B2solverData{
 		step : *step,
-		//positions : &mut this.m_positions,
-		//velocities : &mut this.m_velocities,
+		//positions : &mut self_.m_positions,
+		//velocities : &mut self_.m_velocities,
 	};
 
 	// initialize velocity constraints.
 	let contact_solver_def = B2contactSolverDef
 	{
 		step : *step,
-		//contacts : &mut this.m_contacts,
-		//positions : &mut this.m_positions,
-		//velocities : &mut this.m_velocities,
+		//contacts : &mut self_.m_contacts,
+		//positions : &mut self_.m_positions,
+		//velocities : &mut self_.m_velocities,
 	};
 
-	let mut contact_solver = B2contactSolver::new::<D>(&contact_solver_def, &this.m_contacts);
-	contact_solver.initialize_velocity_constraints(&this.m_positions, &this.m_velocities, &this.m_contacts);
+	let mut contact_solver = B2contactSolver::new::<D>(&contact_solver_def, &self_.m_contacts);
+	contact_solver.initialize_velocity_constraints(&self_.m_positions, &self_.m_velocities, &self_.m_contacts);
 
 	if step.warm_starting
 	{
-		contact_solver.warm_start(&mut this.m_velocities);
+		contact_solver.warm_start(&mut self_.m_velocities);
 	}
 	
-	for j in &this.m_joints
+	for j in &self_.m_joints
 	{
-		j.borrow_mut().init_velocity_constraints(&mut solver_data, &mut this.m_positions, &mut this.m_velocities);
+		j.borrow_mut().init_velocity_constraints(&mut solver_data, &mut self_.m_positions, &mut self_.m_velocities);
 	}
 
 	profile.solve_init = timer.get_milliseconds();
@@ -206,25 +206,25 @@ pub(crate) fn solve<D: UserDataType>(this: &mut B2island<D>, profile: &mut B2Pro
 	timer.reset();
 	for _i in 0..step.velocity_iterations
 	{
-		for joint in &this.m_joints
+		for joint in &self_.m_joints
 		{
-			joint.borrow_mut().solve_velocity_constraints(&mut solver_data, &mut this.m_velocities);
+			joint.borrow_mut().solve_velocity_constraints(&mut solver_data, &mut self_.m_velocities);
 		}
 
-		contact_solver.solve_velocity_constraints(&mut this.m_velocities);
+		contact_solver.solve_velocity_constraints(&mut self_.m_velocities);
 	}
 
 	// Store impulses for warm starting
-	contact_solver.store_impulses(&this.m_contacts);
+	contact_solver.store_impulses(&self_.m_contacts);
 	profile.solve_velocity = timer.get_milliseconds();
 
 	// Integrate positions
-	for i in 0..this.m_bodies.len()
+	for i in 0..self_.m_bodies.len()
 	{
-		let mut c:B2vec2 = this.m_positions[i].c;
-		let mut a:f32 = this.m_positions[i].a;
-		let mut v:B2vec2 = this.m_velocities[i].v;
-		let mut w:f32 = this.m_velocities[i].w;
+		let mut c:B2vec2 = self_.m_positions[i].c;
+		let mut a:f32 = self_.m_positions[i].a;
+		let mut v:B2vec2 = self_.m_velocities[i].v;
+		let mut w:f32 = self_.m_velocities[i].w;
 
 		// Check for large velocities
 		let translation:B2vec2 = h * v;
@@ -245,10 +245,10 @@ pub(crate) fn solve<D: UserDataType>(this: &mut B2island<D>, profile: &mut B2Pro
 		c += h * v;
 		a += h * w;
 
-		this.m_positions[i].c = c;
-		this.m_positions[i].a = a;
-		this.m_velocities[i].v = v;
-		this.m_velocities[i].w = w;
+		self_.m_positions[i].c = c;
+		self_.m_positions[i].a = a;
+		self_.m_velocities[i].v = v;
+		self_.m_velocities[i].w = w;
 	}
 
 	// solve position constraints
@@ -256,12 +256,12 @@ pub(crate) fn solve<D: UserDataType>(this: &mut B2island<D>, profile: &mut B2Pro
 	let mut position_solved:bool = false;
 	for _i in 0..step.position_iterations
 	{
-		let contacts_okay: bool = contact_solver.solve_position_constraints(&mut this.m_positions);
+		let contacts_okay: bool = contact_solver.solve_position_constraints(&mut self_.m_positions);
 
 		let mut joints_okay: bool = true;
-		for joint in &this.m_joints
+		for joint in &self_.m_joints
 		{
-			let joint_okay: bool = joint.borrow_mut().solve_position_constraints(&mut solver_data, &mut this.m_positions);
+			let joint_okay: bool = joint.borrow_mut().solve_position_constraints(&mut solver_data, &mut self_.m_positions);
 			joints_okay = joints_okay && joint_okay;
 		}
 
@@ -274,19 +274,19 @@ pub(crate) fn solve<D: UserDataType>(this: &mut B2island<D>, profile: &mut B2Pro
 	}
 
 	// Copy state buffers back to the bodies
-	for (i,body) in (&this.m_bodies).iter().enumerate()
+	for (i,body) in (&self_.m_bodies).iter().enumerate()
 	{
 		let mut body = body.borrow_mut();
-		body.m_sweep.c = this.m_positions[i].c;
-		body.m_sweep.a = this.m_positions[i].a;
-		body.m_linear_velocity = this.m_velocities[i].v;
-		body.m_angular_velocity = this.m_velocities[i].w;
+		body.m_sweep.c = self_.m_positions[i].c;
+		body.m_sweep.a = self_.m_positions[i].a;
+		body.m_linear_velocity = self_.m_velocities[i].v;
+		body.m_angular_velocity = self_.m_velocities[i].w;
 		body.synchronize_transform();
 	}
 
 	profile.solve_position = timer.get_milliseconds();
 
-	this.report(&contact_solver.m_velocity_constraints);
+	self_.report(&contact_solver.m_velocity_constraints);
 
 	if allow_sleep
 	{
@@ -295,7 +295,7 @@ pub(crate) fn solve<D: UserDataType>(this: &mut B2island<D>, profile: &mut B2Pro
 		let lin_tol_sqr:f32 = B2_LINEAR_SLEEP_TOLERANCE * B2_LINEAR_SLEEP_TOLERANCE;
 		let ang_tol_sqr:f32 = B2_ANGULAR_SLEEP_TOLERANCE * B2_ANGULAR_SLEEP_TOLERANCE;
 
-		for b in &this.m_bodies
+		for b in &self_.m_bodies
 		{
 			let mut b = b.borrow_mut();
 			if b.get_type() == B2bodyType::B2StaticBody
@@ -319,7 +319,7 @@ pub(crate) fn solve<D: UserDataType>(this: &mut B2island<D>, profile: &mut B2Pro
 
 		if min_sleep_time >= B2_TIME_TO_SLEEP && position_solved
 		{
-			for b in &this.m_bodies
+			for b in &self_.m_bodies
 			{
 				b.borrow_mut().set_awake(false);
 			}
@@ -327,16 +327,16 @@ pub(crate) fn solve<D: UserDataType>(this: &mut B2island<D>, profile: &mut B2Pro
 	}
 }
 
-pub(crate) fn solve_toi<D: UserDataType>(this: &mut B2island<D>, sub_step: &B2timeStep, toi_index_a: i32, toi_index_b: i32)
+pub(crate) fn solve_toi<D: UserDataType>(self_: &mut B2island<D>, sub_step: &B2timeStep, toi_index_a: i32, toi_index_b: i32)
 {
 	// initialize the body state.
-	for (i,b) in this.m_bodies.iter().enumerate()
+	for (i,b) in self_.m_bodies.iter().enumerate()
 	{
 		let b = b.borrow();
-		this.m_positions[i].c = b.m_sweep.c;
-		this.m_positions[i].a = b.m_sweep.a;
-		this.m_velocities[i].v = b.m_linear_velocity;
-		this.m_velocities[i].w = b.m_angular_velocity;
+		self_.m_positions[i].c = b.m_sweep.c;
+		self_.m_positions[i].a = b.m_sweep.a;
+		self_.m_velocities[i].v = b.m_linear_velocity;
+		self_.m_velocities[i].w = b.m_angular_velocity;
 	}
 
 	let contact_solver_def = B2contactSolverDef{
@@ -347,12 +347,12 @@ pub(crate) fn solve_toi<D: UserDataType>(this: &mut B2island<D>, sub_step: &B2ti
 	// contact_solver_def.positions = m_positions;
 	// contact_solver_def.velocities = m_velocities;
 	};
-	let mut contact_solver = B2contactSolver::new::<D>(&contact_solver_def, &this.m_contacts);
+	let mut contact_solver = B2contactSolver::new::<D>(&contact_solver_def, &self_.m_contacts);
 
 	// solve position constraints.
 	for _i in 0..sub_step.position_iterations
 	{
-		let contacts_okay:bool = contact_solver.solve_toiposition_constraints(toi_index_a, toi_index_b, &mut this.m_positions);
+		let contacts_okay:bool = contact_solver.solve_toiposition_constraints(toi_index_a, toi_index_b, &mut self_.m_positions);
 		if contacts_okay
 		{
 			break;
@@ -393,19 +393,19 @@ pub(crate) fn solve_toi<D: UserDataType>(this: &mut B2island<D>, sub_step: &B2ti
 // #endif
 
 	// Leap of faith to new safe state.
-	this.m_bodies[toi_index_a as usize].borrow_mut().m_sweep.c0 = this.m_positions[toi_index_a as usize].c;
-	this.m_bodies[toi_index_a as usize].borrow_mut().m_sweep.a0 = this.m_positions[toi_index_a as usize].a;
-	this.m_bodies[toi_index_b as usize].borrow_mut().m_sweep.c0 = this.m_positions[toi_index_b as usize].c;
-	this.m_bodies[toi_index_b as usize].borrow_mut().m_sweep.a0 = this.m_positions[toi_index_b as usize].a;
+	self_.m_bodies[toi_index_a as usize].borrow_mut().m_sweep.c0 = self_.m_positions[toi_index_a as usize].c;
+	self_.m_bodies[toi_index_a as usize].borrow_mut().m_sweep.a0 = self_.m_positions[toi_index_a as usize].a;
+	self_.m_bodies[toi_index_b as usize].borrow_mut().m_sweep.c0 = self_.m_positions[toi_index_b as usize].c;
+	self_.m_bodies[toi_index_b as usize].borrow_mut().m_sweep.a0 = self_.m_positions[toi_index_b as usize].a;
 
 	// No warm starting is needed for TOI events because warm
 	// starting impulses were applied in the discrete solver.
-	contact_solver.initialize_velocity_constraints(&this.m_positions, &this.m_velocities, &this.m_contacts);
+	contact_solver.initialize_velocity_constraints(&self_.m_positions, &self_.m_velocities, &self_.m_contacts);
 
 	// solve velocity constraints.
 	for _i in 0..sub_step.velocity_iterations
 	{
-		contact_solver.solve_velocity_constraints(&mut this.m_velocities);
+		contact_solver.solve_velocity_constraints(&mut self_.m_velocities);
 	}
 
 	// Don't store the TOI contact forces for warm starting
@@ -414,12 +414,12 @@ pub(crate) fn solve_toi<D: UserDataType>(this: &mut B2island<D>, sub_step: &B2ti
 	let h: f32 = sub_step.dt;
 
 	// Integrate positions
-	for i in 0..this.m_bodies.len()
+	for i in 0..self_.m_bodies.len()
 	{
-		let mut c:B2vec2 = this.m_positions[i].c;
-		let mut a:f32 = this.m_positions[i].a;
-		let mut v:B2vec2 = this.m_velocities[i].v;
-		let mut w:f32 = this.m_velocities[i].w;
+		let mut c:B2vec2 = self_.m_positions[i].c;
+		let mut a:f32 = self_.m_positions[i].a;
+		let mut v:B2vec2 = self_.m_velocities[i].v;
+		let mut w:f32 = self_.m_velocities[i].w;
 
 		// Check for large velocities
 		let translation:B2vec2 = h * v;
@@ -440,13 +440,13 @@ pub(crate) fn solve_toi<D: UserDataType>(this: &mut B2island<D>, sub_step: &B2ti
 		c += h * v;
 		a += h * w;
 
-		this.m_positions[i].c = c;
-		this.m_positions[i].a = a;
-		this.m_velocities[i].v = v;
-		this.m_velocities[i].w = w;
+		self_.m_positions[i].c = c;
+		self_.m_positions[i].a = a;
+		self_.m_velocities[i].v = v;
+		self_.m_velocities[i].w = w;
 
 		// Sync bodies
-		let mut body = this.m_bodies[i].borrow_mut();
+		let mut body = self_.m_bodies[i].borrow_mut();
 		body.m_sweep.c = c;
 		body.m_sweep.a = a;
 		body.m_linear_velocity = v;
@@ -454,21 +454,21 @@ pub(crate) fn solve_toi<D: UserDataType>(this: &mut B2island<D>, sub_step: &B2ti
 		body.synchronize_transform();
 	}
 
-	this.report(&contact_solver.m_velocity_constraints);
+	self_.report(&contact_solver.m_velocity_constraints);
 }
 
-pub(crate) fn report<D: UserDataType>(this: &B2island<D>, constraints: &[B2contactVelocityConstraint])
+pub(crate) fn report<D: UserDataType>(self_: &B2island<D>, constraints: &[B2contactVelocityConstraint])
 {
-	if this.m_listener.is_none()
+	if self_.m_listener.is_none()
 	{
 		return;
 	}
 
-	let listener = this.m_listener.as_ref().unwrap();
+	let listener = self_.m_listener.as_ref().unwrap();
 
-	assert_eq!(this.m_contacts.len(), constraints.len());
+	assert_eq!(self_.m_contacts.len(), constraints.len());
 
-	for (i,c) in (&this.m_contacts).iter().enumerate()
+	for (i,c) in (&self_.m_contacts).iter().enumerate()
 	{
 		let mut c = c.borrow_mut();
 		let vc = &constraints[i];

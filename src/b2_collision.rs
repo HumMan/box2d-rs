@@ -345,10 +345,10 @@ pub fn b2_test_overlap_shapes(
 
 // ---------------- Inline Functions ------------------------------------------
 
-pub fn b2_aabb_is_valid(this: B2AABB) -> bool {
-    let d: B2vec2 = this.upper_bound - this.lower_bound;
+pub fn b2_aabb_is_valid(self_: B2AABB) -> bool {
+    let d: B2vec2 = self_.upper_bound - self_.lower_bound;
     let mut valid: bool = d.x >= 0.0 && d.y >= 0.0;
-    valid = valid && this.lower_bound.is_valid() && this.upper_bound.is_valid();
+    valid = valid && self_.lower_bound.is_valid() && self_.upper_bound.is_valid();
     return valid;
 }
 

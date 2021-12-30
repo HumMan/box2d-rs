@@ -101,13 +101,13 @@ pub fn b2_contact_new<D: UserDataType>(
 // update the contact manifold and touching status.
 // Note: do not assume the fixture AABBs are overlapping or are valid.
 pub fn b2_contact_update<D: UserDataType>(
-	this_dyn: &mut dyn B2contactDynTrait<D>,
+	self_: &mut dyn B2contactDynTrait<D>,
 	listener: Option<B2contactListenerPtr<D>>
 ) {
 	{
-		let this = this_dyn.get_base_mut();
+		let self_ = self_.get_base_mut();
 		// Re-enable this contact.
-		this.m_flags |= ContactFlags::E_ENABLED_FLAG;
+		self_.m_flags |= ContactFlags::E_ENABLED_FLAG;
 	}
 
 	let old_manifold: B2manifold;
@@ -123,20 +123,20 @@ pub fn b2_contact_update<D: UserDataType>(
 	let xf_a: B2Transform;
 	let xf_b: B2Transform;
 	{
-		let this = this_dyn.get_base();
-		old_manifold = this.m_manifold;
+		let self_ = self_.get_base();
+		old_manifold = self_.m_manifold;
 
-		was_touching = this.m_flags.contains(ContactFlags::E_TOUCHING_FLAG);
+		was_touching = self_.m_flags.contains(ContactFlags::E_TOUCHING_FLAG);
 
-		sensor_a = this.m_fixture_a.borrow().is_sensor();
-		sensor_b = this.m_fixture_b.borrow().is_sensor();
+		sensor_a = self_.m_fixture_a.borrow().is_sensor();
+		sensor_b = self_.m_fixture_b.borrow().is_sensor();
 		sensor = sensor_a || sensor_b;
 		{
-			let temp = this.m_fixture_a.borrow();
+			let temp = self_.m_fixture_a.borrow();
 			body_a = temp.get_body();
 		}
 		{
-			let temp = this.m_fixture_b.borrow();
+			let temp = self_.m_fixture_b.borrow();
 			body_b = temp.get_body();
 		}
 		xf_a = body_a.borrow().get_transform();
@@ -147,31 +147,31 @@ pub fn b2_contact_update<D: UserDataType>(
 
 	// Is this contact a sensor?
 	if sensor {
-		let this = this_dyn.get_base_mut();
-		let shape_a = this.m_fixture_a.borrow().get_shape();
-		let shape_b = this.m_fixture_b.borrow().get_shape();
+		let self_ = self_.get_base_mut();
+		let shape_a = self_.m_fixture_a.borrow().get_shape();
+		let shape_b = self_.m_fixture_b.borrow().get_shape();
 		touching = b2_test_overlap_shapes(
 			shape_a,
-			this.m_index_a as usize,
+			self_.m_index_a as usize,
 			shape_b,
-			this.m_index_b as usize,
+			self_.m_index_b as usize,
 			xf_a,
 			xf_b,
 		);
 
 		// Sensors don't generate manifolds.
-		this.m_manifold.point_count = 0;
+		self_.m_manifold.point_count = 0;
 	} else {
 		let mut new_manifold = B2manifold::default();
-		this_dyn.evaluate(&mut new_manifold, &xf_a, &xf_b);
-		let this = this_dyn.get_base_mut();
-		this.m_manifold = new_manifold;
-		touching = this.m_manifold.point_count > 0;
+		self_.evaluate(&mut new_manifold, &xf_a, &xf_b);
+		let self_ = self_.get_base_mut();
+		self_.m_manifold = new_manifold;
+		touching = self_.m_manifold.point_count > 0;
 
 		// Match old contact ids to new contact ids and copy the
 		// stored impulses to warm start the solver.
-		for i in 0..this.m_manifold.point_count {
-			let mp2 = &mut this.m_manifold.points[i];
+		for i in 0..self_.m_manifold.point_count {
+			let mp2 = &mut self_.m_manifold.points[i];
 			mp2.normal_impulse = 0.0;
 			mp2.tangent_impulse = 0.0;
 			let id2: B2contactId = mp2.id;
@@ -194,8 +194,8 @@ pub fn b2_contact_update<D: UserDataType>(
 	}
 
 	{
-		let this = this_dyn.get_base_mut();
-		this.m_flags.set(ContactFlags::E_TOUCHING_FLAG, touching);
+		let self_ = self_.get_base_mut();
+		self_.m_flags.set(ContactFlags::E_TOUCHING_FLAG, touching);
 	}
 
 	if let Some(ref contact_listener) = listener
@@ -204,15 +204,15 @@ pub fn b2_contact_update<D: UserDataType>(
 		let mut contact_listener = contact_listener.borrow_mut();
 
 		if was_touching == false && touching == true {
-			contact_listener.begin_contact(this_dyn);
+			contact_listener.begin_contact(self_);
 		}
 
 		if was_touching == true && touching == false {
-			contact_listener.end_contact(this_dyn);
+			contact_listener.end_contact(self_);
 		}
 
 		if sensor == false && touching {
-			contact_listener.pre_solve(this_dyn, &old_manifold);
+			contact_listener.pre_solve(self_, &old_manifold);
 		}
 	}
 }

@@ -107,9 +107,9 @@ pub(crate) fn new<D: UserDataType>(def: &B2jointDef<D>)-> B2joint<D>
 	}
 }
 
-pub(crate) fn  is_enabled<D: UserDataType>(this: &B2joint<D>) -> bool
+pub(crate) fn  is_enabled<D: UserDataType>(self_: &B2joint<D>) -> bool
 {
-	return this.m_body_a.borrow().is_enabled() && this.m_body_b.borrow().is_enabled();
+	return self_.m_body_a.borrow().is_enabled() && self_.m_body_b.borrow().is_enabled();
 }
 
 pub(crate) fn  draw<D: UserDataType, T: B2jointTraitDyn<D>+?Sized>(_self: &T, draw: &mut dyn B2drawTrait)

@@ -130,20 +130,20 @@ pub fn b2_shape_cast(output: &mut B2shapeCastOutput, input: B2shapeCastInput) ->
 mod inline {
     use super::*;
 
-    pub fn get_vertex_count(this: &B2distanceProxy) -> usize {
-        return this.m_vertices.len();
+    pub fn get_vertex_count(self_: &B2distanceProxy) -> usize {
+        return self_.m_vertices.len();
     }
 
-    pub fn get_vertex(this: &B2distanceProxy, index: usize) -> B2vec2 {
-        b2_assert(index < this.m_vertices.len());
-        return this.m_vertices[index];
+    pub fn get_vertex(self_: &B2distanceProxy, index: usize) -> B2vec2 {
+        b2_assert(index < self_.m_vertices.len());
+        return self_.m_vertices[index];
     }
 
-    pub fn get_support(this: &B2distanceProxy, d: B2vec2) -> usize {
+    pub fn get_support(self_: &B2distanceProxy, d: B2vec2) -> usize {
         let mut best_index: usize = 0;
-        let mut best_value: f32 = b2_dot(this.m_vertices[0], d);
-        for i in 1..this.m_vertices.len() {
-            let value: f32 = b2_dot(this.m_vertices[i], d);
+        let mut best_value: f32 = b2_dot(self_.m_vertices[0], d);
+        for i in 1..self_.m_vertices.len() {
+            let value: f32 = b2_dot(self_.m_vertices[i], d);
             if value > best_value {
                 best_index = i;
                 best_value = value;
@@ -153,17 +153,17 @@ mod inline {
         return best_index;
     }
 
-    pub fn get_support_vertex(this: &B2distanceProxy, d: B2vec2) -> B2vec2 {
+    pub fn get_support_vertex(self_: &B2distanceProxy, d: B2vec2) -> B2vec2 {
         let mut best_index: usize = 0;
-        let mut best_value: f32 = b2_dot(this.m_vertices[0], d);
-        for i in 1..this.m_vertices.len() {
-            let value: f32 = b2_dot(this.m_vertices[i], d);
+        let mut best_value: f32 = b2_dot(self_.m_vertices[0], d);
+        for i in 1..self_.m_vertices.len() {
+            let value: f32 = b2_dot(self_.m_vertices[i], d);
             if value > best_value {
                 best_index = i;
                 best_value = value;
             }
         }
 
-        return this.m_vertices[best_index];
+        return self_.m_vertices[best_index];
     }
 }

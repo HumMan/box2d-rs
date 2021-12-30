@@ -761,27 +761,27 @@ pub fn b2_is_power_of_two(x: u32) -> bool {
 }
 
 // https://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
-pub fn b2_sweep_get_transform(this: B2Sweep, xf: &mut B2Transform, beta: f32) {
-    xf.p = (1.0 - beta) * this.c0 + beta * this.c;
-	let angle: f32 = (1.0 - beta) * this.a0 + beta * this.a;
+pub fn b2_sweep_get_transform(self_: B2Sweep, xf: &mut B2Transform, beta: f32) {
+    xf.p = (1.0 - beta) * self_.c0 + beta * self_.c;
+	let angle: f32 = (1.0 - beta) * self_.a0 + beta * self_.a;
     xf.q.set(angle);
 
     // Shift to origin
-    xf.p -= b2_mul_rot_by_vec2(xf.q, this.local_center);
+    xf.p -= b2_mul_rot_by_vec2(xf.q, self_.local_center);
 }
 
-pub fn b2_sweep_advance(this: &mut B2Sweep, alpha: f32) {
-    b2_assert(this.alpha0 < 1.0);
-    let beta: f32 = (alpha - this.alpha0) / (1.0 - this.alpha0);
-    this.c0 += beta * (this.c - this.c0);
-    this.a0 += beta * (this.a - this.a0);
-    this.alpha0 = alpha;
+pub fn b2_sweep_advance(self_: &mut B2Sweep, alpha: f32) {
+    b2_assert(self_.alpha0 < 1.0);
+    let beta: f32 = (alpha - self_.alpha0) / (1.0 - self_.alpha0);
+    self_.c0 += beta * (self_.c - self_.c0);
+    self_.a0 += beta * (self_.a - self_.a0);
+    self_.alpha0 = alpha;
 }
 
 /// normalize an angle in radians to be between -pi and pi
-pub fn b2_sweep_normalize(this: &mut B2Sweep) {
+pub fn b2_sweep_normalize(self_: &mut B2Sweep) {
     let two_pi: f32 = 2.0 * B2_PI;
-    let d: f32 = two_pi * f32::floor(this.a0 / two_pi);
-    this.a0 -= d;
-    this.a -= d;
+    let d: f32 = two_pi * f32::floor(self_.a0 / two_pi);
+    self_.a0 -= d;
+    self_.a -= d;
 }

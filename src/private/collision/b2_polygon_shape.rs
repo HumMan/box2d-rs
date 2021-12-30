@@ -5,40 +5,40 @@ use crate::b2_common::*;
 use crate::b2_settings::*;
 use crate::b2_shape::*;
 
-pub fn b2_shape_dyn_trait_clone(this: &B2polygonShape) -> Box<dyn B2shapeDynTrait> {
-	return Box::new(B2polygonShape::clone(&this));
+pub fn b2_shape_dyn_trait_clone(self_: &B2polygonShape) -> Box<dyn B2shapeDynTrait> {
+	return Box::new(B2polygonShape::clone(&self_));
 }
 
-pub fn b2_polygon_shape_set_as_box(this: &mut B2polygonShape, hx: f32, hy: f32) {
-	this.m_count = 4;
-	this.m_vertices[0].set(-hx, -hy);
-	this.m_vertices[1].set(hx, -hy);
-	this.m_vertices[2].set(hx, hy);
-	this.m_vertices[3].set(-hx, hy);
-	this.m_normals[0].set(0.0, -1.0);
-	this.m_normals[1].set(1.0, 0.0);
-	this.m_normals[2].set(0.0, 1.0);
-	this.m_normals[3].set(-1.0, 0.0);
-	this.m_centroid.set_zero();
+pub fn b2_polygon_shape_set_as_box(self_: &mut B2polygonShape, hx: f32, hy: f32) {
+	self_.m_count = 4;
+	self_.m_vertices[0].set(-hx, -hy);
+	self_.m_vertices[1].set(hx, -hy);
+	self_.m_vertices[2].set(hx, hy);
+	self_.m_vertices[3].set(-hx, hy);
+	self_.m_normals[0].set(0.0, -1.0);
+	self_.m_normals[1].set(1.0, 0.0);
+	self_.m_normals[2].set(0.0, 1.0);
+	self_.m_normals[3].set(-1.0, 0.0);
+	self_.m_centroid.set_zero();
 }
 
 pub fn b2_polygon_shape_set_as_box_angle(
-	this: &mut B2polygonShape,
+	self_: &mut B2polygonShape,
 	hx: f32,
 	hy: f32,
 	center: B2vec2,
 	angle: f32,
 ) {
-	this.m_count = 4;
-	this.m_vertices[0].set(-hx, -hy);
-	this.m_vertices[1].set(hx, -hy);
-	this.m_vertices[2].set(hx, hy);
-	this.m_vertices[3].set(-hx, hy);
-	this.m_normals[0].set(0.0, -1.0);
-	this.m_normals[1].set(1.0, 0.0);
-	this.m_normals[2].set(0.0, 1.0);
-	this.m_normals[3].set(-1.0, 0.0);
-	this.m_centroid = center;
+	self_.m_count = 4;
+	self_.m_vertices[0].set(-hx, -hy);
+	self_.m_vertices[1].set(hx, -hy);
+	self_.m_vertices[2].set(hx, hy);
+	self_.m_vertices[3].set(-hx, hy);
+	self_.m_normals[0].set(0.0, -1.0);
+	self_.m_normals[1].set(1.0, 0.0);
+	self_.m_normals[2].set(0.0, 1.0);
+	self_.m_normals[3].set(-1.0, 0.0);
+	self_.m_centroid = center;
 
 	let xf = B2Transform {
 		p: center,
@@ -46,13 +46,13 @@ pub fn b2_polygon_shape_set_as_box_angle(
 	};
 
 	// Transform vertices and normals.
-	for i in 0..this.m_count {
-		this.m_vertices[i] = b2_mul_transform_by_vec2(xf, this.m_vertices[i]);
-		this.m_normals[i] = b2_mul_rot_by_vec2(xf.q, this.m_normals[i]);
+	for i in 0..self_.m_count {
+		self_.m_vertices[i] = b2_mul_transform_by_vec2(xf, self_.m_vertices[i]);
+		self_.m_normals[i] = b2_mul_rot_by_vec2(xf.q, self_.m_normals[i]);
 	}
 }
 
-pub fn b2_shape_dyn_trait_get_child_count(_this: &B2polygonShape) -> usize {
+pub fn b2_shape_dyn_trait_get_child_count(_self: &B2polygonShape) -> usize {
 	return 1;
 }
 
@@ -93,11 +93,11 @@ fn compute_centroid(vs: &[B2vec2]) -> B2vec2 {
 	return c;
 }
 
-pub fn b2_polygon_shape_set(this: &mut B2polygonShape, vertices: &[B2vec2]) {
+pub fn b2_polygon_shape_set(self_: &mut B2polygonShape, vertices: &[B2vec2]) {
 	let count = vertices.len();
 	b2_assert(3 <= count && count <= B2_MAX_POLYGON_VERTICES);
 	if count < 3 {
-		b2_polygon_shape_set_as_box(this, 1.0, 1.0);
+		b2_polygon_shape_set_as_box(self_, 1.0, 1.0);
 		return;
 	}
 	let mut n: usize = b2_min(count, B2_MAX_POLYGON_VERTICES);
@@ -128,7 +128,7 @@ pub fn b2_polygon_shape_set(this: &mut B2polygonShape, vertices: &[B2vec2]) {
 	if n < 3 {
 		// Polygon is degenerate.
 		b2_assert(false);
-		b2_polygon_shape_set_as_box(this, 1.0, 1.0);
+		b2_polygon_shape_set_as_box(self_, 1.0, 1.0);
 		return;
 	}
 
@@ -185,36 +185,36 @@ pub fn b2_polygon_shape_set(this: &mut B2polygonShape, vertices: &[B2vec2]) {
 	if m < 3 {
 		// Polygon is degenerate.
 		b2_assert(false);
-		b2_polygon_shape_set_as_box(this, 1.0, 1.0);
+		b2_polygon_shape_set_as_box(self_, 1.0, 1.0);
 		return;
 	}
 
-	this.m_count = m;
+	self_.m_count = m;
 
 	// Copy vertices.
 	for i in 0..m {
-		this.m_vertices[i] = ps[hull[i]];
+		self_.m_vertices[i] = ps[hull[i]];
 	}
 
 	// Compute normals. Ensure the edges have non-zero length.
 	for i in 0..m {
 		let i1: usize = i;
 		let i2: usize = if i + 1 < m { i + 1 } else { 0 };
-		let edge: B2vec2 = this.m_vertices[i2] - this.m_vertices[i1];
+		let edge: B2vec2 = self_.m_vertices[i2] - self_.m_vertices[i1];
 		b2_assert(edge.length_squared() > B2_EPSILON * B2_EPSILON);
-		this.m_normals[i] = b2_cross_vec_by_scalar(edge, 1.0);
-		this.m_normals[i].normalize();
+		self_.m_normals[i] = b2_cross_vec_by_scalar(edge, 1.0);
+		self_.m_normals[i].normalize();
 	}
 
 	// Compute the polygon centroid.
-	this.m_centroid = compute_centroid(&this.m_vertices[0..m]);
+	self_.m_centroid = compute_centroid(&self_.m_vertices[0..m]);
 }
 
-pub fn b2_shape_dyn_trait_test_point(this: &B2polygonShape, xf: B2Transform, p: B2vec2) -> bool {
+pub fn b2_shape_dyn_trait_test_point(self_: &B2polygonShape, xf: B2Transform, p: B2vec2) -> bool {
 	let p_local: B2vec2 = b2_mul_t_rot_by_vec2(xf.q, p - xf.p);
 
-	for i in 0..this.m_count {
-		let dot: f32 = b2_dot(this.m_normals[i], p_local - this.m_vertices[i]);
+	for i in 0..self_.m_count {
+		let dot: f32 = b2_dot(self_.m_normals[i], p_local - self_.m_vertices[i]);
 		if dot > 0.0 {
 			return false;
 		}
@@ -224,7 +224,7 @@ pub fn b2_shape_dyn_trait_test_point(this: &B2polygonShape, xf: B2Transform, p: 
 }
 
 pub fn b2_shape_dyn_trait_ray_cast(
-	this: &B2polygonShape,
+	self_: &B2polygonShape,
 	output: &mut B2rayCastOutput,
 	input: &B2rayCastInput,
 	xf: B2Transform,
@@ -241,12 +241,12 @@ pub fn b2_shape_dyn_trait_ray_cast(
 
 	let mut index: i32 = -1;
 
-	for i in 0..this.m_count {
+	for i in 0..self_.m_count {
 		// p = p1 + a * d
 		// dot(normal, p - v) = 0
 		// dot(normal, p1 - v) + a * dot(normal, d) = 0
-		let numerator: f32 = b2_dot(this.m_normals[i], this.m_vertices[i] - p1);
-		let denominator: f32 = b2_dot(this.m_normals[i], d);
+		let numerator: f32 = b2_dot(self_.m_normals[i], self_.m_vertices[i] - p1);
+		let denominator: f32 = b2_dot(self_.m_normals[i], d);
 
 		if denominator == 0.0 {
 			if numerator < 0.0 {
@@ -282,7 +282,7 @@ pub fn b2_shape_dyn_trait_ray_cast(
 
 	if index >= 0 {
 		output.fraction = lower;
-		output.normal = b2_mul_rot_by_vec2(xf.q, this.m_normals[index as usize]);
+		output.normal = b2_mul_rot_by_vec2(xf.q, self_.m_normals[index as usize]);
 		return true;
 	}
 
@@ -290,28 +290,28 @@ pub fn b2_shape_dyn_trait_ray_cast(
 }
 
 pub fn b2_shape_dyn_trait_compute_aabb(
-	this: &B2polygonShape,
+	self_: &B2polygonShape,
 	aabb: &mut B2AABB,
 	xf: B2Transform,
 	child_index: usize,
 ) {
 	b2_not_used(child_index);
 
-	let mut lower: B2vec2 = b2_mul_transform_by_vec2(xf, this.m_vertices[0]);
+	let mut lower: B2vec2 = b2_mul_transform_by_vec2(xf, self_.m_vertices[0]);
 	let mut upper: B2vec2 = lower;
 
-	for i in 1..this.m_count {
-		let v: B2vec2 = b2_mul_transform_by_vec2(xf, this.m_vertices[i]);
+	for i in 1..self_.m_count {
+		let v: B2vec2 = b2_mul_transform_by_vec2(xf, self_.m_vertices[i]);
 		lower = b2_min_vec2(lower, v);
 		upper = b2_max_vec2(upper, v);
 	}
 
-	let r = B2vec2::new(this.base.m_radius, this.base.m_radius);
+	let r = B2vec2::new(self_.base.m_radius, self_.base.m_radius);
 	aabb.lower_bound = lower - r;
 	aabb.upper_bound = upper + r;
 }
 
-pub fn b2_shape_dyn_trait_compute_mass(this: &B2polygonShape, mass_data: &mut B2massData, density: f32) {
+pub fn b2_shape_dyn_trait_compute_mass(self_: &B2polygonShape, mass_data: &mut B2massData, density: f32) {
 	// Polygon mass, centroid, and inertia.
 	// Let rho be the polygon density in mass per unit area.
 	// Then:
@@ -336,7 +336,7 @@ pub fn b2_shape_dyn_trait_compute_mass(this: &B2polygonShape, mass_data: &mut B2
 	//
 	// The rest of the derivation is handled by computer algebra.
 
-	b2_assert(this.m_count >= 3);
+	b2_assert(self_.m_count >= 3);
 
 	let mut center = B2vec2::zero();
 	let mut area: f32 = 0.0;
@@ -344,17 +344,17 @@ pub fn b2_shape_dyn_trait_compute_mass(this: &B2polygonShape, mass_data: &mut B2
 
 	// Get a reference point for forming triangles.
 	// Use the first vertex to reduce round-off errors.
-	let s: B2vec2 = this.m_vertices[0];
+	let s: B2vec2 = self_.m_vertices[0];
 
 	const K_INV3: f32 = 1.0 / 3.0;
 
-	for i in 0..this.m_count {
+	for i in 0..self_.m_count {
 		// Triangle vertices.
-		let e1: B2vec2 = this.m_vertices[i] - s;
-		let e2: B2vec2 = if i + 1 < this.m_count {
-			this.m_vertices[i + 1] - s
+		let e1: B2vec2 = self_.m_vertices[i] - s;
+		let e2: B2vec2 = if i + 1 < self_.m_count {
+			self_.m_vertices[i + 1] - s
 		} else {
-			this.m_vertices[0] - s
+			self_.m_vertices[0] - s
 		};
 
 		let d: f32 = b2_cross(e1, e2);
@@ -389,19 +389,19 @@ pub fn b2_shape_dyn_trait_compute_mass(this: &B2polygonShape, mass_data: &mut B2
 		mass_data.mass * (b2_dot(mass_data.center, mass_data.center) - b2_dot(center, center));
 }
 
-pub fn b2_polygon_shape_validate(this: B2polygonShape) -> bool {
-	for i in 0..this.m_count {
+pub fn b2_polygon_shape_validate(self_: B2polygonShape) -> bool {
+	for i in 0..self_.m_count {
 		let i1: usize = i;
-		let i2: usize = if i < this.m_count - 1 { i1 + 1 } else { 0 };
-		let p: B2vec2 = this.m_vertices[i1];
-		let e: B2vec2 = this.m_vertices[i2] - p;
+		let i2: usize = if i < self_.m_count - 1 { i1 + 1 } else { 0 };
+		let p: B2vec2 = self_.m_vertices[i1];
+		let e: B2vec2 = self_.m_vertices[i2] - p;
 
-		for j in 0..this.m_count {
+		for j in 0..self_.m_count {
 			if j == i1 || j == i2 {
 				continue;
 			}
 
-			let v: B2vec2 = this.m_vertices[j] - p;
+			let v: B2vec2 = self_.m_vertices[j] - p;
 			let c: f32 = b2_cross(e, v);
 			if c < 0.0 {
 				return false;

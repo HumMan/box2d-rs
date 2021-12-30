@@ -316,56 +316,56 @@ impl<D: UserDataType> Drop for B2world<D>
 mod inline {
 	use super::*;
 
-	pub fn get_body_list<D: UserDataType>(this: &B2world<D>) -> DoubleLinkedList<B2body<D>> {
-		return this.m_body_list.clone();
+	pub fn get_body_list<D: UserDataType>(self_: &B2world<D>) -> DoubleLinkedList<B2body<D>> {
+		return self_.m_body_list.clone();
 	}
 
-	pub fn get_joint_list<D: UserDataType>(this: &B2world<D>) -> DoubleLinkedList<dyn B2jointTraitDyn<D>> {
-		return this.m_joint_list.clone();
+	pub fn get_joint_list<D: UserDataType>(self_: &B2world<D>) -> DoubleLinkedList<dyn B2jointTraitDyn<D>> {
+		return self_.m_joint_list.clone();
 	}
 
-	pub fn get_contact_list<D: UserDataType>(this: &B2world<D>) -> DoubleLinkedList<dyn B2contactDynTrait<D>> {
-		return this.m_contact_manager.borrow().m_contact_list.clone();
+	pub fn get_contact_list<D: UserDataType>(self_: &B2world<D>) -> DoubleLinkedList<dyn B2contactDynTrait<D>> {
+		return self_.m_contact_manager.borrow().m_contact_list.clone();
 	}
 
-	pub fn get_body_count<D: UserDataType>(this: &B2world<D>) -> usize {
-		return this.m_body_count;
+	pub fn get_body_count<D: UserDataType>(self_: &B2world<D>) -> usize {
+		return self_.m_body_count;
 	}
 
-	pub fn get_joint_count<D: UserDataType>(this: &B2world<D>) -> usize {
-		return this.m_joint_count;
+	pub fn get_joint_count<D: UserDataType>(self_: &B2world<D>) -> usize {
+		return self_.m_joint_count;
 	}
 
-	pub fn get_contact_count<D: UserDataType>(this: &B2world<D>) -> usize {
-		return this.m_contact_manager.borrow().m_contact_count;
+	pub fn get_contact_count<D: UserDataType>(self_: &B2world<D>) -> usize {
+		return self_.m_contact_manager.borrow().m_contact_count;
 	}
 
-	pub fn set_gravity<D: UserDataType>(this: &mut B2world<D>, gravity: B2vec2) {
-		this.m_gravity = gravity;
+	pub fn set_gravity<D: UserDataType>(self_: &mut B2world<D>, gravity: B2vec2) {
+		self_.m_gravity = gravity;
 	}
 
-	pub fn get_gravity<D: UserDataType>(this: &B2world<D>) -> B2vec2 {
-		return this.m_gravity;
+	pub fn get_gravity<D: UserDataType>(self_: &B2world<D>) -> B2vec2 {
+		return self_.m_gravity;
 	}
 
-	pub fn is_locked<D: UserDataType>(this: &B2world<D>) -> bool {
-		return this.m_locked;
+	pub fn is_locked<D: UserDataType>(self_: &B2world<D>) -> bool {
+		return self_.m_locked;
 	}
 
-	pub fn set_auto_clear_forces<D: UserDataType>(this: &mut B2world<D>, flag: bool) {
-		this.m_clear_forces = flag;
+	pub fn set_auto_clear_forces<D: UserDataType>(self_: &mut B2world<D>, flag: bool) {
+		self_.m_clear_forces = flag;
 	}
 
 	/// Get the flag that controls automatic clearing of forces after each time step.
-	pub fn get_auto_clear_forces<D: UserDataType>(this: &B2world<D>) -> bool {
-		return this.m_clear_forces;
+	pub fn get_auto_clear_forces<D: UserDataType>(self_: &B2world<D>) -> bool {
+		return self_.m_clear_forces;
 	}
 
-	pub fn get_contact_manager<D: UserDataType>(this: &B2world<D>) -> B2contactManagerPtr<D> {
-		return this.m_contact_manager.clone();
+	pub fn get_contact_manager<D: UserDataType>(self_: &B2world<D>) -> B2contactManagerPtr<D> {
+		return self_.m_contact_manager.clone();
 	}
 
-	pub(crate) fn get_profile<D: UserDataType>(this: &B2world<D>) -> B2Profile {
-		return this.m_profile;
+	pub(crate) fn get_profile<D: UserDataType>(self_: &B2world<D>) -> B2Profile {
+		return self_.m_profile;
 	}
 }

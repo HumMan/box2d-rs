@@ -161,62 +161,62 @@ mod inline {
 	use super::*;
 
 	pub fn get_user_data<UserDataType: Default + Clone>(
-		this: &B2broadPhase<UserDataType>,
+		self_: &B2broadPhase<UserDataType>,
 		proxy_id: i32,
 	) -> Option<UserDataType> {
-		return this.m_tree.get_user_data(proxy_id);
+		return self_.m_tree.get_user_data(proxy_id);
 	}
 
 	pub fn test_overlap<T: Default + Clone>(
-		this: &B2broadPhase<T>,
+		self_: &B2broadPhase<T>,
 		proxy_id_a: i32,
 		proxy_id_b: i32,
 	) -> bool {
-		let aabb_a: B2AABB = this.m_tree.get_fat_aabb(proxy_id_a);
-		let aabb_b: B2AABB = this.m_tree.get_fat_aabb(proxy_id_b);
+		let aabb_a: B2AABB = self_.m_tree.get_fat_aabb(proxy_id_a);
+		let aabb_b: B2AABB = self_.m_tree.get_fat_aabb(proxy_id_b);
 		return b2_test_overlap(aabb_a, aabb_b);
 	}
 
-	pub fn get_fat_aabb<T: Default + Clone>(this: &B2broadPhase<T>, proxy_id: i32) -> B2AABB {
-		return this.m_tree.get_fat_aabb(proxy_id);
+	pub fn get_fat_aabb<T: Default + Clone>(self_: &B2broadPhase<T>, proxy_id: i32) -> B2AABB {
+		return self_.m_tree.get_fat_aabb(proxy_id);
 	}
 
-	pub fn get_proxy_count<T: Default + Clone>(this: &B2broadPhase<T>) -> i32 {
-		return this.m_proxy_count;
+	pub fn get_proxy_count<T: Default + Clone>(self_: &B2broadPhase<T>) -> i32 {
+		return self_.m_proxy_count;
 	}
 
-	pub fn get_tree_height<T: Default + Clone>(this: &B2broadPhase<T>) -> i32 {
-		return this.m_tree.get_height();
+	pub fn get_tree_height<T: Default + Clone>(self_: &B2broadPhase<T>) -> i32 {
+		return self_.m_tree.get_height();
 	}
 
-	pub fn get_tree_balance<T: Default + Clone>(this: &B2broadPhase<T>) -> i32 {
-		return this.m_tree.get_max_balance();
+	pub fn get_tree_balance<T: Default + Clone>(self_: &B2broadPhase<T>) -> i32 {
+		return self_.m_tree.get_max_balance();
 	}
 
-	pub fn get_tree_quality<T: Default + Clone>(this: &B2broadPhase<T>) -> f32 {
-		return this.m_tree.get_area_ration();
+	pub fn get_tree_quality<T: Default + Clone>(self_: &B2broadPhase<T>) -> f32 {
+		return self_.m_tree.get_area_ration();
 	}
 
 	pub fn update_pairs<T: Default + Clone, CallbackType: AddPairTrait<T>>(
-		this: &mut B2broadPhase<T>,
+		self_: &mut B2broadPhase<T>,
 		callback: &mut CallbackType,
 	) {
 		// reset pair buffer
-		this.pairs.m_pair_count=0;
+		self_.pairs.m_pair_count=0;
 
 		// Perform tree queries for all moving proxies.
-		for i in 0..this.m_move_count {
-			let m_query_proxy_id = this.m_move_buffer[i as usize];
+		for i in 0..self_.m_move_count {
+			let m_query_proxy_id = self_.m_move_buffer[i as usize];
 			if m_query_proxy_id == E_NULL_PROXY {
 				continue;
 			}
 
 			// We have to query the tree with the fat AABB so that
 			// we don't fail to create a pair that may touch later.
-			let fat_aabb: B2AABB = this.m_tree.get_fat_aabb(m_query_proxy_id);
+			let fat_aabb: B2AABB = self_.m_tree.get_fat_aabb(m_query_proxy_id);
 			{
-				let pairs = &mut this.pairs;
-				let tree = &this.m_tree;
+				let pairs = &mut self_.pairs;
+				let tree = &self_.m_tree;
 				// query tree, create pairs and add them pair buffer.
 				tree.query(|proxy_id:i32|->bool{
 					let moved = tree.was_moved(proxy_id);
@@ -226,48 +226,48 @@ mod inline {
 		}
 
 		// Send pairs to caller
-		for i in 0..this.pairs.m_pair_count {
-			let primary_pair: B2pair = this.pairs.m_pair_buffer[i as usize];
-			let user_data_a = this.m_tree.get_user_data(primary_pair.proxy_id_a);
-			let user_data_b = this.m_tree.get_user_data(primary_pair.proxy_id_b);
+		for i in 0..self_.pairs.m_pair_count {
+			let primary_pair: B2pair = self_.pairs.m_pair_buffer[i as usize];
+			let user_data_a = self_.m_tree.get_user_data(primary_pair.proxy_id_a);
+			let user_data_b = self_.m_tree.get_user_data(primary_pair.proxy_id_b);
 
 			callback.add_pair(user_data_a, user_data_b);
 		}
 
 		// clear move flags
-		for i in 0..this.m_move_count {
-			let proxy_id: i32 = this.m_move_buffer[i as usize];
+		for i in 0..self_.m_move_count {
+			let proxy_id: i32 = self_.m_move_buffer[i as usize];
 			if proxy_id == E_NULL_PROXY {
 				continue;
 			}
 
-			this.m_tree.clear_moved(proxy_id);
+			self_.m_tree.clear_moved(proxy_id);
 		}
 
 		// reset move buffer
-		this.m_move_count = 0;
+		self_.m_move_count = 0;
 	}
 
 	pub fn query<UserDataType: Default + Clone, F:  QueryCallback>(
-		this: &B2broadPhase<UserDataType>,
+		self_: &B2broadPhase<UserDataType>,
 		callback: F,
 		aabb: B2AABB,
 	) {
-		this.m_tree.query(callback, aabb);
+		self_.m_tree.query(callback, aabb);
 	}
 
 	pub fn ray_cast<UserDataType: Default + Clone, T: RayCastCallback>(
-		this: &B2broadPhase<UserDataType>,
+		self_: &B2broadPhase<UserDataType>,
 		callback: T,
 		input: &B2rayCastInput,
 	) {
-		this.m_tree.ray_cast(callback, input);
+		self_.m_tree.ray_cast(callback, input);
 	}
 
 	pub fn shift_origin<UserDataType: Default + Clone>(
-		this: &mut B2broadPhase<UserDataType>,
+		self_: &mut B2broadPhase<UserDataType>,
 		new_origin: B2vec2,
 	) {
-		this.m_tree.shift_origin(new_origin);
+		self_.m_tree.shift_origin(new_origin);
 	}
 }

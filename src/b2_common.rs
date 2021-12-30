@@ -64,12 +64,12 @@ pub const B2_MAX_LINEAR_CORRECTION: f32 = 0.2 * B2_LENGTH_UNITS_PER_METER;
 pub const B2_MAX_ANGULAR_CORRECTION: f32 = 8.0 / 180.0 * PI;
 
 /// The maximum linear translation of a body per step. This limit is very large and is used
-/// to prevent numerical problems. You shouldn't need to adjust this. Meters.
+/// to prevent numerical problems. You shouldn't need to adjust self_. Meters.
 pub const B2_MAX_TRANSLATION: f32 = 2.0 * B2_LENGTH_UNITS_PER_METER;
 pub const B2_MAX_TRANSLATION_SQUARED: f32 = B2_MAX_TRANSLATION * B2_MAX_TRANSLATION;
 
 /// The maximum angular velocity of a body. This limit is very large and is used
-/// to prevent numerical problems. You shouldn't need to adjust this.
+/// to prevent numerical problems. You shouldn't need to adjust self_.
 pub const B2_MAX_ROTATION: f32 = 0.5 * PI;
 pub const B2_MAX_ROTATION_SQUARED: f32 = B2_MAX_ROTATION * B2_MAX_ROTATION;
 

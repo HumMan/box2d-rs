@@ -273,12 +273,12 @@ impl<D: UserDataType> B2contact<D> {
 	}
 
 	pub(crate) fn update(
-		this_dyn: &mut dyn B2contactDynTrait<D>,
+		self_dyn: &mut dyn B2contactDynTrait<D>,
 		listener: Option<B2contactListenerPtr<D>>,
 	) where
 		Self: Sized,
 	{
-		private::b2_contact_update(this_dyn, listener);
+		private::b2_contact_update(self_dyn, listener);
 	}
 }
 
@@ -343,25 +343,25 @@ pub struct B2contact<D: UserDataType> {
 mod inline {
 	use super::*;
 
-	pub fn get_manifold<D: UserDataType>(this: &B2contact<D>) -> &B2manifold {
-		return &this.m_manifold;
+	pub fn get_manifold<D: UserDataType>(self_: &B2contact<D>) -> &B2manifold {
+		return &self_.m_manifold;
 	}
 
-	pub fn get_manifold_mut<D: UserDataType>(this: &mut B2contact<D>) -> &mut B2manifold {
-		return &mut this.m_manifold;
+	pub fn get_manifold_mut<D: UserDataType>(self_: &mut B2contact<D>) -> &mut B2manifold {
+		return &mut self_.m_manifold;
 	}
 
 	pub fn get_world_manifold<D: UserDataType>(
-		this: &B2contact<D>,
+		self_: &B2contact<D>,
 		world_manifold: &mut B2worldManifold,
 	) {
-		let body_a = this.m_fixture_a.borrow().get_body();
-		let body_b = this.m_fixture_b.borrow().get_body();
-		let shape_a = this.m_fixture_a.borrow().get_shape();
-		let shape_b = this.m_fixture_b.borrow().get_shape();
+		let body_a = self_.m_fixture_a.borrow().get_body();
+		let body_b = self_.m_fixture_b.borrow().get_body();
+		let shape_a = self_.m_fixture_a.borrow().get_shape();
+		let shape_b = self_.m_fixture_b.borrow().get_shape();
 
 		world_manifold.initialize(
-			&this.m_manifold,
+			&self_.m_manifold,
 			body_a.borrow().get_transform(),
 			shape_a.get_base().m_radius,
 			body_b.borrow().get_transform(),
@@ -369,92 +369,92 @@ mod inline {
 		);
 	}
 
-	pub fn set_enabled<D: UserDataType>(this: &mut B2contact<D>, flag: bool) {
-		this.m_flags.set(ContactFlags::E_ENABLED_FLAG, flag);
+	pub fn set_enabled<D: UserDataType>(self_: &mut B2contact<D>, flag: bool) {
+		self_.m_flags.set(ContactFlags::E_ENABLED_FLAG, flag);
 	}
 
-	pub fn is_enabled<D: UserDataType>(this: &B2contact<D>) -> bool {
-		return this.m_flags.contains(ContactFlags::E_ENABLED_FLAG);
+	pub fn is_enabled<D: UserDataType>(self_: &B2contact<D>) -> bool {
+		return self_.m_flags.contains(ContactFlags::E_ENABLED_FLAG);
 	}
 
-	pub fn is_touching<D: UserDataType>(this: &B2contact<D>) -> bool {
-		return this.m_flags.contains(ContactFlags::E_TOUCHING_FLAG);
+	pub fn is_touching<D: UserDataType>(self_: &B2contact<D>) -> bool {
+		return self_.m_flags.contains(ContactFlags::E_TOUCHING_FLAG);
 	}
 
-	pub fn get_next<D: UserDataType>(this: &B2contact<D>) -> Option<ContactPtr<D>> {
-		return this.m_next.clone();
+	pub fn get_next<D: UserDataType>(self_: &B2contact<D>) -> Option<ContactPtr<D>> {
+		return self_.m_next.clone();
 	}
 
-	pub fn get_fixture_a<D: UserDataType>(this: &B2contact<D>) -> FixturePtr<D> {
-		return this.m_fixture_a.clone();
+	pub fn get_fixture_a<D: UserDataType>(self_: &B2contact<D>) -> FixturePtr<D> {
+		return self_.m_fixture_a.clone();
 	}
 
-	pub fn get_child_index_a<D: UserDataType>(this: &B2contact<D>) -> i32 {
-		return this.m_index_a;
+	pub fn get_child_index_a<D: UserDataType>(self_: &B2contact<D>) -> i32 {
+		return self_.m_index_a;
 	}
 
-	pub fn get_fixture_b<D: UserDataType>(this: &B2contact<D>) -> FixturePtr<D> {
-		return this.m_fixture_b.clone();
+	pub fn get_fixture_b<D: UserDataType>(self_: &B2contact<D>) -> FixturePtr<D> {
+		return self_.m_fixture_b.clone();
 	}
 
-	pub fn get_child_index_b<D: UserDataType>(this: &B2contact<D>) -> i32 {
-		return this.m_index_b;
+	pub fn get_child_index_b<D: UserDataType>(self_: &B2contact<D>) -> i32 {
+		return self_.m_index_b;
 	}
 
-	pub fn flag_for_filtering<D: UserDataType>(this: &mut B2contact<D>) {
-		this.m_flags.set(ContactFlags::E_FILTER_FLAG, true);
+	pub fn flag_for_filtering<D: UserDataType>(self_: &mut B2contact<D>) {
+		self_.m_flags.set(ContactFlags::E_FILTER_FLAG, true);
 	}
 
-	pub fn set_friction<D: UserDataType>(this: &mut B2contact<D>, friction: f32) {
-		this.m_friction = friction;
+	pub fn set_friction<D: UserDataType>(self_: &mut B2contact<D>, friction: f32) {
+		self_.m_friction = friction;
 	}
 
-	pub fn get_friction<D: UserDataType>(this: &B2contact<D>) -> f32 {
-		return this.m_friction;
+	pub fn get_friction<D: UserDataType>(self_: &B2contact<D>) -> f32 {
+		return self_.m_friction;
 	}
 
-	pub fn reset_friction<D: UserDataType>(this: &mut B2contact<D>) {
-		this.m_friction = b2_mix_friction(
-			this.m_fixture_a.borrow().m_friction,
-			this.m_fixture_b.borrow().m_friction,
+	pub fn reset_friction<D: UserDataType>(self_: &mut B2contact<D>) {
+		self_.m_friction = b2_mix_friction(
+			self_.m_fixture_a.borrow().m_friction,
+			self_.m_fixture_b.borrow().m_friction,
 		);
 	}
 
-	pub fn set_restitution<D: UserDataType>(this: &mut B2contact<D>, restitution: f32) {
-		this.m_restitution = restitution;
+	pub fn set_restitution<D: UserDataType>(self_: &mut B2contact<D>, restitution: f32) {
+		self_.m_restitution = restitution;
 	}
 
-	pub fn get_restitution<D: UserDataType>(this: &B2contact<D>) -> f32 {
-		return this.m_restitution;
+	pub fn get_restitution<D: UserDataType>(self_: &B2contact<D>) -> f32 {
+		return self_.m_restitution;
 	}
 
-	pub fn reset_restitution<D: UserDataType>(this: &mut B2contact<D>) {
-		this.m_restitution = b2_mix_restitution(
-			this.m_fixture_a.borrow().m_restitution,
-			this.m_fixture_b.borrow().m_restitution,
+	pub fn reset_restitution<D: UserDataType>(self_: &mut B2contact<D>) {
+		self_.m_restitution = b2_mix_restitution(
+			self_.m_fixture_a.borrow().m_restitution,
+			self_.m_fixture_b.borrow().m_restitution,
 		);
 	}
 
-	pub fn set_restitution_threshold<D: UserDataType>(this: &mut B2contact<D>, threshold: f32) {
-		this.m_restitution_threshold = threshold;
+	pub fn set_restitution_threshold<D: UserDataType>(self_: &mut B2contact<D>, threshold: f32) {
+		self_.m_restitution_threshold = threshold;
 	}
 
-	pub fn get_restitution_threshold<D: UserDataType>(this: &B2contact<D>) -> f32 {
-		return this.m_restitution_threshold;
+	pub fn get_restitution_threshold<D: UserDataType>(self_: &B2contact<D>) -> f32 {
+		return self_.m_restitution_threshold;
 	}
 
-	pub fn reset_restitution_threshold<D: UserDataType>(this: &mut B2contact<D>) {
-		this.m_restitution_threshold = b2_mix_restitution_threshold(
-			this.m_fixture_a.borrow().m_restitution_threshold,
-			this.m_fixture_b.borrow().m_restitution_threshold,
+	pub fn reset_restitution_threshold<D: UserDataType>(self_: &mut B2contact<D>) {
+		self_.m_restitution_threshold = b2_mix_restitution_threshold(
+			self_.m_fixture_a.borrow().m_restitution_threshold,
+			self_.m_fixture_b.borrow().m_restitution_threshold,
 		);
 	}
 
-	pub fn set_tangent_speed<D: UserDataType>(this: &mut B2contact<D>, speed: f32) {
-		this.m_tangent_speed = speed;
+	pub fn set_tangent_speed<D: UserDataType>(self_: &mut B2contact<D>, speed: f32) {
+		self_.m_tangent_speed = speed;
 	}
 
-	pub fn get_tangent_speed<D: UserDataType>(this: &B2contact<D>) -> f32 {
-		return this.m_tangent_speed;
+	pub fn get_tangent_speed<D: UserDataType>(self_: &B2contact<D>) -> f32 {
+		return self_.m_tangent_speed;
 	}
 }

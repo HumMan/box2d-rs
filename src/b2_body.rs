@@ -621,347 +621,347 @@ impl<D: UserDataType> B2body<D> {
 mod inline {
 	use super::*;
 
-	pub fn get_type<D: UserDataType>(this: &B2body<D>) -> B2bodyType {
-		return this.m_type;
+	pub fn get_type<D: UserDataType>(self_: &B2body<D>) -> B2bodyType {
+		return self_.m_type;
 	}
 
-	pub fn get_transform<D: UserDataType>(this: &B2body<D>) -> B2Transform {
-		return this.m_xf;
+	pub fn get_transform<D: UserDataType>(self_: &B2body<D>) -> B2Transform {
+		return self_.m_xf;
 	}
 
-	pub fn get_position<D: UserDataType>(this: &B2body<D>) -> B2vec2 {
-		return this.m_xf.p;
+	pub fn get_position<D: UserDataType>(self_: &B2body<D>) -> B2vec2 {
+		return self_.m_xf.p;
 	}
 
-	pub fn get_angle<D: UserDataType>(this: &B2body<D>) -> f32 {
-		return this.m_sweep.a;
+	pub fn get_angle<D: UserDataType>(self_: &B2body<D>) -> f32 {
+		return self_.m_sweep.a;
 	}
 
-	pub fn get_world_center<D: UserDataType>(this: &B2body<D>) -> B2vec2 {
-		return this.m_sweep.c;
+	pub fn get_world_center<D: UserDataType>(self_: &B2body<D>) -> B2vec2 {
+		return self_.m_sweep.c;
 	}
 
-	pub fn get_local_center<D: UserDataType>(this: &B2body<D>) -> B2vec2 {
-		return this.m_sweep.local_center;
+	pub fn get_local_center<D: UserDataType>(self_: &B2body<D>) -> B2vec2 {
+		return self_.m_sweep.local_center;
 	}
 
-	pub fn set_linear_velocity<D: UserDataType>(this: &mut B2body<D>, v: B2vec2) {
-		if this.m_type == B2bodyType::B2StaticBody {
+	pub fn set_linear_velocity<D: UserDataType>(self_: &mut B2body<D>, v: B2vec2) {
+		if self_.m_type == B2bodyType::B2StaticBody {
 			return;
 		}
 
 		if b2_dot(v, v) > 0.0 {
-			this.set_awake(true);
+			self_.set_awake(true);
 		}
 
-		this.m_linear_velocity = v;
+		self_.m_linear_velocity = v;
 	}
 
-	pub fn get_linear_velocity<D: UserDataType>(this: &B2body<D>) -> B2vec2 {
-		return this.m_linear_velocity;
+	pub fn get_linear_velocity<D: UserDataType>(self_: &B2body<D>) -> B2vec2 {
+		return self_.m_linear_velocity;
 	}
 
-	pub fn set_angular_velocity<D: UserDataType>(this: &mut B2body<D>, w: f32) {
-		if this.m_type == B2bodyType::B2StaticBody {
+	pub fn set_angular_velocity<D: UserDataType>(self_: &mut B2body<D>, w: f32) {
+		if self_.m_type == B2bodyType::B2StaticBody {
 			return;
 		}
 
 		if w * w > 0.0 {
-			this.set_awake(true);
+			self_.set_awake(true);
 		}
 
-		this.m_angular_velocity = w;
+		self_.m_angular_velocity = w;
 	}
 
-	pub fn get_angular_velocity<D: UserDataType>(this: &B2body<D>) -> f32 {
-		return this.m_angular_velocity;
+	pub fn get_angular_velocity<D: UserDataType>(self_: &B2body<D>) -> f32 {
+		return self_.m_angular_velocity;
 	}
 
-	pub fn get_mass<D: UserDataType>(this: &B2body<D>) -> f32 {
-		return this.m_mass;
+	pub fn get_mass<D: UserDataType>(self_: &B2body<D>) -> f32 {
+		return self_.m_mass;
 	}
 
-	pub fn get_inertia<D: UserDataType>(this: &B2body<D>) -> f32 {
-		return this.m_i
-			+ this.m_mass * b2_dot(this.m_sweep.local_center, this.m_sweep.local_center);
+	pub fn get_inertia<D: UserDataType>(self_: &B2body<D>) -> f32 {
+		return self_.m_i
+			+ self_.m_mass * b2_dot(self_.m_sweep.local_center, self_.m_sweep.local_center);
 	}
 
-	pub fn get_mass_data<D: UserDataType>(this: &B2body<D>, data: &mut B2massData) {
-		data.mass = this.m_mass;
+	pub fn get_mass_data<D: UserDataType>(self_: &B2body<D>, data: &mut B2massData) {
+		data.mass = self_.m_mass;
 		data.i =
-			this.m_i + this.m_mass * b2_dot(this.m_sweep.local_center, this.m_sweep.local_center);
-		data.center = this.m_sweep.local_center;
+			self_.m_i + self_.m_mass * b2_dot(self_.m_sweep.local_center, self_.m_sweep.local_center);
+		data.center = self_.m_sweep.local_center;
 	}
 
-	pub fn get_world_point<D: UserDataType>(this: &B2body<D>, local_point: B2vec2) -> B2vec2 {
-		return b2_mul_transform_by_vec2(this.m_xf, local_point);
+	pub fn get_world_point<D: UserDataType>(self_: &B2body<D>, local_point: B2vec2) -> B2vec2 {
+		return b2_mul_transform_by_vec2(self_.m_xf, local_point);
 	}
 
-	pub fn get_world_vector<D: UserDataType>(this: &B2body<D>, local_vector: B2vec2) -> B2vec2 {
-		return b2_mul_rot_by_vec2(this.m_xf.q, local_vector);
+	pub fn get_world_vector<D: UserDataType>(self_: &B2body<D>, local_vector: B2vec2) -> B2vec2 {
+		return b2_mul_rot_by_vec2(self_.m_xf.q, local_vector);
 	}
 
-	pub fn get_local_point<D: UserDataType>(this: &B2body<D>, world_point: B2vec2) -> B2vec2 {
-		return b2_mul_t_transform_by_vec2(this.m_xf, world_point);
+	pub fn get_local_point<D: UserDataType>(self_: &B2body<D>, world_point: B2vec2) -> B2vec2 {
+		return b2_mul_t_transform_by_vec2(self_.m_xf, world_point);
 	}
 
-	pub fn get_local_vector<D: UserDataType>(this: &B2body<D>, world_vector: B2vec2) -> B2vec2 {
-		return b2_mul_t_rot_by_vec2(this.m_xf.q, world_vector);
+	pub fn get_local_vector<D: UserDataType>(self_: &B2body<D>, world_vector: B2vec2) -> B2vec2 {
+		return b2_mul_t_rot_by_vec2(self_.m_xf.q, world_vector);
 	}
 
 	pub fn get_linear_velocity_from_world_point<D: UserDataType>(
-		this: &B2body<D>,
+		self_: &B2body<D>,
 		world_point: B2vec2,
 	) -> B2vec2 {
-		return this.m_linear_velocity
-			+ b2_cross_scalar_by_vec(this.m_angular_velocity, world_point - this.m_sweep.c);
+		return self_.m_linear_velocity
+			+ b2_cross_scalar_by_vec(self_.m_angular_velocity, world_point - self_.m_sweep.c);
 	}
 
 	pub fn get_linear_velocity_from_local_point<D: UserDataType>(
-		this: &B2body<D>,
+		self_: &B2body<D>,
 		local_point: B2vec2,
 	) -> B2vec2 {
-		return this.get_linear_velocity_from_world_point(this.get_world_point(local_point));
+		return self_.get_linear_velocity_from_world_point(self_.get_world_point(local_point));
 	}
 
-	pub fn get_linear_damping<D: UserDataType>(this: &B2body<D>) -> f32 {
-		return this.m_linear_damping;
+	pub fn get_linear_damping<D: UserDataType>(self_: &B2body<D>) -> f32 {
+		return self_.m_linear_damping;
 	}
 
-	pub fn set_linear_damping<D: UserDataType>(this: &mut B2body<D>, linear_damping: f32) {
-		this.m_linear_damping = linear_damping;
+	pub fn set_linear_damping<D: UserDataType>(self_: &mut B2body<D>, linear_damping: f32) {
+		self_.m_linear_damping = linear_damping;
 	}
 
-	pub fn get_angular_damping<D: UserDataType>(this: &B2body<D>) -> f32 {
-		return this.m_angular_damping;
+	pub fn get_angular_damping<D: UserDataType>(self_: &B2body<D>) -> f32 {
+		return self_.m_angular_damping;
 	}
 
-	pub fn set_angular_damping<D: UserDataType>(this: &mut B2body<D>, angular_damping: f32) {
-		this.m_angular_damping = angular_damping;
+	pub fn set_angular_damping<D: UserDataType>(self_: &mut B2body<D>, angular_damping: f32) {
+		self_.m_angular_damping = angular_damping;
 	}
 
-	pub fn get_gravity_scale<D: UserDataType>(this: &B2body<D>) -> f32 {
-		return this.m_gravity_scale;
+	pub fn get_gravity_scale<D: UserDataType>(self_: &B2body<D>) -> f32 {
+		return self_.m_gravity_scale;
 	}
 
-	pub fn set_gravity_scale<D: UserDataType>(this: &mut B2body<D>, scale: f32) {
-		this.m_gravity_scale = scale;
+	pub fn set_gravity_scale<D: UserDataType>(self_: &mut B2body<D>, scale: f32) {
+		self_.m_gravity_scale = scale;
 	}
 
-	pub fn set_bullet<D: UserDataType>(this: &mut B2body<D>, flag: bool) {
-		this.m_flags.set(BodyFlags::E_BULLET_FLAG, flag);
+	pub fn set_bullet<D: UserDataType>(self_: &mut B2body<D>, flag: bool) {
+		self_.m_flags.set(BodyFlags::E_BULLET_FLAG, flag);
 	}
 
-	pub fn is_bullet<D: UserDataType>(this: &B2body<D>) -> bool {
-		return this.m_flags.contains(BodyFlags::E_BULLET_FLAG);
+	pub fn is_bullet<D: UserDataType>(self_: &B2body<D>) -> bool {
+		return self_.m_flags.contains(BodyFlags::E_BULLET_FLAG);
 	}
 
-	pub fn set_awake<D: UserDataType>(this: &mut B2body<D>, flag: bool) {
+	pub fn set_awake<D: UserDataType>(self_: &mut B2body<D>, flag: bool) {
 
-		if this.m_type == B2bodyType::B2StaticBody
+		if self_.m_type == B2bodyType::B2StaticBody
 		{
 			return;
 	
 		}
 
-		this.m_flags.set(BodyFlags::E_AWAKE_FLAG, flag);
+		self_.m_flags.set(BodyFlags::E_AWAKE_FLAG, flag);
 		if flag {
-			this.m_sleep_time = 0.0;
+			self_.m_sleep_time = 0.0;
 		} else {
-			this.m_sleep_time = 0.0;
-			this.m_linear_velocity.set_zero();
-			this.m_angular_velocity = 0.0;
-			this.m_force.set_zero();
-			this.m_torque = 0.0;
+			self_.m_sleep_time = 0.0;
+			self_.m_linear_velocity.set_zero();
+			self_.m_angular_velocity = 0.0;
+			self_.m_force.set_zero();
+			self_.m_torque = 0.0;
 		}
 	}
 
-	pub fn is_awake<D: UserDataType>(this: &B2body<D>) -> bool {
-		return this.m_flags.contains(BodyFlags::E_AWAKE_FLAG);
+	pub fn is_awake<D: UserDataType>(self_: &B2body<D>) -> bool {
+		return self_.m_flags.contains(BodyFlags::E_AWAKE_FLAG);
 	}
 
-	pub fn is_enabled<D: UserDataType>(this: &B2body<D>) -> bool {
-		return this.m_flags.contains(BodyFlags::E_ENABLED_FLAG);
+	pub fn is_enabled<D: UserDataType>(self_: &B2body<D>) -> bool {
+		return self_.m_flags.contains(BodyFlags::E_ENABLED_FLAG);
 	}
 
-	pub fn is_fixed_rotation<D: UserDataType>(this: &B2body<D>) -> bool {
-		return this.m_flags.contains(BodyFlags::E_FIXED_ROTATION_FLAG);
+	pub fn is_fixed_rotation<D: UserDataType>(self_: &B2body<D>) -> bool {
+		return self_.m_flags.contains(BodyFlags::E_FIXED_ROTATION_FLAG);
 	}
 
-	pub fn set_sleeping_allowed<D: UserDataType>(this: &mut B2body<D>, flag: bool) {
-		this.m_flags.set(BodyFlags::E_AUTO_SLEEP_FLAG, flag);
+	pub fn set_sleeping_allowed<D: UserDataType>(self_: &mut B2body<D>, flag: bool) {
+		self_.m_flags.set(BodyFlags::E_AUTO_SLEEP_FLAG, flag);
 		if flag {
 		} else {
-			this.set_awake(true);
+			self_.set_awake(true);
 		}
 	}
 
-	pub fn is_sleeping_allowed<D: UserDataType>(this: &B2body<D>) -> bool {
-		return this.m_flags.contains(BodyFlags::E_AUTO_SLEEP_FLAG);
+	pub fn is_sleeping_allowed<D: UserDataType>(self_: &B2body<D>) -> bool {
+		return self_.m_flags.contains(BodyFlags::E_AUTO_SLEEP_FLAG);
 	}
 
 	// pub fn get_fixture_list_mut<D: UserDataType>(
-	// 	this: &mut B2body<D>,
+	// 	self_: &mut B2body<D>,
 	// ) -> &mut Option<FixturePtr<D>> {
-	// 	return &mut this.m_fixture_list;
+	// 	return &mut self_.m_fixture_list;
 	// }
 
-	pub fn get_fixture_list<D: UserDataType>(this: &B2body<D>) -> &LinkedList<B2fixture<D>> {
-		return &this.m_fixture_list;
+	pub fn get_fixture_list<D: UserDataType>(self_: &B2body<D>) -> &LinkedList<B2fixture<D>> {
+		return &self_.m_fixture_list;
 	}
 
 	pub fn get_joint_list_mut<D: UserDataType>(
-		this: &mut B2body<D>,
+		self_: &mut B2body<D>,
 	) -> &mut DoubleLinkedList<B2jointEdge<D>> {
-		return &mut this.m_joint_list;
+		return &mut self_.m_joint_list;
 	}
 
-	pub fn get_joint_list<D: UserDataType>(this: &B2body<D>) -> &DoubleLinkedList<B2jointEdge<D>> {
-		return &this.m_joint_list;
+	pub fn get_joint_list<D: UserDataType>(self_: &B2body<D>) -> &DoubleLinkedList<B2jointEdge<D>> {
+		return &self_.m_joint_list;
 	}
 
 	// pub fn get_contact_list_mut<D: UserDataType>(
-	// 	this: &mut B2body<D>,
+	// 	self_: &mut B2body<D>,
 	// ) -> &mut Option<ContactEdgePtr<D>> {
-	// 	return &mut this.m_contact_list.head;
+	// 	return &mut self_.m_contact_list.head;
 	// }
 
-	pub fn get_contact_list<D: UserDataType>(this: &B2body<D>) -> &DoubleLinkedList<B2contactEdge<D>> {
-		return &this.m_contact_list;
+	pub fn get_contact_list<D: UserDataType>(self_: &B2body<D>) -> &DoubleLinkedList<B2contactEdge<D>> {
+		return &self_.m_contact_list;
 	}
 
-	pub fn get_next<D: UserDataType>(this: &B2body<D>) -> Option<BodyPtr<D>> {
-		return this.m_next.clone();
+	pub fn get_next<D: UserDataType>(self_: &B2body<D>) -> Option<BodyPtr<D>> {
+		return self_.m_next.clone();
 	}
 
-	pub fn set_user_data<D: UserDataType>(this: &mut B2body<D>, data: &D::Body) {
-		this.m_user_data = Some(data.clone());
+	pub fn set_user_data<D: UserDataType>(self_: &mut B2body<D>, data: &D::Body) {
+		self_.m_user_data = Some(data.clone());
 	}
 
-	pub fn get_user_data<D: UserDataType>(this: &B2body<D>) -> Option<D::Body> {
-		return this.m_user_data.clone();
+	pub fn get_user_data<D: UserDataType>(self_: &B2body<D>) -> Option<D::Body> {
+		return self_.m_user_data.clone();
 	}
 
 	pub fn apply_force<D: UserDataType>(
-		this: &mut B2body<D>,
+		self_: &mut B2body<D>,
 		force: B2vec2,
 		point: B2vec2,
 		wake: bool,
 	) {
-		if this.m_type != B2bodyType::B2DynamicBody {
+		if self_.m_type != B2bodyType::B2DynamicBody {
 			return;
 		}
 
-		if wake && !this.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
-			this.set_awake(true);
+		if wake && !self_.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
+			self_.set_awake(true);
 		}
 
 		// Don't accumulate a force if the body is sleeping.
-		if this.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
-			this.m_force += force;
-			this.m_torque += b2_cross(point - this.m_sweep.c, force);
+		if self_.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
+			self_.m_force += force;
+			self_.m_torque += b2_cross(point - self_.m_sweep.c, force);
 		}
 	}
 
-	pub fn apply_force_to_center<D: UserDataType>(this: &mut B2body<D>, force: B2vec2, wake: bool) {
-		if this.m_type != B2bodyType::B2DynamicBody {
+	pub fn apply_force_to_center<D: UserDataType>(self_: &mut B2body<D>, force: B2vec2, wake: bool) {
+		if self_.m_type != B2bodyType::B2DynamicBody {
 			return;
 		}
 
-		if wake && !this.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
-			this.set_awake(true);
+		if wake && !self_.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
+			self_.set_awake(true);
 		}
 
 		// Don't accumulate a force if the body is sleeping
-		if this.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
-			this.m_force += force;
+		if self_.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
+			self_.m_force += force;
 		}
 	}
 
-	pub fn apply_torque<D: UserDataType>(this: &mut B2body<D>, torque: f32, wake: bool) {
-		if this.m_type != B2bodyType::B2DynamicBody {
+	pub fn apply_torque<D: UserDataType>(self_: &mut B2body<D>, torque: f32, wake: bool) {
+		if self_.m_type != B2bodyType::B2DynamicBody {
 			return;
 		}
 
-		if wake && !this.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
-			this.set_awake(true);
+		if wake && !self_.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
+			self_.set_awake(true);
 		}
 
 		// Don't accumulate a force if the body is sleeping
-		if this.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
-			this.m_torque += torque;
+		if self_.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
+			self_.m_torque += torque;
 		}
 	}
 
 	pub fn apply_linear_impulse<D: UserDataType>(
-		this: &mut B2body<D>,
+		self_: &mut B2body<D>,
 		impulse: B2vec2,
 		point: B2vec2,
 		wake: bool,
 	) {
-		if this.m_type != B2bodyType::B2DynamicBody {
+		if self_.m_type != B2bodyType::B2DynamicBody {
 			return;
 		}
 
-		if wake && !this.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
-			this.set_awake(true);
+		if wake && !self_.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
+			self_.set_awake(true);
 		}
 
 		// Don't accumulate velocity if the body is sleeping
-		if this.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
-			this.m_linear_velocity += this.m_inv_mass * impulse;
-			this.m_angular_velocity += this.m_inv_i * b2_cross(point - this.m_sweep.c, impulse);
+		if self_.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
+			self_.m_linear_velocity += self_.m_inv_mass * impulse;
+			self_.m_angular_velocity += self_.m_inv_i * b2_cross(point - self_.m_sweep.c, impulse);
 		}
 	}
 
 	pub fn apply_linear_impulse_to_center<D: UserDataType>(
-		this: &mut B2body<D>,
+		self_: &mut B2body<D>,
 		impulse: B2vec2,
 		wake: bool,
 	) {
-		if this.m_type != B2bodyType::B2DynamicBody {
+		if self_.m_type != B2bodyType::B2DynamicBody {
 			return;
 		}
-		if wake && !this.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
-			this.set_awake(true);
+		if wake && !self_.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
+			self_.set_awake(true);
 		}
 
 		// Don't accumulate velocity if the body is sleeping
-		if this.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
-			this.m_linear_velocity += this.m_inv_mass * impulse;
+		if self_.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
+			self_.m_linear_velocity += self_.m_inv_mass * impulse;
 		}
 	}
 
-	pub fn apply_angular_impulse<D: UserDataType>(this: &mut B2body<D>, impulse: f32, wake: bool) {
-		if this.m_type != B2bodyType::B2DynamicBody {
+	pub fn apply_angular_impulse<D: UserDataType>(self_: &mut B2body<D>, impulse: f32, wake: bool) {
+		if self_.m_type != B2bodyType::B2DynamicBody {
 			return;
 		}
 
-		if wake && !this.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
-			this.set_awake(true);
+		if wake && !self_.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
+			self_.set_awake(true);
 		}
 
 		// Don't accumulate velocity if the body is sleeping
-		if this.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
-			this.m_angular_velocity += this.m_inv_i * impulse;
+		if self_.m_flags.contains(BodyFlags::E_AWAKE_FLAG) {
+			self_.m_angular_velocity += self_.m_inv_i * impulse;
 		}
 	}
 
-	pub fn synchronize_transform<D: UserDataType>(this: &mut B2body<D>) {
-		this.m_xf.q.set(this.m_sweep.a);
-		this.m_xf.p = this.m_sweep.c - b2_mul_rot_by_vec2(this.m_xf.q, this.m_sweep.local_center);
+	pub fn synchronize_transform<D: UserDataType>(self_: &mut B2body<D>) {
+		self_.m_xf.q.set(self_.m_sweep.a);
+		self_.m_xf.p = self_.m_sweep.c - b2_mul_rot_by_vec2(self_.m_xf.q, self_.m_sweep.local_center);
 	}
 
-	pub fn advance<D: UserDataType>(this: &mut B2body<D>, alpha: f32) {
+	pub fn advance<D: UserDataType>(self_: &mut B2body<D>, alpha: f32) {
 		// advance to the new safe time. This doesn't sync the broad-phase.
-		this.m_sweep.advance(alpha);
-		this.m_sweep.c = this.m_sweep.c0;
-		this.m_sweep.a = this.m_sweep.a0;
-		this.m_xf.q.set(this.m_sweep.a);
-		this.m_xf.p = this.m_sweep.c - b2_mul_rot_by_vec2(this.m_xf.q, this.m_sweep.local_center);
+		self_.m_sweep.advance(alpha);
+		self_.m_sweep.c = self_.m_sweep.c0;
+		self_.m_sweep.a = self_.m_sweep.a0;
+		self_.m_xf.q.set(self_.m_sweep.a);
+		self_.m_xf.p = self_.m_sweep.c - b2_mul_rot_by_vec2(self_.m_xf.q, self_.m_sweep.local_center);
 	}
 
-	pub fn get_world<D: UserDataType>(this: &B2body<D>) -> B2worldPtr<D> {
-		return this.m_world.upgrade().unwrap();
+	pub fn get_world<D: UserDataType>(self_: &B2body<D>) -> B2worldPtr<D> {
+		return self_.m_world.upgrade().unwrap();
 	}
 }

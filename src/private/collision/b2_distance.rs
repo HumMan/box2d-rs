@@ -11,42 +11,42 @@ use std::sync::atomic::Ordering;
 // GJK using Voronoi regions (Christer Ericson) and Barycentric coordinates.
 
 pub fn set_shape(
-	this: &mut B2distanceProxy,
+	self_: &mut B2distanceProxy,
 	shape: ShapePtr,
 	index: usize,
 ) {
 	match shape.as_derived() {
 		ShapeAsDerived::AsCircle(circle) => {
-			this.m_vertices = vec![circle.m_p];
-			this.m_radius = circle.base.m_radius;
+			self_.m_vertices = vec![circle.m_p];
+			self_.m_radius = circle.base.m_radius;
 		}
 		ShapeAsDerived::AsPolygon(polygon) => {
-			this.m_vertices = polygon.m_vertices[..polygon.m_count].to_vec();
-			this.m_radius = polygon.base.m_radius;
+			self_.m_vertices = polygon.m_vertices[..polygon.m_count].to_vec();
+			self_.m_radius = polygon.base.m_radius;
 		}
 		ShapeAsDerived::AsChain(chain) => {
 			b2_assert(index < chain.m_vertices.len());
 
-			this.m_buffer[0] = chain.m_vertices[index];
+			self_.m_buffer[0] = chain.m_vertices[index];
 			if index + 1 < chain.m_vertices.len() {
-				this.m_buffer[1] = chain.m_vertices[index + 1];
+				self_.m_buffer[1] = chain.m_vertices[index + 1];
 			} else {
-				this.m_buffer[1] = chain.m_vertices[0];
+				self_.m_buffer[1] = chain.m_vertices[0];
 			}
 
-			this.m_vertices = this.m_buffer.to_vec();
-			this.m_radius = chain.base.m_radius;
+			self_.m_vertices = self_.m_buffer.to_vec();
+			self_.m_radius = chain.base.m_radius;
 		}
 		ShapeAsDerived::AsEdge(edge)  => {
-			this.m_vertices = [edge.m_vertex1, edge.m_vertex2].to_vec();
-			this.m_radius = edge.base.m_radius;
+			self_.m_vertices = [edge.m_vertex1, edge.m_vertex2].to_vec();
+			self_.m_radius = edge.base.m_radius;
 		}
 	}
 }
 
-pub fn set_vertices(this: &mut B2distanceProxy, vertices: &[B2vec2], radius: f32) {
-	this.m_vertices = Vec::from(vertices);
-	this.m_radius = radius;
+pub fn set_vertices(self_: &mut B2distanceProxy, vertices: &[B2vec2], radius: f32) {
+	self_.m_vertices = Vec::from(vertices);
+	self_.m_radius = radius;
 }
 
 #[derive(Default, Clone, Copy, Debug)]
@@ -83,7 +83,7 @@ impl B2simplex {
 
 		// Copy data from cache.
 		self.m_count = cache.count as usize;
-		//b2SimplexVertex* vertices = &this.m_v[0];
+		//b2SimplexVertex* vertices = &self_.m_v[0];
 		for i in 0..self.m_count {
 			let v = &mut self.m_v[i];
 			v.index_a = cache.index_a[i] as usize;
@@ -264,17 +264,17 @@ impl B2simplex {
 // Solution
 // a1 = d12_1 / d12
 // a2 = d12_2 / d12
-fn b2_simplex_solve2(this: &mut B2simplex) {
-	let w1: B2vec2 = this.m_v[0].w;
-	let w2: B2vec2 = this.m_v[1].w;
+fn b2_simplex_solve2(self_: &mut B2simplex) {
+	let w1: B2vec2 = self_.m_v[0].w;
+	let w2: B2vec2 = self_.m_v[1].w;
 	let e12: B2vec2 = w2 - w1;
 
 	// w1 region
 	let d12_2: f32 = -b2_dot(w1, e12);
 	if d12_2 <= 0.0 {
 		// a2 <= 0, so we clamp it to 0
-		this.m_v[0].a = 1.0;
-		this.m_count = 1;
+		self_.m_v[0].a = 1.0;
+		self_.m_count = 1;
 		return;
 	}
 
@@ -282,17 +282,17 @@ fn b2_simplex_solve2(this: &mut B2simplex) {
 	let d12_1: f32 = b2_dot(w2, e12);
 	if d12_1 <= 0.0 {
 		// a1 <= 0, so we clamp it to 0
-		this.m_v[1].a = 1.0;
-		this.m_count = 1;
-		this.m_v[0] = this.m_v[1];
+		self_.m_v[1].a = 1.0;
+		self_.m_count = 1;
+		self_.m_v[0] = self_.m_v[1];
 		return;
 	}
 
 	// Must be in e12 region.
 	let inv_d12: f32 = 1.0 / (d12_1 + d12_2);
-	this.m_v[0].a = d12_1 * inv_d12;
-	this.m_v[1].a = d12_2 * inv_d12;
-	this.m_count = 2;
+	self_.m_v[0].a = d12_1 * inv_d12;
+	self_.m_v[1].a = d12_2 * inv_d12;
+	self_.m_count = 2;
 }
 
 // Possible regions:
@@ -300,10 +300,10 @@ fn b2_simplex_solve2(this: &mut B2simplex) {
 // - edge points[0]-points[2]
 // - edge points[1]-points[2]
 // - inside the triangle
-fn b2_simplex_solve3(this: &mut B2simplex) {
-	let w1: B2vec2 = this.m_v[0].w;
-	let w2: B2vec2 = this.m_v[1].w;
-	let w3: B2vec2 = this.m_v[2].w;
+fn b2_simplex_solve3(self_: &mut B2simplex) {
+	let w1: B2vec2 = self_.m_v[0].w;
+	let w2: B2vec2 = self_.m_v[1].w;
+	let w3: B2vec2 = self_.m_v[2].w;
 
 	// Edge12
 	// [1      1     ][a1] = [1]
@@ -343,62 +343,62 @@ fn b2_simplex_solve3(this: &mut B2simplex) {
 
 	// w1 region
 	if d12_2 <= 0.0 && d13_2 <= 0.0 {
-		this.m_v[0].a = 1.0;
-		this.m_count = 1;
+		self_.m_v[0].a = 1.0;
+		self_.m_count = 1;
 		return;
 	}
 
 	// e12
 	if d12_1 > 0.0 && d12_2 > 0.0 && d123_3 <= 0.0 {
 		let inv_d12: f32 = 1.0 / (d12_1 + d12_2);
-		this.m_v[0].a = d12_1 * inv_d12;
-		this.m_v[1].a = d12_2 * inv_d12;
-		this.m_count = 2;
+		self_.m_v[0].a = d12_1 * inv_d12;
+		self_.m_v[1].a = d12_2 * inv_d12;
+		self_.m_count = 2;
 		return;
 	}
 
 	// e13
 	if d13_1 > 0.0 && d13_2 > 0.0 && d123_2 <= 0.0 {
 		let inv_d13: f32 = 1.0 / (d13_1 + d13_2);
-		this.m_v[0].a = d13_1 * inv_d13;
-		this.m_v[2].a = d13_2 * inv_d13;
-		this.m_count = 2;
-		this.m_v[1] = this.m_v[2];
+		self_.m_v[0].a = d13_1 * inv_d13;
+		self_.m_v[2].a = d13_2 * inv_d13;
+		self_.m_count = 2;
+		self_.m_v[1] = self_.m_v[2];
 		return;
 	}
 
 	// w2 region
 	if d12_1 <= 0.0 && d23_2 <= 0.0 {
-		this.m_v[1].a = 1.0;
-		this.m_count = 1;
-		this.m_v[0] = this.m_v[1];
+		self_.m_v[1].a = 1.0;
+		self_.m_count = 1;
+		self_.m_v[0] = self_.m_v[1];
 		return;
 	}
 
 	// w3 region
 	if d13_1 <= 0.0 && d23_1 <= 0.0 {
-		this.m_v[2].a = 1.0;
-		this.m_count = 1;
-		this.m_v[0] = this.m_v[2];
+		self_.m_v[2].a = 1.0;
+		self_.m_count = 1;
+		self_.m_v[0] = self_.m_v[2];
 		return;
 	}
 
 	// e23
 	if d23_1 > 0.0 && d23_2 > 0.0 && d123_1 <= 0.0 {
 		let inv_d23: f32 = 1.0 / (d23_1 + d23_2);
-		this.m_v[1].a = d23_1 * inv_d23;
-		this.m_v[2].a = d23_2 * inv_d23;
-		this.m_count = 2;
-		this.m_v[0] = this.m_v[2];
+		self_.m_v[1].a = d23_1 * inv_d23;
+		self_.m_v[2].a = d23_2 * inv_d23;
+		self_.m_count = 2;
+		self_.m_v[0] = self_.m_v[2];
 		return;
 	}
 
 	// Must be in triangle123
 	let inv_d123: f32 = 1.0 / (d123_1 + d123_2 + d123_3);
-	this.m_v[0].a = d123_1 * inv_d123;
-	this.m_v[1].a = d123_2 * inv_d123;
-	this.m_v[2].a = d123_3 * inv_d123;
-	this.m_count = 3;
+	self_.m_v[0].a = d123_1 * inv_d123;
+	self_.m_v[1].a = d123_2 * inv_d123;
+	self_.m_v[2].a = d123_3 * inv_d123;
+	self_.m_count = 3;
 }
 
 pub fn b2_distance_fn(

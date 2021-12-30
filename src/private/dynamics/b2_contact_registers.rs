@@ -55,12 +55,12 @@ impl<D: UserDataType> ContactRegisters<D>
 		type2: B2ShapeType,
 	) {
 		self_.s_registers[type1 as usize][type2 as usize].create_fcn = Some(create_fcn);
-		//this.s_registers.0[type1 as usize][type2 as usize].destroyFcn = Some(destoryFcn);
+		//self_.s_registers.0[type1 as usize][type2 as usize].destroyFcn = Some(destoryFcn);
 		self_.s_registers[type1 as usize][type2 as usize].primary = true;
 
 		if type1 != type2 {
 			self_.s_registers[type2 as usize][type1 as usize].create_fcn = Some(create_fcn);
-			//this.s_registers.0[type2 as usize][type1 as usize].destroyFcn = Some(destoryFcn);
+			//self_.s_registers.0[type2 as usize][type1 as usize].destroyFcn = Some(destoryFcn);
 			self_.s_registers[type2 as usize][type1 as usize].primary = false;
 		}
 	}

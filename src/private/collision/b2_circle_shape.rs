@@ -4,18 +4,18 @@ use crate::b2_math::*;
 use crate::b2_common::*;
 use crate::b2_shape::*;
 
-pub fn clone(this: &B2circleShape) -> Box<dyn B2shapeDynTrait> {
-	return Box::new(B2circleShape::clone(&this));
+pub fn clone(self_: &B2circleShape) -> Box<dyn B2shapeDynTrait> {
+	return Box::new(B2circleShape::clone(&self_));
 }
 
-pub fn get_child_count(_this: &B2circleShape) -> usize {
+pub fn get_child_count(_self: &B2circleShape) -> usize {
 	return 1;
 }
 
-pub fn test_point(this: &B2circleShape, transform: B2Transform, p: B2vec2) -> bool {
-	let center: B2vec2 = transform.p + b2_mul_rot_by_vec2(transform.q, this.m_p);
+pub fn test_point(self_: &B2circleShape, transform: B2Transform, p: B2vec2) -> bool {
+	let center: B2vec2 = transform.p + b2_mul_rot_by_vec2(transform.q, self_.m_p);
 	let d: B2vec2 = p - center;
-	return b2_dot(d, d) <= this.base.m_radius * this.base.m_radius;
+	return b2_dot(d, d) <= self_.base.m_radius * self_.base.m_radius;
 }
 
 // Collision Detection in Interactive 3D Environments by Gino van den Bergen
@@ -24,7 +24,7 @@ pub fn test_point(this: &B2circleShape, transform: B2Transform, p: B2vec2) -> bo
 // norm(x) = radius
 
 pub fn ray_cast(
-	this: &B2circleShape,
+	self_: &B2circleShape,
 	output: &mut B2rayCastOutput,
 	input: &B2rayCastInput,
 	transform: B2Transform,
@@ -32,9 +32,9 @@ pub fn ray_cast(
 ) -> bool {
 	b2_not_used(child_index);
 
-	let position: B2vec2 = transform.p + b2_mul_rot_by_vec2(transform.q, this.m_p);
+	let position: B2vec2 = transform.p + b2_mul_rot_by_vec2(transform.q, self_.m_p);
 	let s: B2vec2 = input.p1 - position;
-	let b: f32 = b2_dot(s, s) - this.base.m_radius * this.base.m_radius;
+	let b: f32 = b2_dot(s, s) - self_.base.m_radius * self_.base.m_radius;
 
 	// solve quadratic equation.
 	let r: B2vec2 = input.p2 - input.p1;
@@ -62,25 +62,25 @@ pub fn ray_cast(
 	return false;
 }
 pub fn compute_aabb(
-	this: &B2circleShape,
+	self_: &B2circleShape,
 	aabb: &mut B2AABB,
 	transform: B2Transform,
 	child_index: usize,
 ) {
 	b2_not_used(child_index);
 
-	let p: B2vec2 = transform.p + b2_mul_rot_by_vec2(transform.q, this.m_p);
+	let p: B2vec2 = transform.p + b2_mul_rot_by_vec2(transform.q, self_.m_p);
 	aabb.lower_bound
-		.set(p.x - this.base.m_radius, p.y - this.base.m_radius);
+		.set(p.x - self_.base.m_radius, p.y - self_.base.m_radius);
 	aabb.upper_bound
-		.set(p.x + this.base.m_radius, p.y + this.base.m_radius);
+		.set(p.x + self_.base.m_radius, p.y + self_.base.m_radius);
 }
 
-pub fn compute_mass(this: &B2circleShape, mass_data: &mut B2massData, density: f32) {
-	mass_data.mass = density * B2_PI * this.base.m_radius * this.base.m_radius;
-	mass_data.center = this.m_p;
+pub fn compute_mass(self_: &B2circleShape, mass_data: &mut B2massData, density: f32) {
+	mass_data.mass = density * B2_PI * self_.base.m_radius * self_.base.m_radius;
+	mass_data.center = self_.m_p;
 
 	// inertia about the local origin
 	mass_data.i = mass_data.mass
-		* (0.5 * this.base.m_radius * this.base.m_radius + b2_dot(this.m_p, this.m_p));
+		* (0.5 * self_.base.m_radius * self_.base.m_radius + b2_dot(self_.m_p, self_.m_p));
 }
