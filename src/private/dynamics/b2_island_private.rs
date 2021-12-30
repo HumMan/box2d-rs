@@ -174,7 +174,6 @@ pub(crate) fn solve<D: UserDataType>(this: &mut B2island<D>, profile: &mut B2Pro
 	// Solver data
 	let mut solver_data = B2solverData{
 		step : *step,
-		//TODO_humman
 		//positions : &mut this.m_positions,
 		//velocities : &mut this.m_velocities,
 	};
@@ -183,7 +182,6 @@ pub(crate) fn solve<D: UserDataType>(this: &mut B2island<D>, profile: &mut B2Pro
 	let contact_solver_def = B2contactSolverDef
 	{
 		step : *step,
-		//TODO_humman
 		//contacts : &mut this.m_contacts,
 		//positions : &mut this.m_positions,
 		//velocities : &mut this.m_velocities,

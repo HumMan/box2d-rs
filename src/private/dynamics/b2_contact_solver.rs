@@ -40,9 +40,11 @@ pub(crate) struct B2contactVelocityConstraint
 	pub(crate) contact_index: i32,
 }
 
+
 pub(crate) struct B2contactSolverDef
 {
 	pub(crate) step: B2timeStep,
+	//box2d-rs: not using struct because of borrowing and mutability
 	//pub(crate) contacts: &'a mut  Vec<ContactPtr<D>>,
 	//pub(crate) positions: &'a mut  Vec<B2position>,
 	//pub(crate) velocities: &'a mut  Vec<B2velocity>,
