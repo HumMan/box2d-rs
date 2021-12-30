@@ -128,6 +128,10 @@ impl<D: UserDataType> B2jointTraitDyn<D> for B2distanceJoint<D> {
 	) -> bool {
 		return private::solve_position_constraints(self, data, positions);
 	}
+	///
+	fn draw(&self, draw: &mut dyn B2drawTrait) {
+		private::draw(self, draw);
+	}
 }
 
 impl<D: UserDataType> B2distanceJoint<D> {
@@ -195,12 +199,7 @@ impl<D: UserDataType> B2distanceJoint<D> {
 	}
 	pub fn get_damping(&self) -> f32 {
 		return self.m_damping;
-	}
-
-	///
-	fn draw(&self, draw: &mut dyn B2drawTrait) {
-		private::draw(self, draw);
-	}
+	}	
 
 	pub(crate) fn new(data: &B2distanceJointDef<D>) -> Self {
 		return private::b2_distance_joint_new(data);
