@@ -191,7 +191,6 @@ pub(crate) fn mouse_move<D: UserDataType>(self_: &mut Test<D>, p: B2vec2) {
 	}
 }
 
-//TODO_humman bomb launch
 pub(crate) fn launch_bomb_rand<D: UserDataType>(self_: &mut Test<D>) {
 	let p = B2vec2::new(random_float_range(-15.0, 15.0), 30.0);
 	let v: B2vec2 = -5.0 * p;
@@ -519,6 +518,6 @@ pub(crate) fn step<D: UserDataType, F: Facade>(
 	}
 }
 
-// pub(crate) fn shift_origin<D: UserDataType>(self_: &mut Test<D>, new_origin: B2vec2) {
-// 	self_.m_world.borrow_mut().shift_origin(new_origin);
-// }
+pub(crate) fn shift_origin<D: UserDataType>(self_: &mut Test<D>, new_origin: B2vec2) {
+	self_.m_world.borrow_mut().shift_origin(new_origin);
+}

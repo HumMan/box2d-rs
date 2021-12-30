@@ -241,12 +241,122 @@ impl System {
                         device_id: _,
                         is_synthetic: _,
                     } => {
-                        match input.virtual_keycode {
-                            Some(VirtualKeyCode::Escape) => *control_flow = ControlFlow::Exit,
-                            _ => (),
-                        }
-
-                        s_test.borrow_mut().keyboard(input);
+                        if input.state == ElementState::Pressed 
+                        {
+                            match input.virtual_keycode {
+                                Some(VirtualKeyCode::Escape) => {
+                                    // Quit
+                                    *control_flow = ControlFlow::Exit
+                                }
+                                Some(VirtualKeyCode::Left) => {
+                                    // Pan left
+                                    if input.modifiers == ModifiersState::CTRL
+                                    {
+                                        let newOrigin = B2vec2::new(2.0, 0.0);
+                                        s_test.borrow_mut().shift_origin(newOrigin);
+                                    }
+                                    else
+                                    {
+                                        g_camera.m_center.x -= 0.5;
+                                    }
+                                },
+                                Some(VirtualKeyCode::Right) => {
+                                    // Pan right
+                                    if input.modifiers == ModifiersState::CTRL
+                                    {
+                                        let newOrigin = B2vec2::new(-2.0, 0.0);
+                                        s_test.borrow_mut().shift_origin(newOrigin);
+                                    }
+                                    else
+                                    {
+                                        g_camera.m_center.x += 0.5;
+                                    }
+                                },
+                                Some(VirtualKeyCode::Down) => {
+                                    // Pan down
+                                    if input.modifiers == ModifiersState::CTRL
+                                    {
+                                        let newOrigin = B2vec2::new(0.0, 2.0);
+                                        s_test.borrow_mut().shift_origin(newOrigin);
+                                    }
+                                    else
+                                    {
+                                        g_camera.m_center.y -= 0.5;
+                                    }
+                                },
+                                Some(VirtualKeyCode::Up) => {
+                                    // Pan up
+                                    if input.modifiers == ModifiersState::CTRL
+                                    {
+                                        let newOrigin = B2vec2::new(0.0, -2.0);
+                                        s_test.borrow_mut().shift_origin(newOrigin);
+                                    }
+                                    else
+                                    {
+                                        g_camera.m_center.y += 0.5;
+                                    }
+                                },
+                                Some(VirtualKeyCode::Home) => {
+                                    // Reset view
+                                    g_camera.m_zoom = 1.0;
+			                        g_camera.m_center.set(0.0, 20.0);
+                                },
+                                Some(VirtualKeyCode::Z) => {
+                                    // Zoom out
+                                    g_camera.m_zoom = b2_max(1.1 * g_camera.m_zoom, 0.02);
+                                },
+                                Some(VirtualKeyCode::X) => {
+                                    // Zoom in
+                                    g_camera.m_zoom = b2_max(0.9 * g_camera.m_zoom, 0.02);
+                                },
+                                Some(VirtualKeyCode::R) => {
+                                    // Reset test
+                                    s_test = (g_test_entries[s_settings.m_test_index as usize].create_fcn)(
+                                        g_debug_draw.clone(),
+                                    );
+                                },
+                                Some(VirtualKeyCode::Space) => {
+                                    // Launch a bomb.
+                                    s_test.borrow_mut().launch_bomb_rand();
+                                },
+                                Some(VirtualKeyCode::O) => {
+                                    s_settings.m_single_step = !s_settings.m_single_step;
+                                },
+                                Some(VirtualKeyCode::P) => {
+                                    s_settings.m_pause = !s_settings.m_pause;
+                                },
+                                Some(VirtualKeyCode::LBracket) => {    
+                                    // Switch to previous test                                
+                                    if s_settings.m_test_index==0 {
+                                        s_settings.m_test_index = g_test_entries.len()-1;
+                                    }else{
+                                        s_settings.m_test_index-=1;
+                                    }
+                                    s_test = (g_test_entries
+                                        [s_settings.m_test_index as usize]
+                                        .create_fcn)(
+                                        g_debug_draw.clone()
+                                    );
+                                },
+                                Some(VirtualKeyCode::RBracket) => {
+                                    // Switch to next test
+                                    s_settings.m_test_index+=1;
+                                    if s_settings.m_test_index==g_test_entries.len(){
+                                        s_settings.m_test_index = 0;
+                                    }
+                                    s_test = (g_test_entries
+                                        [s_settings.m_test_index as usize]
+                                        .create_fcn)(
+                                        g_debug_draw.clone()
+                                    );
+                                },
+                                Some(VirtualKeyCode::Tab) => {
+                                    let mut d = g_debug_draw.borrow_mut();
+                                    d.m_show_ui = !d.m_show_ui;
+                                },
+                                _ => s_test.borrow_mut().keyboard(input),
+                            }    
+                        }                    
                     }
                     WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
                     _ => (),

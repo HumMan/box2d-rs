@@ -144,9 +144,9 @@ pub(crate) trait TestDyn<D: UserDataType, F:Facade>
 		b2_not_used(joint);
 	}
 
-	// fn shift_origin(&mut self, new_origin: B2vec2) {
-	// 	private::shift_origin(&mut self.get_base().borrow_mut(), new_origin);
-	// }
+	fn shift_origin(&mut self, new_origin: B2vec2) {
+		private::shift_origin(&mut self.get_base().borrow_mut(), new_origin);
+	}
 }
 
 pub(crate) type TestBasePtr<D> = Rc<RefCell<Test<D>>>;
