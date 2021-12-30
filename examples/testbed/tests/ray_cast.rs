@@ -239,11 +239,11 @@ impl<F: Facade> TestDyn<UserDataTypes, F> for RayCast<UserDataTypes> {
 					self.m_mode = Mode::EAny;
 				}
 
-				if sys::igRadioButtonBool(im_str!("Any").as_ptr(),  self.m_mode == Mode::EClosest) {
+				if sys::igRadioButtonBool(im_str!("Closest").as_ptr(),  self.m_mode == Mode::EClosest) {
 					self.m_mode = Mode::EClosest;
 				}
 
-				if sys::igRadioButtonBool(im_str!("Any").as_ptr(),  self.m_mode == Mode::EMultiple) {
+				if sys::igRadioButtonBool(im_str!("Multiple").as_ptr(),  self.m_mode == Mode::EMultiple) {
 					self.m_mode = Mode::EMultiple;
 				}
 

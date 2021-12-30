@@ -403,7 +403,7 @@ impl System {
                             &mut s_settings.m_hertz,
                             5.0,
                             120.0,
-                            im_str!("%.0f").as_ptr(),
+                            im_str!("%.0f hz").as_ptr(),
                             1.0,
                         );
 
@@ -457,7 +457,7 @@ impl System {
                         );
 
                         let button_sz = [-1.0, 0.0];
-                        if ui.button(im_str!("Pause (p)"), button_sz) {
+                        if ui.button(im_str!("Pause (P)"), button_sz) {
                             s_settings.m_pause = !s_settings.m_pause;
                         }
                         if ui.button(im_str!("Single Step (O)"), button_sz) {
