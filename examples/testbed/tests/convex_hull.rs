@@ -132,8 +132,9 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for ConvexHull<D> {
 					3.0,
 					B2color::new(0.3, 0.9, 0.3),
 				);
-				base.g_debug_draw.borrow_mut().draw_string(
+				base.g_debug_draw.borrow_mut().draw_string_world(
 					ui,
+					*camera,
 					self.m_points[i] + B2vec2::new(0.05, 0.05),
 					&format!("{0}", i),
 				);

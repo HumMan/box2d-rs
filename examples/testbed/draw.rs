@@ -23,9 +23,9 @@ impl Camera {
     pub fn convert_screen_to_world(&self, screen_point: B2vec2) -> B2vec2 {
         return private::camera_convert_screen_to_world(self, screen_point);
     }
-    // pub fn convert_world_to_screen(&self, world_point: B2vec2) -> B2vec2 {
-    //     return private::convert_world_to_screen(self, world_point);
-    // }
+    pub fn convert_world_to_screen(&self, world_point: B2vec2) -> B2vec2 {
+        return private::convert_world_to_screen(self, world_point);
+    }
     pub fn build_projection_matrix(&self, m: &mut [f32; 16], z_bias: f32) {
         private::build_projection_matrix(self, m, z_bias);
     }
@@ -71,9 +71,9 @@ impl TestBedDebugDraw {
         private::draw_string(self, ui, p, text);
     }
 
-    // pub fn draw_string_world(&self, ui: &imgui::Ui<'_>, camera: Camera, pw: B2vec2, text: &str) {
-    //     private::draw_string_world(self, ui, camera, pw, text);
-    // }
+    pub fn draw_string_world(&self, ui: &imgui::Ui<'_>, camera: Camera, pw: B2vec2, text: &str) {
+        private::draw_string_world(self, ui, camera, pw, text);
+    }
 
     pub fn draw_aabb(&mut self, aabb: B2AABB, color: B2color) {
         private::draw_aabb(self, aabb, color);

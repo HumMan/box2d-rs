@@ -9,14 +9,18 @@ use std::fs::File;
 use std::io::BufReader;
 use std::path::Path;
 
+fn sanitize_file_name(fname:&str)->String{
+	return fname.replace(".","").replace("<","");
+}
+
 pub(crate) fn test_deserialize<D: UserDataType>(test_name: &str) -> B2worldPtr<D> {
-	let test_dir = Path::new("serialize_test").join(Path::new(test_name));
+	let test_dir = Path::new("serialize_test").join(Path::new(&sanitize_file_name(test_name)));
 	return world_from_json(&test_dir.join(Path::new("world.json.json")));
 }
 
 /// Test serialize to multiple formats
 pub(crate) fn test_serialize<D: UserDataType>(test_name: &str, world: B2worldPtr<D>) {
-	let test_dir = Path::new("serialize_test").join(Path::new(test_name));
+	let test_dir = Path::new("serialize_test").join(Path::new(&sanitize_file_name(test_name)));
 	std::fs::create_dir_all(test_dir.clone()).unwrap();
 
 	world_to_json(world.clone(), &test_dir.join(Path::new("world.json")));

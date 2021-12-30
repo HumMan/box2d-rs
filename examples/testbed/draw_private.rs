@@ -32,25 +32,25 @@ pub(crate) fn camera_convert_screen_to_world(self_: &Camera, ps: B2vec2) -> B2ve
 	return pw;
 }
 
-// pub(crate) fn convert_world_to_screen(self_: &Camera, pw: B2vec2) -> B2vec2 {
-// 	let w: f32 = self_.m_width as f32;
-// 	let h: f32 = self_.m_height as f32;
-// 	let ratio: f32 = w / h;
-// 	let mut extents = B2vec2::new(ratio * 25.0, 25.0);
-// 	extents *= self_.m_zoom;
+pub(crate) fn convert_world_to_screen(self_: &Camera, pw: B2vec2) -> B2vec2 {
+	let w: f32 = self_.m_width as f32;
+	let h: f32 = self_.m_height as f32;
+	let ratio: f32 = w / h;
+	let mut extents = B2vec2::new(ratio * 25.0, 25.0);
+	extents *= self_.m_zoom;
 
-// 	let lower: B2vec2 = self_.m_center - extents;
-// 	let upper: B2vec2 = self_.m_center + extents;
+	let lower: B2vec2 = self_.m_center - extents;
+	let upper: B2vec2 = self_.m_center + extents;
 
-// 	let u: f32 = (pw.x - lower.x) / (upper.x - lower.x);
-// 	let v: f32 = (pw.y - lower.y) / (upper.y - lower.y);
+	let u: f32 = (pw.x - lower.x) / (upper.x - lower.x);
+	let v: f32 = (pw.y - lower.y) / (upper.y - lower.y);
 
-// 	let ps = B2vec2 {
-// 		x: u * w,
-// 		y: (1.0 - v) * h,
-// 	};
-// 	return ps;
-// }
+	let ps = B2vec2 {
+		x: u * w,
+		y: (1.0 - v) * h,
+	};
+	return ps;
+}
 
 // Convert from world coordinates to normalized device coordinates.
 // http://www.songho.ca/opengl/gl_projectionmatrix.html
@@ -501,11 +501,10 @@ pub(crate) fn draw_string(self_: &TestBedDebugDraw, ui: &imgui::Ui<'_>, p: B2vec
 	if self_.m_show_ui == false {
 		return;
 	}
-
 	imgui::Window::new(im_str!("Overlay"))
-		.flags(imgui::WindowFlags::NO_DECORATION | imgui::WindowFlags::NO_BACKGROUND)
+		.flags(imgui::WindowFlags::NO_DECORATION | imgui::WindowFlags::NO_BACKGROUND | imgui::WindowFlags::NO_INPUTS)
 		.position([0.0, 0.0], imgui::Condition::Always)
-		.size([600.0, 700.0], imgui::Condition::Always)
+		.size([2000.0, 2000.0], imgui::Condition::Always)
 		.build(ui, || {
 			unsafe {
 				sys::igSetCursorPos(sys::ImVec2{x:p.x,y:p.y});
@@ -517,17 +516,14 @@ pub(crate) fn draw_string(self_: &TestBedDebugDraw, ui: &imgui::Ui<'_>, p: B2vec
 		});
 }
 
-// pub(crate) fn draw_string_world(
-// 	self_: &TestBedDebugDraw,
-// 	ui: &imgui::Ui<'_>,
-// 	camera: Camera,
-// 	pw: B2vec2,
-// 	text: &str,
-// ) {
-// 	let ps: B2vec2 = camera.convert_world_to_screen(pw);
+pub(crate) fn draw_string_world(self_: &TestBedDebugDraw, ui: &imgui::Ui<'_>, camera: Camera, pw: B2vec2, text: &str) {
+	if self_.m_show_ui == false {
+		return;
+	}
 
-// 	draw_string(self_, ui, ps, text);
-// }
+	let ps: B2vec2 = camera.convert_world_to_screen(pw);
+	draw_string(self_, ui, ps, text);
+}
 
 pub(crate) fn draw_aabb(self_: &mut TestBedDebugDraw, aabb: B2AABB, c: B2color) {
 	let p1: B2vec2 = aabb.lower_bound;
