@@ -6,7 +6,7 @@ use crate::b2_common::*;
 use crate::b2rs_common::UserDataType;
 use crate::b2_settings::*;
 use crate::b2_shape::*;
-use crate::linked_list::*;
+use crate::b2rs_linked_list::*;
 use crate::private::dynamics::b2_fixture as private;
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};

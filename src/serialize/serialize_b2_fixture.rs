@@ -6,7 +6,7 @@ use crate::shapes::b2_chain_shape::*;
 use crate::shapes::b2_circle_shape::*;
 use crate::shapes::b2_edge_shape::*;
 use crate::shapes::b2_polygon_shape::*;
-use crate::shapes::to_derived_shape::*;
+use crate::shapes::b2rs_to_derived_shape::*;
 use std::cell::RefCell;
 use std::rc::{Rc};
 

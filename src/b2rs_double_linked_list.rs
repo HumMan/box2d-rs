@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::ptr;
 use std::rc::{Rc, Weak};
 use crate::b2rs_common::upgrade;
-use crate::linked_list::*;
+use crate::b2rs_linked_list::*;
 use std::fmt;
 
 #[cfg(feature="serde_support")]

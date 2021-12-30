@@ -11,8 +11,8 @@ use crate::b2rs_common::UserDataType;
 use crate::b2_world_callbacks::*;
 use crate::b2_contact_manager::*;
 
-use crate::linked_list::LinkedListNode;
-use crate::double_linked_list::DoubleLinkedListNode;
+use crate::b2rs_linked_list::LinkedListNode;
+use crate::b2rs_double_linked_list::DoubleLinkedListNode;
 
 use crate::private::dynamics::b2_contact as private;
 

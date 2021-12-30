@@ -31,8 +31,8 @@ pub mod b2_growable_stack;
 pub mod b2_contact_manager;
 pub mod b2_rope;
 
-mod double_linked_list;
-mod linked_list;
+mod b2rs_double_linked_list;
+mod b2rs_linked_list;
 
 #[cfg(feature="serde_support")]
 pub mod serialize;

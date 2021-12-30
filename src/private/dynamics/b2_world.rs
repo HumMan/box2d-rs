@@ -14,11 +14,11 @@ use crate::b2_time_step::*;
 use crate::b2_timer::*;
 use crate::b2_world::*;
 use crate::b2_world_callbacks::*;
-use crate::double_linked_list::*;
+use crate::b2rs_double_linked_list::*;
 use crate::b2_contact_manager::*;
 
 
-use crate::shapes::to_derived_shape::ShapeAsDerived;
+use crate::shapes::b2rs_to_derived_shape::ShapeAsDerived;
 
 use std::cell::RefCell;
 use std::rc::Rc;

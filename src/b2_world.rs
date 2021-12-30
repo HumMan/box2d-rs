@@ -12,7 +12,7 @@ use crate::b2_math::*;
 use crate::b2rs_common::*;
 use crate::b2_time_step::*;
 use crate::b2_world_callbacks::*;
-use crate::double_linked_list::*;
+use crate::b2rs_double_linked_list::*;
 
 use crate::private::dynamics::b2_world as private;
 

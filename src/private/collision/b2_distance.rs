@@ -4,7 +4,7 @@ use crate::b2_math::*;
 use crate::b2_common::*;
 use crate::b2_shape::*;
 
-use crate::shapes::to_derived_shape::*;
+use crate::shapes::b2rs_to_derived_shape::*;
 
 use std::sync::atomic::Ordering;
 

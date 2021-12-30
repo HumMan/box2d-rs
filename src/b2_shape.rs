@@ -1,6 +1,6 @@
 use crate::b2_collision::*;
 use crate::b2_math::{B2Transform, B2vec2};
-use crate::shapes::to_derived_shape::*;
+use crate::shapes::b2rs_to_derived_shape::*;
 use std::rc::Rc;
 use std::cell::RefCell;
 

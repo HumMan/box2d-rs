@@ -3,7 +3,7 @@ use crate::b2_contact::*;
 use crate::b2rs_common::UserDataType;
 use crate::b2_world_callbacks::*;
 use crate::b2_fixture::*;
-use crate::double_linked_list::*;
+use crate::b2rs_double_linked_list::*;
 use crate::private::dynamics::b2_contact_manager as private;
 use crate::private::dynamics::b2_contact_registers::*;
 

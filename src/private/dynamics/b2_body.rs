@@ -5,8 +5,8 @@ use crate::b2_common::*;
 use crate::b2rs_common::*;
 use crate::b2_shape::*;
 use crate::b2_world::*;
-use crate::double_linked_list::*;
-use crate::linked_list::*;
+use crate::b2rs_double_linked_list::*;
+use crate::b2rs_linked_list::*;
 
 use std::cell::RefCell;
 use std::ptr;

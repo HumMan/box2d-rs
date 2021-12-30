@@ -5,8 +5,8 @@ use crate::b2_common::*;
 use crate::b2rs_common::UserDataType;
 use crate::b2_time_step::*;
 
-use crate::double_linked_list::*;
-use crate::linked_list::*;
+use crate::b2rs_double_linked_list::*;
+use crate::b2rs_linked_list::*;
 
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};

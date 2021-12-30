@@ -13,8 +13,8 @@ use crate::b2_shape::*;
 use crate::b2_world::*;
 use crate::private::dynamics::b2_body as private;
 
-use crate::linked_list::*;
-use crate::double_linked_list::*;
+use crate::b2rs_linked_list::*;
+use crate::b2rs_double_linked_list::*;
 
 use bitflags::bitflags;
 
