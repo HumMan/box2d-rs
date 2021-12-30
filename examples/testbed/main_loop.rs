@@ -252,8 +252,8 @@ impl System {
                                     // Pan left
                                     if input.modifiers == ModifiersState::CTRL
                                     {
-                                        let newOrigin = B2vec2::new(2.0, 0.0);
-                                        s_test.borrow_mut().shift_origin(newOrigin);
+                                        let new_origin = B2vec2::new(2.0, 0.0);
+                                        s_test.borrow_mut().shift_origin(new_origin);
                                     }
                                     else
                                     {
@@ -264,8 +264,8 @@ impl System {
                                     // Pan right
                                     if input.modifiers == ModifiersState::CTRL
                                     {
-                                        let newOrigin = B2vec2::new(-2.0, 0.0);
-                                        s_test.borrow_mut().shift_origin(newOrigin);
+                                        let new_origin = B2vec2::new(-2.0, 0.0);
+                                        s_test.borrow_mut().shift_origin(new_origin);
                                     }
                                     else
                                     {
@@ -276,8 +276,8 @@ impl System {
                                     // Pan down
                                     if input.modifiers == ModifiersState::CTRL
                                     {
-                                        let newOrigin = B2vec2::new(0.0, 2.0);
-                                        s_test.borrow_mut().shift_origin(newOrigin);
+                                        let new_origin = B2vec2::new(0.0, 2.0);
+                                        s_test.borrow_mut().shift_origin(new_origin);
                                     }
                                     else
                                     {
@@ -288,8 +288,8 @@ impl System {
                                     // Pan up
                                     if input.modifiers == ModifiersState::CTRL
                                     {
-                                        let newOrigin = B2vec2::new(0.0, -2.0);
-                                        s_test.borrow_mut().shift_origin(newOrigin);
+                                        let new_origin = B2vec2::new(0.0, -2.0);
+                                        s_test.borrow_mut().shift_origin(new_origin);
                                     }
                                     else
                                     {

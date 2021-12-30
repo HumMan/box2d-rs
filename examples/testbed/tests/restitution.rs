@@ -4,7 +4,6 @@ use super::super::test::*;
 use box2d_rs::b2_body::*;
 use box2d_rs::b2_fixture::*;
 use box2d_rs::b2_math::*;
-use box2d_rs::b2_settings::*;
 use box2d_rs::b2rs_common::UserDataType;
 use box2d_rs::b2_world::*;
 use box2d_rs::b2_world_callbacks::*;
@@ -53,7 +52,7 @@ impl<D: UserDataType> Restitution<D> {
 
 	fn init(&mut self) {
 
-		const threshold: f32 = 10.0;
+		const THRESHOLD: f32 = 10.0;
 
 		let m_world = self.base.borrow().m_world.clone();
 		{
@@ -65,7 +64,7 @@ impl<D: UserDataType> Restitution<D> {
 
 			let mut fd = B2fixtureDef::default();
 			fd.shape = Some(Rc::new(RefCell::new(shape)));
-			fd.restitutionThreshold = threshold;
+			fd.restitution_threshold = THRESHOLD;
 			B2body::create_fixture(ground, &fd);
 		}
 
@@ -87,7 +86,7 @@ impl<D: UserDataType> Restitution<D> {
 				let body = B2world::create_body(m_world.clone(), &bd);
 
 				fd.restitution = *r;
-				fd.restitutionThreshold = threshold;
+				fd.restitution_threshold = THRESHOLD;
 				B2body::create_fixture(body.clone(), &fd);
 			}
 		}

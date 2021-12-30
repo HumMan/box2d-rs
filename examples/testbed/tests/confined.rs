@@ -4,7 +4,6 @@ use super::super::test::*;
 use box2d_rs::b2_body::*;
 use box2d_rs::b2_fixture::*;
 use box2d_rs::b2_math::*;
-use box2d_rs::b2_settings::*;
 use box2d_rs::b2rs_common::UserDataType;
 use box2d_rs::b2_world::*;
 use box2d_rs::b2_world_callbacks::*;
@@ -158,47 +157,47 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for Confined<D> {
 
 		let m_world = self.base.borrow().m_world.clone();
 
-		//TODO_humman uncomment
-		// bool sleeping = true;
-		// for (let b: BodyPtr<D> = m_world->GetBodyList(); b; b = b->GetNext())
-		// {
-		// 	if b->get_type() != B2bodyType::B2DynamicBody
-		// 	{
-		// 		continue;
-		// 	}
+		let mut sleeping: bool = true;
+		for b in m_world.borrow_mut().get_body_list().iter()
+		{
+			let b = b.borrow_mut();
+			if b.get_type() != B2bodyType::B2DynamicBody
+			{
+				continue;
+			}
 
-		// 	if b->IsAwake()
-		// 	{
-		// 		sleeping = false;
-		// 	}
-		// }
+			if b.is_awake()
+			{
+				sleeping = false;
+			}
+		}
 
-		// if m_step_count == 180
-		// {
-		// 	m_step_count += 0;
-		// }
+		if self.base.borrow().m_step_count == 180
+		{
+			self.base.borrow_mut().m_step_count += 0;
+		}
 
-		// //if sleeping
-		// //{
-		// //	create_circle();
-		// //}
+		//if sleeping
+		//{
+		//	create_circle();
+		//}
 
 		Test::step(self.base.clone(), ui, display, target, settings, *camera);
 
-		// for b in m_world.borrow_mut().get_body_list().iter()
-		// {
-		// 	let b = b.borrow_mut();
-		// 	if b.get_type() != B2bodyType::B2DynamicBody
-		// 	{
-		// 		continue;
-		// 	}
+		for b in m_world.borrow_mut().get_body_list().iter()
+		{
+			let b = b.borrow_mut();
+			if b.get_type() != B2bodyType::B2DynamicBody
+			{
+				continue;
+			}
 
-		// 	let p: B2vec2 = b.get_position();
-		// 	if p.x <= -10.0 || 10.0 <= p.x || p.y <= 0.0 || 20.0 <= p.y
-		// 	{
-		// 		p.x += 0.0;
-		// 	}
-		// }
+			let mut p: B2vec2 = b.get_position();
+			if p.x <= -10.0 || 10.0 <= p.x || p.y <= 0.0 || 20.0 <= p.y
+			{
+				p.x += 0.0;
+			}
+		}
 
 		{
 			let mut base = self.base.borrow_mut();

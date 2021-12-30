@@ -4,29 +4,14 @@ mod test {
     use std::rc::Rc;
 
     use box2d_rs::b2_body::*;
-    use box2d_rs::b2_fixture::*;
     use box2d_rs::b2_math::*;
     use box2d_rs::b2rs_common::UserDataType;
     use box2d_rs::b2_world::*;
-    use box2d_rs::shapes::b2_polygon_shape::*;
 	use box2d_rs::shapes::b2_circle_shape::*;
-	use box2d_rs::b2_shape::*;
-	use box2d_rs::b2_joint::*;
-	use box2d_rs::joints::b2_distance_joint::*;
-	use box2d_rs::joints::b2_prismatic_joint::*;
-	use box2d_rs::joints::b2_revolute_joint::*;
 	use box2d_rs::b2_world_callbacks::*;
 	use box2d_rs::b2_contact::*;
-	use box2d_rs::b2_body::*;
 	use box2d_rs::b2_collision::*;
-	use box2d_rs::b2_contact::*;
-	use box2d_rs::b2_fixture::*;
-	use box2d_rs::b2_joint::*;
-	use box2d_rs::b2_math::*;
 	use box2d_rs::b2_common::*;
-	use box2d_rs::b2_time_step::*;
-	use box2d_rs::b2_world::*;
-	use box2d_rs::b2_world_callbacks::*;
 
     #[cfg(feature="serde_support")]
 	use serde::{Serialize, Deserialize};
@@ -85,18 +70,18 @@ mod test {
 		body_a.borrow_mut().set_transform(B2vec2::new(0.0, 0.0), 0.0);
 		body_b.borrow_mut().set_transform(B2vec2::new(100.0, 0.0), 0.0);
 
-		const timeStep: f32 = 1.0 / 60.0;
-		const velocityIterations:i32 = 6;
-		const positionIterations:i32 = 2;
+		const TIME_STEP: f32 = 1.0 / 60.0;
+		const VELOCITY_ITERATIONS:i32 = 6;
+		const POSITION_ITERATIONS:i32 = 2;
 
-		world.borrow_mut().step(timeStep, velocityIterations, positionIterations);
+		world.borrow_mut().step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
 
 		assert_eq!(world.borrow().get_contact_list().iter().next().is_none(), true);
 		assert_eq!(listener.borrow().begin_contact, false);
 		
 		body_b.borrow_mut().set_transform(B2vec2::new(1.0, 0.0), 0.0);
 
-		world.borrow_mut().step(timeStep, velocityIterations, positionIterations);
+		world.borrow_mut().step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
 
 		assert_eq!(world.borrow().get_contact_list().iter().next().is_none(), false);
 		assert_eq!(listener.borrow().begin_contact, true);

@@ -3,7 +3,6 @@ use crate::b2_contact::*;
 use crate::b2_math::*;
 use crate::b2_common::*;
 use crate::b2rs_common::*;
-use crate::b2_settings::*;
 use crate::b2_time_step::*;
 use crate::b2_collision::*;
 
@@ -49,7 +48,7 @@ pub(crate) fn new<D: UserDataType>(def: &B2contactSolverDef, contacts: &Vec<Cont
 		let mut vc = &mut result.m_velocity_constraints[i];
 		vc.friction = contact.m_friction;
 		vc.restitution = contact.m_restitution;
-		vc.threshold = contact.m_restitutionThreshold;
+		vc.threshold = contact.m_restitution_threshold;
 		vc.tangent_speed = contact.m_tangent_speed;
 		vc.index_a = body_a.m_island_index;
 		vc.index_b = body_b.m_island_index;

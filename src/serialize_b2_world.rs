@@ -1,4 +1,4 @@
-use serde::de::{self, Deserializer, Error, MapAccess, SeqAccess, Visitor};
+use serde::de::{self, Deserializer, MapAccess, SeqAccess, Visitor};
 use serde::{
     ser::{SerializeSeq, SerializeStruct},
     Deserialize, Serialize, Serializer,
@@ -26,7 +26,6 @@ use crate::joints::serialize::serialize_b2_wheel_joint::*;
 use strum::VariantNames;
 use strum_macros::EnumVariantNames;
 
-use crate::double_linked_list::*;
 use crate::serialize_b2_body::*;
 
 struct JointWithType<T: Serialize> {

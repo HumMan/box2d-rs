@@ -634,14 +634,14 @@ fn solve_bend_pbd_triangle(_self: &mut B2rope)
 		let wv: f32 = c.inv_mass2;
 		let wb1: f32 = c.inv_mass3;
 
-		let W: f32 = wb0 + wb1 + 2.0 * wv;
-		let invW: f32 = stiffness / W;
+		let w: f32 = wb0 + wb1 + 2.0 * wv;
+		let inv_w: f32 = stiffness / w;
 
 		let d: B2vec2 = v - (1.0 / 3.0) * (b0 + v + b1);
 
-		let db0: B2vec2 = 2.0 * wb0 * invW * d;
-		let dv: B2vec2 = -4.0 * wv * invW * d;
-		let db1: B2vec2 = 2.0 * wb1 * invW * d;
+		let db0: B2vec2 = 2.0 * wb0 * inv_w * d;
+		let dv: B2vec2 = -4.0 * wv * inv_w * d;
+		let db1: B2vec2 = 2.0 * wb1 * inv_w * d;
 
 		b0 += db0;
 		v += dv;

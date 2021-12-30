@@ -4,8 +4,6 @@ use super::super::test::*;
 use box2d_rs::b2_body::*;
 use box2d_rs::b2_joint::*;
 use box2d_rs::b2_math::*;
-use box2d_rs::b2_settings::*;
-use box2d_rs::b2_common::*;
 use box2d_rs::b2_fixture::*;
 use box2d_rs::b2_world::*;
 use box2d_rs::b2_world_callbacks::*;
@@ -157,8 +155,8 @@ impl<D: UserDataType> Web<D> {
 					5.0,
 				);
 				let mut jd = B2distanceJointDef::default();
-				const frequencyHz: f32 = 2.0;
-				const dampingRatio: f32 = 0.0;
+				const FREQUENCY_HZ: f32 = 2.0;
+				const DAMPING_RATIO: f32 = 0.0;
 
 				let create_joint =
 					|m_world: B2worldPtr<D>, jd: &mut B2distanceJointDef<D>| -> B2jointPtr<D> {
@@ -171,8 +169,8 @@ impl<D: UserDataType> Web<D> {
 						b2_linear_stiffness(
 							&mut jd.stiffness,
 							&mut jd.damping,
-							frequencyHz,
-							dampingRatio,
+							FREQUENCY_HZ,
+							DAMPING_RATIO,
 							body_a,
 							body_b,
 						);

@@ -28,7 +28,7 @@ impl<D: UserDataType> Serialize for B2fixture<D> {
 		let mut state = serializer.serialize_struct("B2fixture", 7)?;
 		state.serialize_field("m_friction", &self.m_friction)?;
 		state.serialize_field("m_restitution", &self.m_restitution)?;
-		state.serialize_field("m_restitution_threshold", &self.m_restitutionThreshold)?;
+		state.serialize_field("m_restitution_threshold", &self.m_restitution_threshold)?;
 		state.serialize_field("m_density", &self.m_density)?;
 		state.serialize_field("m_is_sensor", &self.m_is_sensor)?;
 		state.serialize_field("m_filter", &self.m_filter)?;
@@ -100,7 +100,7 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2fixtureVisitorContext<U> {
 					.next_element()?
 					.ok_or_else(|| de::Error::invalid_length(0, &self))?;
 
-				definition.restitutionThreshold = seq
+				definition.restitution_threshold = seq
 					.next_element()?
 					.ok_or_else(|| de::Error::invalid_length(0, &self))?;
 
@@ -167,7 +167,7 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2fixtureVisitorContext<U> {
 							definition.restitution = map.next_value()?;
 						}
 						Field::m_restitution_threshold => {
-							definition.restitutionThreshold = map.next_value()?;
+							definition.restitution_threshold = map.next_value()?;
 						}
 						Field::m_density => {
 							definition.density = map.next_value()?;
@@ -234,7 +234,7 @@ impl<'de, U: UserDataType> DeserializeSeed<'de> for B2fixtureListVisitorContext<
 			where
 				V: SeqAccess<'de>,
 			{
-				while let Some(elem) = seq.next_element_seed(B2fixtureVisitorContext {
+				while let Some(_elem) = seq.next_element_seed(B2fixtureVisitorContext {
 					body: self.0.body.clone(),
 				})? {}
 				Ok(())

@@ -115,8 +115,8 @@ pub(crate) fn mouse_down<D: UserDataType>(self_: &mut Test<D>, p: B2vec2) {
 		let body_ptr = fixture.borrow().get_body();
 		let mut jd;
 		{
-			let frequencyHz: f32 = 5.0;
-			let dampingRatio: f32 = 0.7;
+			let frequency_hz: f32 = 5.0;
+			let damping_ratio: f32 = 0.7;
 	
 			jd = B2mouseJointDef {
 				base: B2jointDef {
@@ -129,7 +129,7 @@ pub(crate) fn mouse_down<D: UserDataType>(self_: &mut Test<D>, p: B2vec2) {
 				max_force: 1000.0 * body_ptr.borrow().get_mass(),
 				..Default::default()
 			};
-			b2_linear_stiffness(&mut jd.stiffness, &mut jd.damping, frequencyHz, dampingRatio, jd.base.body_a.clone().unwrap(), jd.base.body_b.clone().unwrap());
+			b2_linear_stiffness(&mut jd.stiffness, &mut jd.damping, frequency_hz, damping_ratio, jd.base.body_a.clone().unwrap(), jd.base.body_b.clone().unwrap());
 		}
 
 		self_.m_mouse_joint = Some(self_.m_world.borrow_mut().create_joint(&B2JointDefEnum::<D>::MouseJoint(jd)));

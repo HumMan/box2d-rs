@@ -35,7 +35,7 @@ pub fn b2_mix_restitution(restitution1: f32, restitution2: f32) -> f32 {
 }
 
 /// Restitution mixing law. This picks the lowest value.
-pub fn b2MixRestitutionThreshold(threshold1: f32, threshold2: f32) -> f32 {
+pub fn b2_mix_restitution_threshold(threshold1: f32, threshold2: f32) -> f32 {
 	return if threshold1 < threshold2 {threshold1} else {threshold2};
 }
 
@@ -218,18 +218,18 @@ impl<D: UserDataType> B2contact<D> {
 
 	/// Override the default restitution velocity threshold mixture. You can call this in b2ContactListener::PreSolve.
 	/// The value persists until you set or reset.
-	pub fn  SetRestitutionThreshold(&mut self, threshold:f32){
-		inline::SetRestitutionThreshold(self, threshold);
+	pub fn  set_restitution_threshold(&mut self, threshold:f32){
+		inline::set_restitution_threshold(self, threshold);
 	}
 
 	/// Get the restitution threshold.
-	pub fn  GetRestitutionThreshold(&self)->f32{
-		return inline::GetRestitutionThreshold(self);
+	pub fn  get_restitution_threshold(&self)->f32{
+		return inline::get_restitution_threshold(self);
 	}
 
 	/// Reset the restitution threshold to the default value.
-	pub fn  ResetRestitutionThreshold(&mut self){
-		inline::ResetRestitutionThreshold(self);
+	pub fn  reset_restitution_threshold(&mut self){
+		inline::reset_restitution_threshold(self);
 	}
 
 	/// Set the desired tangent speed for a conveyor belt behavior. In meters per second.
@@ -330,7 +330,7 @@ pub struct B2contact<D: UserDataType> {
 
 	pub(crate) m_friction: f32,
 	pub(crate) m_restitution: f32,
-	pub(crate) m_restitutionThreshold: f32,
+	pub(crate) m_restitution_threshold: f32,
 
 	pub(crate) m_tangent_speed: f32,
 }
@@ -430,18 +430,18 @@ mod inline {
 		);
 	}
 
-	pub fn SetRestitutionThreshold<D: UserDataType>(this: &mut B2contact<D>, threshold: f32) {
-		this.m_restitutionThreshold = threshold;
+	pub fn set_restitution_threshold<D: UserDataType>(this: &mut B2contact<D>, threshold: f32) {
+		this.m_restitution_threshold = threshold;
 	}
 
-	pub fn GetRestitutionThreshold<D: UserDataType>(this: &B2contact<D>) -> f32 {
-		return this.m_restitutionThreshold;
+	pub fn get_restitution_threshold<D: UserDataType>(this: &B2contact<D>) -> f32 {
+		return this.m_restitution_threshold;
 	}
 
-	pub fn ResetRestitutionThreshold<D: UserDataType>(this: &mut B2contact<D>) {
-		this.m_restitutionThreshold = b2MixRestitutionThreshold(
-			this.m_fixture_a.borrow().m_restitutionThreshold,
-			this.m_fixture_b.borrow().m_restitutionThreshold,
+	pub fn reset_restitution_threshold<D: UserDataType>(this: &mut B2contact<D>) {
+		this.m_restitution_threshold = b2_mix_restitution_threshold(
+			this.m_fixture_a.borrow().m_restitution_threshold,
+			this.m_fixture_b.borrow().m_restitution_threshold,
 		);
 	}
 

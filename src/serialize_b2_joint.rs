@@ -11,8 +11,6 @@ use crate::b2_body::*;
 use crate::b2_joint::*;
 use crate::b2rs_common::UserDataType;
 
-use crate::b2_world::*;
-
 use strum::VariantNames;
 use strum_macros::EnumVariantNames;
 

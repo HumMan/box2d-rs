@@ -18,8 +18,8 @@ impl<D: UserDataType> Default for B2distanceJointDef<D> {
 			local_anchor_a: B2vec2::zero(),
 			local_anchor_b: B2vec2::zero(),
 			length: 1.0,
-			minLength: 0.0,
-			maxLength: B2_MAX_FLOAT,
+			min_length: 0.0,
+			max_length: B2_MAX_FLOAT,
 			stiffness: 0.0,
 			damping: 0.0,
 		};
@@ -47,10 +47,10 @@ pub struct B2distanceJointDef<D: UserDataType> {
 	pub stiffness: f32,
 
 	/// Minimum length. Clamped to a stable minimum value.
-	pub minLength: f32,
+	pub min_length: f32,
 
 	/// Maximum length. Must be greater than or equal to the minimum length.
-	pub maxLength: f32,
+	pub max_length: f32,
 	
 	/// The linear stiffness in N/m.	
 	pub damping: f32,
@@ -153,35 +153,35 @@ impl<D: UserDataType> B2distanceJoint<D> {
 	/// Set the rest length
 	/// @returns clamped rest length
 	pub fn set_length(&mut self, length: f32)->f32 {
-		return private::SetLength(self,length);
+		return private::set_length(self,length);
 	}
 
 	/// Get the minimum length
-	pub fn GetMinLength(&self)  -> f32  { 
-		return self.m_minLength; 
+	pub fn get_min_length(&self)  -> f32  { 
+		return self.m_min_length; 
 	}
 
 	/// Set the minimum length
 	/// @returns the clamped minimum length
-	pub fn SetMinLength(&mut self, minLength: f32)  -> f32 
+	pub fn set_min_length(&mut self, min_length: f32)  -> f32 
 	{
-		return private::SetMinLength(self, minLength);
+		return private::set_min_length(self, min_length);
 	}
 
 	/// Get the maximum length
-	pub fn GetMaxLength(&self)  -> f32  { 
-		return self.m_maxLength; 
+	pub fn get_max_length(&self)  -> f32  { 
+		return self.m_max_length; 
 	}
 
 	/// Set the maximum length
 	/// @returns the clamped maximum length
-	pub fn SetMaxLength(&mut self, maxLength: f32)  -> f32  {
-		return private::SetMaxLength(self, maxLength);
+	pub fn set_max_length(&mut self, max_length: f32)  -> f32  {
+		return private::set_max_length(self, max_length);
 	}
 
 	/// Get the current length
-	pub fn GetCurrentLength(&self)  -> f32 {
-		return private::GetCurrentLength(self);
+	pub fn get_current_length(&self)  -> f32 {
+		return private::get_current_length(self);
 	}
 	
 
@@ -216,8 +216,8 @@ pub struct B2distanceJoint<D: UserDataType> {
 	pub(crate) m_damping: f32,
 	pub(crate) m_bias: f32,
 	pub(crate)  m_length: f32,
-	pub(crate)  m_minLength: f32,
-	pub(crate)  m_maxLength: f32,
+	pub(crate)  m_min_length: f32,
+	pub(crate)  m_max_length: f32,
 
 
 	// Solver shared
@@ -225,8 +225,8 @@ pub struct B2distanceJoint<D: UserDataType> {
 	pub(crate) m_local_anchor_b: B2vec2,
 	pub(crate) m_gamma: f32,
 	pub(crate) m_impulse: f32,
-	pub(crate)  m_lowerImpulse: f32,
-	pub(crate)  m_upperImpulse: f32,
+	pub(crate)  m_lower_impulse: f32,
+	pub(crate)  m_upper_impulse: f32,
 
 
 	// Solver temp
@@ -237,12 +237,12 @@ pub struct B2distanceJoint<D: UserDataType> {
 	pub(crate) m_r_b: B2vec2,
 	pub(crate) m_local_center_a: B2vec2,
 	pub(crate) m_local_center_b: B2vec2,
-	pub(crate) m_currentLength: f32,
+	pub(crate) m_current_length: f32,
 
 	pub(crate) m_inv_mass_a: f32,
 	pub(crate) m_inv_mass_b: f32,
 	pub(crate) m_inv_ia: f32,
 	pub(crate) m_inv_ib: f32,
-	pub(crate)  m_softMass: f32,
+	pub(crate) m_soft_mass: f32,
 	pub(crate) m_mass: f32,
 }

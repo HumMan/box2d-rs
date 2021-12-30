@@ -2,10 +2,8 @@ use super::super::draw::*;
 use super::super::settings::*;
 use super::super::test::*;
 use box2d_rs::b2_body::*;
-use box2d_rs::b2_fixture::*;
 use box2d_rs::b2_joint::*;
 use box2d_rs::b2_math::*;
-use box2d_rs::b2_settings::*;
 use box2d_rs::b2_world::*;
 use box2d_rs::b2_world_callbacks::*;
 use box2d_rs::b2rs_common::UserDataType;
@@ -20,8 +18,6 @@ use std::rc::Rc;
 use imgui::im_str;
 use imgui::sys;
 
-use glium::glutin::event::{ElementState, KeyboardInput, VirtualKeyCode};
-
 // This tests distance joints, body destruction, and joint destruction.
 pub(crate) struct DistanceJoint<D: UserDataType> {
 	base: TestBasePtr<D>,
@@ -34,10 +30,10 @@ pub(crate) struct DistanceJoint<D: UserDataType> {
 struct TestData<D: UserDataType> {
 	m_joint: Option<B2jointPtr<D>>,
 	m_length: f32,
-	m_minLength: f32,
-	m_maxLength: f32,
+	m_min_length: f32,
+	m_max_length: f32,
 	m_hertz: f32,
-	m_dampingRatio: f32,
+	m_damping_ratio: f32,
 
 	m_world: Option<B2worldPtr<D>>,
 }
@@ -101,20 +97,20 @@ impl<D: UserDataType> DistanceJoint<D> {
 
 			let mut test_data = self.test_data.borrow_mut();
 			test_data.m_hertz = 1.0;
-			test_data.m_dampingRatio = 0.7;
+			test_data.m_damping_ratio = 0.7;
 
 			let mut jd = B2distanceJointDef::default();
 			jd.initialize(ground, body, B2vec2::new(0.0, 15.0), bd.position);
 			jd.base.collide_connected = true;
 			test_data.m_length = jd.length;
-			test_data.m_minLength = test_data.m_length;
-			test_data.m_maxLength = test_data.m_length;
+			test_data.m_min_length = test_data.m_length;
+			test_data.m_max_length = test_data.m_length;
 
 			b2_linear_stiffness(
 				&mut jd.stiffness,
 				&mut jd.damping,
 				test_data.m_hertz,
-				test_data.m_dampingRatio,
+				test_data.m_damping_ratio,
 				jd.base.body_a.clone().unwrap(),
 				jd.base.body_b.clone().unwrap(),
 			);
@@ -161,24 +157,24 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for DistanceJoint<D> {
 
 						if sys::igSliderFloat(
 							im_str!("Min Length").as_ptr(),
-							&mut test_data.m_minLength,
+							&mut test_data.m_min_length,
 							0.0,
 							20.0,
 							im_str!("%.0f").as_ptr(),
 							1.0,
 						) {
-							test_data.m_minLength = m_joint.SetMinLength(test_data.m_minLength);
+							test_data.m_min_length = m_joint.set_min_length(test_data.m_min_length);
 						}
 
 						if sys::igSliderFloat(
 							im_str!("Max Length").as_ptr(),
-							&mut test_data.m_maxLength,
+							&mut test_data.m_max_length,
 							0.0,
 							20.0,
 							im_str!("%.0f").as_ptr(),
 							1.0,
 						) {
-							test_data.m_maxLength = m_joint.SetMaxLength(test_data.m_maxLength);
+							test_data.m_max_length = m_joint.set_max_length(test_data.m_max_length);
 						}
 
 						if sys::igSliderFloat(
@@ -195,7 +191,7 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for DistanceJoint<D> {
 								&mut stiffness,
 								&mut damping,
 								test_data.m_hertz,
-								test_data.m_dampingRatio,
+								test_data.m_damping_ratio,
 								m_joint.get_base().get_body_a(),
 								m_joint.get_base().get_body_b(),
 							);
@@ -205,7 +201,7 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for DistanceJoint<D> {
 
 						if sys::igSliderFloat(
 							im_str!("Damping Ratio").as_ptr(),
-							&mut test_data.m_dampingRatio,
+							&mut test_data.m_damping_ratio,
 							0.0,
 							2.0,
 							im_str!("%.1f").as_ptr(),
@@ -217,7 +213,7 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for DistanceJoint<D> {
 								&mut stiffness,
 								&mut damping,
 								test_data.m_hertz,
-								test_data.m_dampingRatio,
+								test_data.m_damping_ratio,
 								m_joint.get_base().get_body_a(),
 								m_joint.get_base().get_body_b(),
 							);

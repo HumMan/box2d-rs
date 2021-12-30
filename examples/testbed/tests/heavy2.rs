@@ -3,7 +3,6 @@ use super::super::settings::*;
 use super::super::test::*;
 use box2d_rs::b2_body::*;
 use box2d_rs::b2_math::*;
-use box2d_rs::b2_settings::*;
 use box2d_rs::b2rs_common::UserDataType;
 use box2d_rs::b2_world::*;
 use box2d_rs::b2_world_callbacks::*;

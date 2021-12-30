@@ -8,7 +8,6 @@ use super::super::test::*;
 use box2d_rs::b2_body::*;
 use box2d_rs::b2_fixture::*;
 use box2d_rs::b2_math::*;
-use box2d_rs::b2_settings::*;
 use box2d_rs::b2_common::*;
 use box2d_rs::b2rs_common::UserDataType;
 
@@ -20,7 +19,6 @@ use box2d_rs::shapes::b2_edge_shape::*;
 use box2d_rs::shapes::b2_polygon_shape::*;
 
 use glium::backend::Facade;
-use glium::glutin::event::{ElementState, KeyboardInput, VirtualKeyCode};
 use std::cell::RefCell;
 use std::rc::Rc;
 

@@ -1,6 +1,5 @@
 use crate::b2_joint::*;
 use crate::b2_math::*;
-use crate::b2_common::*;
 use crate::b2rs_common::UserDataType;
 use crate::b2_time_step::*;
 
@@ -131,12 +130,12 @@ impl<D: UserDataType> B2mouseJoint<D> {
 	}
 
 	/// Set/get the linear stiffness in N/m
-	pub fn SetStiffness(&mut self, stiffness: f32) { self.m_stiffness = stiffness; }
-	pub fn GetStiffness(&self) -> f32 { return self.m_stiffness; }
+	pub fn set_stiffness(&mut self, stiffness: f32) { self.m_stiffness = stiffness; }
+	pub fn get_stiffness(&self) -> f32 { return self.m_stiffness; }
 
 	/// Set/get linear damping in N*s/m
-	pub fn SetDamping(&mut self, damping: f32) { self.m_damping = damping; }
-	pub fn GetDamping(&self) -> f32 { return self.m_damping; }
+	pub fn set_damping(&mut self, damping: f32) { self.m_damping = damping; }
+	pub fn get_damping(&self) -> f32 { return self.m_damping; }
 	
 
 	pub fn new(def: &B2mouseJointDef<D>) -> Self {

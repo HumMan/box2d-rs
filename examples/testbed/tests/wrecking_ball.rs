@@ -4,12 +4,10 @@ use super::super::test::*;
 use box2d_rs::b2_body::*;
 use box2d_rs::b2_fixture::*;
 use box2d_rs::b2_math::*;
-use box2d_rs::b2_common::*;
 use box2d_rs::b2rs_common::UserDataType;
 use box2d_rs::b2_world::*;
 use box2d_rs::b2_joint::*;
 use box2d_rs::b2_world_callbacks::*;
-use box2d_rs::shapes::b2_chain_shape::*;
 use box2d_rs::shapes::b2_polygon_shape::*;
 use box2d_rs::shapes::b2_edge_shape::*;
 use box2d_rs::shapes::b2_circle_shape::*;
@@ -20,7 +18,6 @@ use imgui::im_str;
 use imgui::sys;
 
 use glium::backend::Facade;
-use glium::glutin::event::{ElementState, KeyboardInput, VirtualKeyCode};
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -37,8 +34,8 @@ pub(crate) struct WreckingBall<D: UserDataType> {
 	destruction_listener: B2destructionListenerPtr<D>,
 	contact_listener: B2contactListenerPtr<D>,
 
-	m_distanceJointDef: B2distanceJointDef<D>,
-	m_distanceJoint: Option<B2jointPtr<D>>,
+	m_distance_joint_def: B2distanceJointDef<D>,
+	m_distance_joint: Option<B2jointPtr<D>>,
 	m_stabilize: bool
 }
 
@@ -53,8 +50,8 @@ impl<D: UserDataType> WreckingBall<D> {
 			contact_listener: Rc::new(RefCell::new(B2testContactListenerDefault {
 				base: Rc::downgrade(&base),
 			})),
-			m_distanceJointDef: B2distanceJointDef::default(),
-			m_distanceJoint: None,
+			m_distance_joint_def: B2distanceJointDef::default(),
+			m_distance_joint: None,
 			m_stabilize: true,
 		}));
 
@@ -100,18 +97,18 @@ impl<D: UserDataType> WreckingBall<D> {
 			jd.base.collide_connected = false;
 
 			const N: i32 = 10;
-			const y: f32 = 15.0;
-			self.m_distanceJointDef.local_anchor_a.set(0.0, y);
+			const Y: f32 = 15.0;
+			self.m_distance_joint_def.local_anchor_a.set(0.0, Y);
 
-			let mut prevBody = ground.clone();
+			let mut prev_body = ground.clone();
 			for i in 0..N
 			{
 				let mut bd = B2bodyDef::default();
 				bd.body_type = B2bodyType::B2DynamicBody;
-				bd.position.set(0.5 + 1.0 * i as f32, y);
+				bd.position.set(0.5 + 1.0 * i as f32, Y);
 				if i == N - 1
 				{
-					bd.position.set(1.0 * i as f32, y);
+					bd.position.set(1.0 * i as f32, Y);
 					bd.angular_damping = 0.4;
 				}
 
@@ -119,10 +116,10 @@ impl<D: UserDataType> WreckingBall<D> {
 
 				if i == N - 1
 				{
-					let mut circleShape = B2circleShape::default();
-					circleShape.base.m_radius = 1.5;
+					let mut circle_shape = B2circleShape::default();
+					circle_shape.base.m_radius = 1.5;
 					let mut sfd = B2fixtureDef::default();
-					sfd.shape = Some(Rc::new(RefCell::new(circleShape)));
+					sfd.shape = Some(Rc::new(RefCell::new(circle_shape)));
 					sfd.density = 100.0;
 					sfd.filter.category_bits = 0x0002;
 					B2body::create_fixture(body.clone(), &sfd);
@@ -132,28 +129,28 @@ impl<D: UserDataType> WreckingBall<D> {
 					B2body::create_fixture(body.clone(), &fd);
 				}
 
-				let anchor = B2vec2::new(i as f32, y);
-				jd.initialize(prevBody, body.clone(), anchor);
+				let anchor = B2vec2::new(i as f32, Y);
+				jd.initialize(prev_body, body.clone(), anchor);
 				m_world
 					.borrow_mut()
 					.create_joint(&B2JointDefEnum::RevoluteJoint(jd.clone()));
 
-				prevBody = body;
+				prev_body = body;
 			}
 
-			self.m_distanceJointDef.local_anchor_b.set_zero();
+			self.m_distance_joint_def.local_anchor_b.set_zero();
 
-			let extraLength: f32 = 0.01;
-			self.m_distanceJointDef.minLength = 0.0;
-			self.m_distanceJointDef.maxLength = (N as f32) - 1.0 + extraLength;
-			self.m_distanceJointDef.base.body_b = Some(prevBody);
+			let extra_length: f32 = 0.01;
+			self.m_distance_joint_def.min_length = 0.0;
+			self.m_distance_joint_def.max_length = (N as f32) - 1.0 + extra_length;
+			self.m_distance_joint_def.base.body_b = Some(prev_body);
 		}
 
 		{
-			self.m_distanceJointDef.base.body_a = Some(ground);
-			self.m_distanceJoint = Some(m_world
+			self.m_distance_joint_def.base.body_a = Some(ground);
+			self.m_distance_joint = Some(m_world
 					.borrow_mut()
-					.create_joint(&B2JointDefEnum::DistanceJoint(self.m_distanceJointDef.clone())));
+					.create_joint(&B2JointDefEnum::DistanceJoint(self.m_distance_joint_def.clone())));
 			self.m_stabilize = true;
 		}
 	}
@@ -175,13 +172,13 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for WreckingBall<D> {
 			.build(&ui, || unsafe {
 				if sys::igCheckbox(im_str!("Stabilize").as_ptr(), &mut self.m_stabilize) {
 					let m_world = self.base.borrow().m_world.clone();
-					if self.m_stabilize == true && self.m_distanceJoint.is_none()
+					if self.m_stabilize == true && self.m_distance_joint.is_none()
 					{
-						self.m_distanceJoint = Some(m_world.borrow_mut().create_joint(&B2JointDefEnum::DistanceJoint(self.m_distanceJointDef.clone())));
+						self.m_distance_joint = Some(m_world.borrow_mut().create_joint(&B2JointDefEnum::DistanceJoint(self.m_distance_joint_def.clone())));
 					}
-					else if self.m_stabilize == false && self.m_distanceJoint.is_some()
+					else if self.m_stabilize == false && self.m_distance_joint.is_some()
 					{
-						match self.m_distanceJoint.take()
+						match self.m_distance_joint.take()
 						{
 							Some(j)=>{
 								m_world.borrow_mut().destroy_joint(j);
@@ -203,7 +200,7 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for WreckingBall<D> {
 	) {
 		Test::step(self.base.clone(), ui, display, target, settings, *camera);
 		let mut base = self.base.borrow_mut();
-		if self.m_distanceJoint.is_some()
+		if self.m_distance_joint.is_some()
 		{
 			base.g_debug_draw.borrow().draw_string(
 				ui,

@@ -168,7 +168,6 @@ impl GLRenderPoints {
 		frame: &mut glium::Frame,
 		camera: Camera,
 	) {
-		//TODO_humman не нужно пересоздвавать m_vbo на каждом шаге
 		//self.m_vbo.as_ref().unwrap().write(&self.m_vertices);
 		let vbo = glium::VertexBuffer::new(display, &self.m_vertices).unwrap();
 		let mut proj: [f32; 16] = [0.0;16];

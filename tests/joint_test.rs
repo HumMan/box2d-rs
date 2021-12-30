@@ -8,7 +8,6 @@ mod test {
     use box2d_rs::b2_math::*;
     use box2d_rs::b2rs_common::UserDataType;
     use box2d_rs::b2_world::*;
-    use box2d_rs::shapes::b2_polygon_shape::*;
 	use box2d_rs::shapes::b2_circle_shape::*;
 	use box2d_rs::b2_shape::*;
 	use box2d_rs::b2_joint::*;
@@ -51,61 +50,61 @@ mod test {
 
 		let body_a = B2world::create_body(world.clone(), &body_def);
 		let body_b = B2world::create_body(world.clone(), &body_def);
-		let bodyC = B2world::create_body(world.clone(), &body_def);
+		let body_c = B2world::create_body(world.clone(), &body_def);
 
-		let mut massData = B2massData::default();
-		circle.compute_mass(&mut massData, fixture_def.density);
-		let mg: f32 = massData.mass * gravity.y;
+		let mut mass_data = B2massData::default();
+		circle.compute_mass(&mut mass_data, fixture_def.density);
+		let mg: f32 = mass_data.mass * gravity.y;
 
 		B2body::create_fixture(body_a.clone(), &fixture_def);
 		B2body::create_fixture(body_b.clone(), &fixture_def);
-		B2body::create_fixture(bodyC.clone(), &fixture_def);
+		B2body::create_fixture(body_c.clone(), &fixture_def);
 
-		let mut distanceJointDef = B2distanceJointDef::default();
-		distanceJointDef.initialize(ground.clone(), body_a, body_def.position + B2vec2::new(0.0, 4.0), body_def.position);
-		distanceJointDef.minLength = distanceJointDef.length;
-		distanceJointDef.maxLength = distanceJointDef.length;
+		let mut distance_joint_def = B2distanceJointDef::default();
+		distance_joint_def.initialize(ground.clone(), body_a, body_def.position + B2vec2::new(0.0, 4.0), body_def.position);
+		distance_joint_def.min_length = distance_joint_def.length;
+		distance_joint_def.max_length = distance_joint_def.length;
 
-		let mut prismaticJointDef = B2prismaticJointDef::default();
-		prismaticJointDef.initialize(ground.clone(), body_b, body_def.position, B2vec2::new(1.0, 0.0));
+		let mut prismatic_joint_def = B2prismaticJointDef::default();
+		prismatic_joint_def.initialize(ground.clone(), body_b, body_def.position, B2vec2::new(1.0, 0.0));
 
-		let mut revoluteJointDef = B2revoluteJointDef::default();
-		revoluteJointDef.initialize(ground.clone(), bodyC, body_def.position);
+		let mut revolute_joint_def = B2revoluteJointDef::default();
+		revolute_joint_def.initialize(ground.clone(), body_c, body_def.position);
 
-		let distanceJoint = world.borrow_mut().create_joint(&B2JointDefEnum::DistanceJoint(distanceJointDef.clone()));
-		let prismaticJoint = world.borrow_mut().create_joint(&B2JointDefEnum::PrismaticJoint(prismaticJointDef.clone()));
-		let revoluteJoint = world.borrow_mut().create_joint(&B2JointDefEnum::RevoluteJoint(revoluteJointDef.clone()));
+		let distance_joint = world.borrow_mut().create_joint(&B2JointDefEnum::DistanceJoint(distance_joint_def.clone()));
+		let prismatic_joint = world.borrow_mut().create_joint(&B2JointDefEnum::PrismaticJoint(prismatic_joint_def.clone()));
+		let revolute_joint = world.borrow_mut().create_joint(&B2JointDefEnum::RevoluteJoint(revolute_joint_def.clone()));
 
-		const timeStep: f32 = 1.0 / 60.;
-		const invTimeStep: f32 = 60.0;
-		const velocityIterations:i32 = 6;
-		const positionIterations:i32 = 2;
+		const TIME_STEP: f32 = 1.0 / 60.;
+		const INV_TIME_STEP: f32 = 60.0;
+		const VELOCITY_ITERATIONS:i32 = 6;
+		const POSITION_ITERATIONS:i32 = 2;
 
-		world.borrow_mut().step(timeStep, velocityIterations, positionIterations);
+		world.borrow_mut().step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
 
-		const tol: f32 = 1.0e-5;
+		const TOL: f32 = 1.0e-5;
 		{
-			let F: B2vec2 = distanceJoint.borrow().get_reaction_force(invTimeStep);
-			let T: f32 = distanceJoint.borrow().get_reaction_torque(invTimeStep);
-			assert!(F.x == 0.0);
-			assert!(b2_abs(F.y + mg) < tol);
-			assert!(T == 0.0);
+			let f: B2vec2 = distance_joint.borrow().get_reaction_force(INV_TIME_STEP);
+			let t: f32 = distance_joint.borrow().get_reaction_torque(INV_TIME_STEP);
+			assert!(f.x == 0.0);
+			assert!(b2_abs(f.y + mg) < TOL);
+			assert!(t == 0.0);
 		}
 
 		{
-			let F: B2vec2 = prismaticJoint.borrow().get_reaction_force(invTimeStep);
-			let T: f32 = prismaticJoint.borrow().get_reaction_torque(invTimeStep);
-			assert!(F.x == 0.0);
-			assert!(b2_abs(F.y + mg) < tol);
-			assert!(T == 0.0);
+			let f: B2vec2 = prismatic_joint.borrow().get_reaction_force(INV_TIME_STEP);
+			let t: f32 = prismatic_joint.borrow().get_reaction_torque(INV_TIME_STEP);
+			assert!(f.x == 0.0);
+			assert!(b2_abs(f.y + mg) < TOL);
+			assert!(t == 0.0);
 		}
 
 		{
-			let F: B2vec2 = revoluteJoint.borrow().get_reaction_force(invTimeStep);
-			let T: f32 = revoluteJoint.borrow().get_reaction_torque(invTimeStep);
-			assert!(F.x == 0.0);
-			assert!(b2_abs(F.y + mg) < tol);
-			assert!(T == 0.0);
+			let f: B2vec2 = revolute_joint.borrow().get_reaction_force(INV_TIME_STEP);
+			let t: f32 = revolute_joint.borrow().get_reaction_torque(INV_TIME_STEP);
+			assert!(f.x == 0.0);
+			assert!(b2_abs(f.y + mg) < TOL);
+			assert!(t == 0.0);
 		}
 	}
 }

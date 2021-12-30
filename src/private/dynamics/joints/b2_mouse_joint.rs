@@ -27,7 +27,7 @@ pub(crate) fn  init_velocity_constraints<D: UserDataType>(this: &mut B2mouseJoin
 
 	let q_b = B2Rot::new(a_b);
 
-	let mass: f32 =m_body_b.get_mass();
+	//let mass: f32 =m_body_b.get_mass();
 
 	let d:f32 = this.m_damping;
 	let k:f32 = this.m_stiffness;

@@ -28,7 +28,7 @@ pub(crate) struct ShapeCast<D: UserDataType> {
 
 	m_transform_a: B2Transform,
 	m_transform_b: B2Transform,
-	m_translationB: B2vec2,
+	m_translation_b: B2vec2,
 
 }
 
@@ -52,7 +52,7 @@ impl ShapeCast<UserDataTypes> {
 			m_radius_b: 0.0,
 			m_transform_a: B2Transform::default(),
 			m_transform_b: B2Transform::default(),
-			m_translationB: B2vec2::default(),
+			m_translation_b: B2vec2::default(),
 		}));
 
 		{
@@ -89,7 +89,7 @@ impl ShapeCast<UserDataTypes> {
 			self.m_transform_a.q.set_identity();
 			self.m_transform_b.p.set(-4.0, 0.0);
 			self.m_transform_b.q.set_identity();
-			self.m_translationB.set(8.0, 0.0);
+			self.m_translation_b.set(8.0, 0.0);
 		}
 		else if false {
 			self.m_v_as[0].set(0.0, 0.0);
@@ -104,7 +104,7 @@ impl ShapeCast<UserDataTypes> {
 			self.m_transform_a.q.set_identity();
 			self.m_transform_b.p.set(-4.0, 0.0);
 			self.m_transform_b.q.set_identity();
-			self.m_translationB.set(8.0, 0.0);
+			self.m_translation_b.set(8.0, 0.0);
 		}
 		else
 		{
@@ -122,7 +122,7 @@ impl ShapeCast<UserDataTypes> {
 			self.m_transform_a.q.set_identity();
 			self.m_transform_b.p.set(-0.244360745, 0.05999358);
 			self.m_transform_b.q.set_identity();
-			self.m_translationB.set(0.0, 0.0399999991);
+			self.m_translation_b.set(0.0, 0.0399999991);
 	
 		}
 	}
@@ -153,7 +153,7 @@ impl<F: Facade> TestDyn<UserDataTypes, F> for ShapeCast<UserDataTypes> {
 
 		input.transform_a = self.m_transform_a;
 		input.transform_b = self.m_transform_b;
-		input.translation_b = self.m_translationB;	
+		input.translation_b = self.m_translation_b;	
 
 		let mut output = B2shapeCastOutput::default();
 

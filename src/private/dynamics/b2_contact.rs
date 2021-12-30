@@ -88,7 +88,7 @@ pub fn b2_contact_new<D: UserDataType>(
 
 		m_friction: b2_mix_friction(f_a.borrow().m_friction, f_b.borrow().m_friction),
 		m_restitution: b2_mix_restitution(f_a.borrow().m_restitution, f_b.borrow().m_restitution),
-		m_restitutionThreshold: b2MixRestitutionThreshold(f_a.borrow().m_restitutionThreshold, f_b.borrow().m_restitutionThreshold),
+		m_restitution_threshold: b2_mix_restitution_threshold(f_a.borrow().m_restitution_threshold, f_b.borrow().m_restitution_threshold),
 
 		m_tangent_speed: 0.0,
 
