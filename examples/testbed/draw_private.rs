@@ -8,6 +8,7 @@ use box2d_rs::b2_common::B2_PI;
 use glium::backend::Facade;
 use glium::Surface;
 
+use imgui::sys;
 use imgui::im_str;
 use glium::{implement_vertex, uniform};
 
@@ -503,9 +504,12 @@ pub(crate) fn draw_string(self_: &TestBedDebugDraw, ui: &imgui::Ui<'_>, p: B2vec
 
 	imgui::Window::new(im_str!("Overlay"))
 		.flags(imgui::WindowFlags::NO_DECORATION | imgui::WindowFlags::NO_BACKGROUND)
-		.position([p.x, p.y], imgui::Condition::Always)
-		.size([400.0, 700.0], imgui::Condition::Always)
+		.position([0.0, 0.0], imgui::Condition::Always)
+		.size([600.0, 700.0], imgui::Condition::Always)
 		.build(ui, || {
+			unsafe {
+				sys::igSetCursorPos(sys::ImVec2{x:p.x,y:p.y});
+			}
 			ui.text_colored(
 				[230.0 / 255.0, 153.0 / 255.0, 153.0 / 255.0, 255.0 / 255.0],
 				text,
