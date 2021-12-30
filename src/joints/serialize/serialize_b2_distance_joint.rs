@@ -45,8 +45,8 @@ impl<D: UserDataType> Serialize for B2distanceJointDef<D> {
         state.serialize_field("local_anchor_a", &self.local_anchor_a)?;
         state.serialize_field("local_anchor_b", &self.local_anchor_b)?;
         state.serialize_field("length", &self.length)?;
-        state.serialize_field("minlength", &self.min_length)?;
-        state.serialize_field("maxlength", &self.max_length)?;
+        state.serialize_field("min_length", &self.min_length)?;
+        state.serialize_field("max_length", &self.max_length)?;
         state.serialize_field("stiffness", &self.stiffness)?;
         state.serialize_field("damping", &self.damping)?;
         state.end()
