@@ -14,11 +14,14 @@ pub(crate) fn test_deserialize<D: UserDataType>(test_name: &str) -> B2worldPtr<D
 	return world_from_json(&test_dir.join(Path::new("world.json.json")));
 }
 
-pub(crate) fn test_serialize_deserialize<D: UserDataType>(test_name: &str, world: B2worldPtr<D>) {
+/// Test serialize to multiple formats
+pub(crate) fn test_serialize<D: UserDataType>(test_name: &str, world: B2worldPtr<D>) {
 	let test_dir = Path::new("serialize_test").join(Path::new(test_name));
 	std::fs::create_dir_all(test_dir.clone()).unwrap();
 
 	world_to_json(world.clone(), &test_dir.join(Path::new("world.json")));
+
+	// check that saved world can be correctly deserealized
 	let deserialized_world = world_from_json::<D>(&test_dir.join(Path::new("world.json")));
 	world_to_json(
 		deserialized_world.clone(),

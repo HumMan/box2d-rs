@@ -470,6 +470,12 @@ impl System {
                         }
                         #[cfg(feature="serde_support")]
                         {
+                            if ui.button(im_str!("Serialize"), button_sz) {
+                                test_serialize::test_serialize::<D>(
+                                    g_test_entries[s_settings.m_test_index as usize].name,
+                                    s_test.borrow().get_base().borrow().m_world.clone()
+                                );
+                            }
                             if ui.button(im_str!("Deserialize"), button_sz) {
                                 let new_world = test_serialize::test_deserialize::<D>(g_test_entries[s_settings.m_test_index as usize].name);
                                 let base = s_test.borrow().get_base();
@@ -518,12 +524,6 @@ impl System {
                                                         .create_fcn)(
                                                         g_debug_draw.clone()
                                                     );
-                                                    #[cfg(feature="serde_support")]
-                                                    {                                                        
-                                                        test_serialize::test_serialize_deserialize::<D>(
-                                                            g_test_entries[s_settings.m_test_index as usize].name,
-                                                            s_test.borrow().get_base().borrow().m_world.clone());
-                                                    }
                                                 }
                                             });
                                     }
