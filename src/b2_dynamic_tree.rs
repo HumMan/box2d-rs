@@ -6,22 +6,6 @@ use crate::private::collision::b2_dynamic_tree as private;
 
 pub const B2_NULL_NODE: i32 = -1;
 
-// #[derive(Debug, Clone, Copy)]
-// pub enum TParentOrNext
-// {
-// 	None,
-// 	Parent(i32),
-// 	Next(i32)
-// }
-
-// impl Default for TParentOrNext
-// {
-// 	fn default() -> TParentOrNext
-// 	{
-// 		TParentOrNext::None
-// 	}
-// }
-
 /// A node in the dynamic tree. The client does not interact with this directly.
 #[derive(Default, Clone, Debug)]
 pub struct B2treeNode<UserDataType> {
@@ -30,14 +14,13 @@ pub struct B2treeNode<UserDataType> {
 
 	pub(crate) user_data: Option<UserDataType>,
 
+	//box2d-rs: parent=next for free nodes
 	//union
 	//{
 	//	 parent:i32,
 	//	 next:i32,
 	//},
-	//TODO_humman всё же тут надо сделать нормальный enum а то каша
-	//pub(crate) parent_or_next: TParentOrNext,
-	pub(crate) parent_or_next: i32,
+	pub(crate) parent: i32,
 
 	pub(crate) child1: i32,
 	pub(crate) child2: i32,

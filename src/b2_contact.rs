@@ -74,8 +74,6 @@ impl<D:UserDataType> DoubleLinkedListNode<B2contactEdge<D>> for B2contactEdge<D>
 	}
 }
 
-//TODO_humman по возможности заменить все Option на значение, если оно всегда должно быть заполнено
-
 /// A contact edge is used to connect bodies and contacts together
 /// in a contact graph where each body is a node and each contact
 /// is an edge. A contact edge belongs to a doubly linked list

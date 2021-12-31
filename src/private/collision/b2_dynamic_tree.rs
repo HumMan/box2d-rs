@@ -14,10 +14,10 @@ pub fn b2_dynamic_tree<T: Clone + Default>() -> B2dynamicTree<T> {
 
 	// Build a linked list for the free list.
 	for i in 0..m_node_capacity - 1 {
-		m_nodes[i as usize].parent_or_next = (i + 1) as i32;
+		m_nodes[i as usize].parent = (i + 1) as i32;//parent is next free node
 		m_nodes[i as usize].height = -1;
 	}
-	m_nodes[(m_node_capacity - 1) as usize].parent_or_next = B2_NULL_NODE;
+	m_nodes[(m_node_capacity - 1) as usize].parent = B2_NULL_NODE;
 	m_nodes[(m_node_capacity - 1) as usize].height = -1;
 
 	return B2dynamicTree::<T> {
@@ -44,18 +44,18 @@ pub fn allocate_node<T: Clone + Default>(self_: &mut B2dynamicTree<T>) -> i32 {
 		// Build a linked list for the free list. The parent
 		// pointer becomes the "next" pointer.
 		for i in self_.m_node_count..self_.m_node_capacity - 1 {
-			self_.m_nodes[i as usize].parent_or_next = i + 1; //next
+			self_.m_nodes[i as usize].parent = i + 1; //next free node
 			self_.m_nodes[i as usize].height = -1;
 		}
-		self_.m_nodes[(self_.m_node_capacity - 1) as usize].parent_or_next = B2_NULL_NODE; //next
+		self_.m_nodes[(self_.m_node_capacity - 1) as usize].parent = B2_NULL_NODE;
 		self_.m_nodes[(self_.m_node_capacity - 1) as usize].height = -1;
 		self_.m_free_list = self_.m_node_count;
 	}
 
 	// Peel a node off the free list.
 	let node_id: usize = (self_.m_free_list).try_into().unwrap();
-	self_.m_free_list = self_.m_nodes[node_id].parent_or_next; //next
-	self_.m_nodes[node_id].parent_or_next = B2_NULL_NODE; //parent
+	self_.m_free_list = self_.m_nodes[node_id].parent; //next free node
+	self_.m_nodes[node_id].parent = B2_NULL_NODE;
 	self_.m_nodes[node_id].child1 = B2_NULL_NODE;
 	self_.m_nodes[node_id].child2 = B2_NULL_NODE;
 	self_.m_nodes[node_id].height = 0;
@@ -69,7 +69,7 @@ pub fn allocate_node<T: Clone + Default>(self_: &mut B2dynamicTree<T>) -> i32 {
 pub fn free_node<T: Clone + Default>(self_: &mut B2dynamicTree<T>, node_id: i32) {
 	b2_assert(0 <= node_id && node_id < self_.m_node_capacity);
 	b2_assert(0 < self_.m_node_count);
-	self_.m_nodes[node_id as usize].parent_or_next = self_.m_free_list; //next
+	self_.m_nodes[node_id as usize].parent = self_.m_free_list; //next
 	self_.m_nodes[node_id as usize].height = -1;
 	self_.m_free_list = node_id;
 	self_.m_node_count -= 1;
@@ -172,7 +172,7 @@ pub fn insert_leaf<T: Clone + Default>(self_: &mut B2dynamicTree<T>, leaf: i32) 
 
 	if self_.m_root == B2_NULL_NODE {
 		self_.m_root = leaf;
-		self_.m_nodes[self_.m_root as usize].parent_or_next = B2_NULL_NODE; //parent_or_next = parent
+		self_.m_nodes[self_.m_root as usize].parent = B2_NULL_NODE; 
 		return;
 	}
 
@@ -239,9 +239,9 @@ pub fn insert_leaf<T: Clone + Default>(self_: &mut B2dynamicTree<T>, leaf: i32) 
 	let sibling: i32 = index;
 
 	// create a new parent.
-	let old_parent: i32 = self_.m_nodes[sibling as usize].parent_or_next; //parent_or_next = parent
+	let old_parent: i32 = self_.m_nodes[sibling as usize].parent; 
 	let new_parent: i32 = self_.allocate_node();
-	self_.m_nodes[new_parent as usize].parent_or_next = old_parent; //parent_or_next = parent
+	self_.m_nodes[new_parent as usize].parent = old_parent; 
 	self_.m_nodes[new_parent as usize].user_data = None;
 	let temp_aabb = self_.m_nodes[sibling as usize].aabb;
 	self_.m_nodes[new_parent as usize]
@@ -259,19 +259,19 @@ pub fn insert_leaf<T: Clone + Default>(self_: &mut B2dynamicTree<T>, leaf: i32) 
 
 		self_.m_nodes[new_parent as usize].child1 = sibling;
 		self_.m_nodes[new_parent as usize].child2 = leaf;
-		self_.m_nodes[sibling as usize].parent_or_next = new_parent; //parent_or_next = parent
-		self_.m_nodes[leaf as usize].parent_or_next = new_parent; //parent_or_next = parent
+		self_.m_nodes[sibling as usize].parent = new_parent; 
+		self_.m_nodes[leaf as usize].parent = new_parent; 
 	} else {
 		// The sibling was the root.
 		self_.m_nodes[new_parent as usize].child1 = sibling;
 		self_.m_nodes[new_parent as usize].child2 = leaf;
-		self_.m_nodes[sibling as usize].parent_or_next = new_parent; //parent_or_next = parent
-		self_.m_nodes[leaf as usize].parent_or_next = new_parent; //parent_or_next = parent
+		self_.m_nodes[sibling as usize].parent = new_parent; 
+		self_.m_nodes[leaf as usize].parent = new_parent; 
 		self_.m_root = new_parent;
 	}
 
 	// Walk back up the tree fixing heights and AABBs
-	index = self_.m_nodes[leaf as usize].parent_or_next; //parent_or_next = parent
+	index = self_.m_nodes[leaf as usize].parent; 
 	while index != B2_NULL_NODE {
 		index = self_.balance(index);
 
@@ -291,7 +291,7 @@ pub fn insert_leaf<T: Clone + Default>(self_: &mut B2dynamicTree<T>, leaf: i32) 
 			.aabb
 			.combine_two(temp_aabb1, temp_aabb2);
 
-		index = self_.m_nodes[index as usize].parent_or_next; //parent_or_next = parent
+		index = self_.m_nodes[index as usize].parent; 
 	}
 
 	//validate();
@@ -303,8 +303,8 @@ pub fn remove_leaf<T: Clone + Default>(self_: &mut B2dynamicTree<T>, leaf: i32) 
 		return;
 	}
 
-	let parent: i32 = self_.m_nodes[leaf as usize].parent_or_next; //parent_or_next = parent
-	let grand_parent: i32 = self_.m_nodes[parent as usize].parent_or_next; //parent_or_next = parent
+	let parent: i32 = self_.m_nodes[leaf as usize].parent; 
+	let grand_parent: i32 = self_.m_nodes[parent as usize].parent; 
 	let sibling: i32;
 	if self_.m_nodes[parent as usize].child1 == leaf {
 		sibling = self_.m_nodes[parent as usize].child2;
@@ -319,7 +319,7 @@ pub fn remove_leaf<T: Clone + Default>(self_: &mut B2dynamicTree<T>, leaf: i32) 
 		} else {
 			self_.m_nodes[grand_parent as usize].child2 = sibling;
 		}
-		self_.m_nodes[sibling as usize].parent_or_next = grand_parent; //parent_or_next = parent
+		self_.m_nodes[sibling as usize].parent = grand_parent; 
 		self_.free_node(parent);
 
 		// Adjust ancestor bounds.
@@ -341,11 +341,11 @@ pub fn remove_leaf<T: Clone + Default>(self_: &mut B2dynamicTree<T>, leaf: i32) 
 				self_.m_nodes[child2 as usize].height,
 			);
 
-			index = self_.m_nodes[index as usize].parent_or_next; //parent_or_next = parent
+			index = self_.m_nodes[index as usize].parent; 
 		}
 	} else {
 		self_.m_root = sibling;
-		self_.m_nodes[sibling as usize].parent_or_next = B2_NULL_NODE; //parent_or_next = parent
+		self_.m_nodes[sibling as usize].parent = B2_NULL_NODE; 
 		self_.free_node(parent);
 	}
 
@@ -372,7 +372,7 @@ pub fn balance<T: Clone + Default>(self_: &mut B2dynamicTree<T>, i_a: i32) -> i3
 
 	let balance: i32 = c.height - b.height;
 
-	//parent_or_next = parent
+	
 
 	// Rotate c up
 	if balance > 1 {
@@ -385,16 +385,16 @@ pub fn balance<T: Clone + Default>(self_: &mut B2dynamicTree<T>, i_a: i32) -> i3
 
 		// Swap A and c
 		c.child1 = i_a;
-		c.parent_or_next = a.parent_or_next;
-		a.parent_or_next = i_c;
+		c.parent = a.parent;
+		a.parent = i_c;
 
 		// A's old parent should point to c
-		if c.parent_or_next != B2_NULL_NODE {
-			if self_.m_nodes[c.parent_or_next as usize].child1 == i_a {
-				self_.m_nodes[c.parent_or_next as usize].child1 = i_c;
+		if c.parent != B2_NULL_NODE {
+			if self_.m_nodes[c.parent as usize].child1 == i_a {
+				self_.m_nodes[c.parent as usize].child1 = i_c;
 			} else {
-				b2_assert(self_.m_nodes[c.parent_or_next as usize].child2 == i_a);
-				self_.m_nodes[c.parent_or_next as usize].child2 = i_c;
+				b2_assert(self_.m_nodes[c.parent as usize].child2 == i_a);
+				self_.m_nodes[c.parent as usize].child2 = i_c;
 			}
 		} else {
 			self_.m_root = i_c;
@@ -404,7 +404,7 @@ pub fn balance<T: Clone + Default>(self_: &mut B2dynamicTree<T>, i_a: i32) -> i3
 		if f.height > g.height {
 			c.child2 = i_f;
 			a.child2 = i_g;
-			g.parent_or_next = i_a;
+			g.parent = i_a;
 			a.aabb.combine_two(b.aabb, g.aabb);
 			c.aabb.combine_two(a.aabb, f.aabb);
 
@@ -413,7 +413,7 @@ pub fn balance<T: Clone + Default>(self_: &mut B2dynamicTree<T>, i_a: i32) -> i3
 		} else {
 			c.child2 = i_g;
 			a.child2 = i_f;
-			f.parent_or_next = i_a;
+			f.parent = i_a;
 			a.aabb.combine_two(b.aabb, f.aabb);
 			c.aabb.combine_two(a.aabb, g.aabb);
 
@@ -440,16 +440,16 @@ pub fn balance<T: Clone + Default>(self_: &mut B2dynamicTree<T>, i_a: i32) -> i3
 
 		// Swap A and b
 		b.child1 = i_a;
-		b.parent_or_next = a.parent_or_next;
-		a.parent_or_next = i_b;
+		b.parent = a.parent;
+		a.parent = i_b;
 
 		// A's old parent should point to b
-		if b.parent_or_next != B2_NULL_NODE {
-			if self_.m_nodes[b.parent_or_next as usize].child1 == i_a {
-				self_.m_nodes[b.parent_or_next as usize].child1 = i_b;
+		if b.parent != B2_NULL_NODE {
+			if self_.m_nodes[b.parent as usize].child1 == i_a {
+				self_.m_nodes[b.parent as usize].child1 = i_b;
 			} else {
-				b2_assert(self_.m_nodes[b.parent_or_next as usize].child2 == i_a);
-				self_.m_nodes[b.parent_or_next as usize].child2 = i_b;
+				b2_assert(self_.m_nodes[b.parent as usize].child2 == i_a);
+				self_.m_nodes[b.parent as usize].child2 = i_b;
 			}
 		} else {
 			self_.m_root = i_b;
@@ -459,7 +459,7 @@ pub fn balance<T: Clone + Default>(self_: &mut B2dynamicTree<T>, i_a: i32) -> i3
 		if d.height > e.height {
 			b.child2 = i_d;
 			a.child1 = i_e;
-			e.parent_or_next = i_a;
+			e.parent = i_a;
 			a.aabb.combine_two(c.aabb, e.aabb);
 			b.aabb.combine_two(a.aabb, d.aabb);
 
@@ -468,7 +468,7 @@ pub fn balance<T: Clone + Default>(self_: &mut B2dynamicTree<T>, i_a: i32) -> i3
 		} else {
 			b.child2 = i_e;
 			a.child1 = i_d;
-			d.parent_or_next = i_a;
+			d.parent = i_a;
 			a.aabb.combine_two(c.aabb, d.aabb);
 			b.aabb.combine_two(a.aabb, e.aabb);
 
@@ -546,10 +546,10 @@ pub fn validate_structure<T: Clone + Default>(self_: &B2dynamicTree<T>, index: i
 		return;
 	}
 
-	//parent_or_next = parent
+	
 
 	if index == self_.m_root {
-		b2_assert(self_.m_nodes[index as usize].parent_or_next == B2_NULL_NODE);
+		b2_assert(self_.m_nodes[index as usize].parent == B2_NULL_NODE);
 	}
 
 	let node = &self_.m_nodes[index as usize];
@@ -567,8 +567,8 @@ pub fn validate_structure<T: Clone + Default>(self_: &B2dynamicTree<T>, index: i
 	b2_assert(0 <= child1 && child1 < self_.m_node_capacity);
 	b2_assert(0 <= child2 && child2 < self_.m_node_capacity);
 
-	b2_assert(self_.m_nodes[child1 as usize].parent_or_next == index);
-	b2_assert(self_.m_nodes[child2 as usize].parent_or_next == index);
+	b2_assert(self_.m_nodes[child1 as usize].parent == index);
+	b2_assert(self_.m_nodes[child2 as usize].parent == index);
 
 	self_.validate_structure(child1);
 	self_.validate_structure(child2);
@@ -623,7 +623,7 @@ pub fn validate<T: Clone + Default>(self_: &B2dynamicTree<T>) {
 		let mut free_index: i32 = self_.m_free_list;
 		while free_index != B2_NULL_NODE {
 			b2_assert(0 <= free_index && free_index < self_.m_node_capacity);
-			free_index = self_.m_nodes[free_index as usize].parent_or_next; //parent_or_next=next
+			free_index = self_.m_nodes[free_index as usize].parent;
 			free_count += 1;
 		}
 
@@ -658,8 +658,6 @@ pub fn rebuild_bottom_up<T: Clone + Default>(self_: &mut B2dynamicTree<T>) {
 	nodes.resize(self_.m_node_count as usize, -1);
 	let mut count: i32 = 0;
 
-	//parent_or_next = parent
-
 	// Build array of leaves. Free the rest.
 	for i in 0..self_.m_node_capacity {
 		if self_.m_nodes[i as usize].height < 0 {
@@ -668,7 +666,7 @@ pub fn rebuild_bottom_up<T: Clone + Default>(self_: &mut B2dynamicTree<T>) {
 		}
 
 		if self_.m_nodes[i as usize].is_leaf() {
-			self_.m_nodes[i as usize].parent_or_next = B2_NULL_NODE;
+			self_.m_nodes[i as usize].parent = B2_NULL_NODE;
 			nodes[count as usize] = i;
 			count += 1;
 		} else {
@@ -707,10 +705,10 @@ pub fn rebuild_bottom_up<T: Clone + Default>(self_: &mut B2dynamicTree<T>) {
 		parent.child2 = index2;
 		parent.height = 1 + b2_max(child1.height, child2.height);
 		parent.aabb.combine_two(child1.aabb, child2.aabb);
-		parent.parent_or_next = B2_NULL_NODE;
+		parent.parent = B2_NULL_NODE;
 
-		child1.parent_or_next = parent_index;
-		child2.parent_or_next = parent_index;
+		child1.parent = parent_index;
+		child2.parent = parent_index;
 
 		self_.m_nodes[index1 as usize] = child1;
 		self_.m_nodes[index2 as usize] = child2;
