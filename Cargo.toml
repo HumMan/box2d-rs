@@ -1,6 +1,6 @@
 [package]
 name = "box2d-rs"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["HumMan <kop3nha@gmail.com>"]
 repository = "https://github.com/humman/box2d-rs"
 description = "Port of Box2d to Rust"

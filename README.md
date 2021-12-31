@@ -35,14 +35,14 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-box2d-rs = "0.0.1"
+box2d-rs = "0.0.2"
 ```
 
 If you want serialize/deserialize world with serde:
 
 ```toml
 [dependencies]
-box2d-rs = { version = "0.0.1", features = ["serde_support"] }
+box2d-rs = { version = "0.0.2", features = ["serde_support"] }
 ```
 
 ## Compiling and running the [testbed](https://box2d.org/documentation/md__d_1__git_hub_box2d_docs_testbed.html) from source
