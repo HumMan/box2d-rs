@@ -21,7 +21,6 @@ When porting, I pursued the following goals
 - [ ] replace imgui unsafe blocks by safe
 - [ ] fix some comments
 - [ ] fix deprecation warning in glium modifiers
-- [ ] rename "this" to "_self"
 
 ## Known differences
 
@@ -39,7 +38,14 @@ Add this to your `Cargo.toml`:
 box2d-rs = "0.0.1"
 ```
 
-## Compiling and running the testbed
+If you want serialize/deserialize world with serde:
+
+```toml
+[dependencies]
+box2d-rs = { version = "0.0.1", features = ["serde_support"] }
+```
+
+## Compiling and running the [testbed](https://box2d.org/documentation/md__d_1__git_hub_box2d_docs_testbed.html) from source
 Build and run testbed in debug mode:
 
 ```bash
