@@ -34,25 +34,25 @@ impl<D: UserDataType> Friction<D> {
 		}));
 
 		{
-			let self_ = result_ptr.borrow();
-			let mut base = base.borrow_mut();
+			let mut self_ = result_ptr.borrow_mut();
 			{
-				let world = base.m_world.clone();
+				let world = base.borrow().m_world.clone();
 				let mut world = world.borrow_mut();
 				world.set_destruction_listener(self_.destruction_listener.clone());
 				world.set_contact_listener(self_.contact_listener.clone());
 				world.set_debug_draw(global_draw);
 			}
-			Friction::init(&mut base);
+			self_.init();
 		}
 
 		return result_ptr;
 	}
 
-	fn init(self_: &mut Test<D>) {
+	fn init(&mut self) {
+		let m_world = self.base.borrow().m_world.clone();
 		{
 			let bd = B2bodyDef::default();
-			let ground = B2world::create_body(self_.m_world.clone(), &bd);
+			let ground = B2world::create_body(m_world.clone(), &bd);
 
 			let mut shape = B2edgeShape::default();
 			shape.set_two_sided(B2vec2::new(-40.0, 0.0), B2vec2::new(40.0, 0.0));
@@ -67,7 +67,7 @@ impl<D: UserDataType> Friction<D> {
 			bd.position.set(-4.0, 22.0);
 			bd.angle = -0.25;
 
-			let ground = B2world::create_body(self_.m_world.clone(), &bd);
+			let ground = B2world::create_body(m_world.clone(), &bd);
 			B2body::create_fixture_by_shape(ground.clone(), Rc::new(RefCell::new(shape)), 0.0);
 		}
 
@@ -78,7 +78,7 @@ impl<D: UserDataType> Friction<D> {
 			let mut bd = B2bodyDef::default();
 			bd.position.set(10.5, 19.0);
 
-			let ground = B2world::create_body(self_.m_world.clone(), &bd);
+			let ground = B2world::create_body(m_world.clone(), &bd);
 			B2body::create_fixture_by_shape(ground.clone(), Rc::new(RefCell::new(shape)), 0.0);
 		}
 
@@ -90,7 +90,7 @@ impl<D: UserDataType> Friction<D> {
 			bd.position.set(4.0, 14.0);
 			bd.angle = 0.25;
 
-			let ground = B2world::create_body(self_.m_world.clone(), &bd);
+			let ground = B2world::create_body(m_world.clone(), &bd);
 			B2body::create_fixture_by_shape(ground.clone(), Rc::new(RefCell::new(shape)), 0.0);
 		}
 
@@ -101,7 +101,7 @@ impl<D: UserDataType> Friction<D> {
 			let mut bd = B2bodyDef::default();
 			bd.position.set(-10.5, 11.0);
 
-			let ground = B2world::create_body(self_.m_world.clone(), &bd);
+			let ground = B2world::create_body(m_world.clone(), &bd);
 			B2body::create_fixture_by_shape(ground.clone(), Rc::new(RefCell::new(shape)), 0.0);
 		}
 
@@ -113,7 +113,7 @@ impl<D: UserDataType> Friction<D> {
 			bd.position.set(-4.0, 6.0);
 			bd.angle = -0.25;
 
-			let ground = B2world::create_body(self_.m_world.clone(), &bd);
+			let ground = B2world::create_body(m_world.clone(), &bd);
 			B2body::create_fixture_by_shape(ground.clone(), Rc::new(RefCell::new(shape)), 0.0);
 		}
 
@@ -130,7 +130,7 @@ impl<D: UserDataType> Friction<D> {
 				let mut bd = B2bodyDef::default();
 				bd.body_type = B2bodyType::B2DynamicBody;
 				bd.position.set(-15.0 + 4.0 * i as f32, 28.0);
-				let body = B2world::create_body(self_.m_world.clone(), &bd);
+				let body = B2world::create_body(m_world.clone(), &bd);
 
 				fd.friction = *f;
 				B2body::create_fixture(body.clone(), &fd);

@@ -46,20 +46,22 @@ impl<D: UserDataType> PulleyJoint<D> {
 				world.set_contact_listener(self_.contact_listener.clone());
 				world.set_debug_draw(global_draw);
 			}
-			PulleyJoint::init(&mut self_);
+			self_.init();
 		}
 
 		return result_ptr;
 	}
 
-	fn init(self_: &mut PulleyJoint<D>) {
+	fn init(&mut self) {
+		let m_world = self.base.borrow().m_world.clone();
+
 		let y: f32 = 16.0;
 		let l: f32 = 12.0;
 		let a: f32 = 1.0;
 		let b: f32 = 2.0;
 
 		let ground;
-		let world = self_.base.borrow().m_world.clone();
+		let world = m_world.clone();
 		{
 			let bd = B2bodyDef::default();
 			ground = B2world::create_body(world.clone(), &bd);
@@ -105,7 +107,7 @@ impl<D: UserDataType> PulleyJoint<D> {
 				1.5,
 			);
 
-			self_.m_joint1 = Some(
+			self.m_joint1 = Some(
 				world
 					.borrow_mut()
 					.create_joint(&B2JointDefEnum::PulleyJoint(pulley_def)),

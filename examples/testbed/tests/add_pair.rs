@@ -33,23 +33,22 @@ impl<D: UserDataType> AddPair<D> {
 		}));
 
 		{
-			let mut self_ = result_ptr.borrow_mut();
+			let mut result = result_ptr.borrow_mut();
 			{
 				let world = base.borrow().m_world.clone();
 				let mut world = world.borrow_mut();
-				world.set_destruction_listener(self_.destruction_listener.clone());
-				world.set_contact_listener(self_.contact_listener.clone());
+				world.set_destruction_listener(result.destruction_listener.clone());
+				world.set_contact_listener(result.contact_listener.clone());
 				world.set_debug_draw(global_draw);
 			}
-			AddPair::init(&mut self_);
+			result.init();
 		}
 
 		return result_ptr;
 	}
 
-	//TODO_humman может тут и везде просто self?
-	fn init(self_: &mut AddPair<D>) {
-		let world = self_.base.borrow().m_world.clone();
+	fn init(&mut self) {
+		let world = self.base.borrow().m_world.clone();
 
 		world.borrow_mut().set_gravity(B2vec2::zero());
 		{

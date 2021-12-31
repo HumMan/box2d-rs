@@ -48,25 +48,26 @@ impl<D: UserDataType> BoxStack<D> {
 		}));
 
 		{
-			let mut self_ = result_ptr.borrow_mut();
-			let mut base = base.borrow_mut();
+			let mut self_ = result_ptr.borrow_mut();			
 			{
-				let world = base.m_world.clone();
+				let world = base.borrow().m_world.clone();
 				let mut world = world.borrow_mut();
 				world.set_destruction_listener(self_.destruction_listener.clone());
 				world.set_contact_listener(self_.contact_listener.clone());
 				world.set_debug_draw(global_draw);
 			}
-			BoxStack::init(&mut base, &mut self_.m_bodies);
+			self_.init();
 		}
 
 		return result_ptr;
+
 	}
 
-	fn init(self_: &mut Test<D>, m_bodies: &mut Vec<BodyPtr<D>>) {
+	fn init(&mut self) {
+		let m_world = self.base.borrow().m_world.clone();
 		{
 			let bd = B2bodyDef::default();
-			let ground = B2world::create_body(self_.m_world.clone(), &bd);
+			let ground = B2world::create_body(m_world.clone(), &bd);
 
 			let mut shape = B2edgeShape::default();
 			shape.set_two_sided(B2vec2::new(-40.0, 0.0), B2vec2::new(40.0, 0.0));
@@ -103,8 +104,8 @@ impl<D: UserDataType> BoxStack<D> {
 					//f32 x = i % 2 == 0 ? -0.01 : 0.01;
 					bd.position.set(xs[j] + x, 0.55 + 1.1 * i as f32);
 
-					let body = B2world::create_body(self_.m_world.clone(), &bd);
-					m_bodies.push(body.clone());
+					let body = B2world::create_body(m_world.clone(), &bd);
+					self.m_bodies.push(body.clone());
 
 					B2body::create_fixture(body.clone(), &fd);
 				}

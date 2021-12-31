@@ -57,14 +57,14 @@ impl<D: UserDataType> ApplyForce<D> {
 				world.set_contact_listener(self_.contact_listener.clone());
 				world.set_debug_draw(global_draw);
 			}
-			ApplyForce::init(&mut self_);
+			self_.init();
 		}
 
 		return result_ptr;
 	}
 
-	fn init(self_: &mut ApplyForce<D>) {
-		let world = self_.base.borrow().m_world.clone();
+	fn init(&mut self) {
+		let world = self.base.borrow().m_world.clone();
 		world.borrow_mut().set_gravity(B2vec2::zero());
 
 		const K_RESTITUTION: f32 = 0.4;
@@ -142,13 +142,13 @@ impl<D: UserDataType> ApplyForce<D> {
 			bd.angle = B2_PI;
 			bd.allow_sleep = false;
 
-			self_.m_body = Some(B2world::create_body(world.clone(), &bd));
-			B2body::create_fixture(self_.m_body.as_ref().unwrap().clone(), &sd1);
-			B2body::create_fixture(self_.m_body.as_ref().unwrap().clone(), &sd2);
+			self.m_body = Some(B2world::create_body(world.clone(), &bd));
+			B2body::create_fixture(self.m_body.as_ref().unwrap().clone(), &sd1);
+			B2body::create_fixture(self.m_body.as_ref().unwrap().clone(), &sd2);
 
 			let gravity: f32 = 10.0;
-			let i: f32 = self_.m_body.as_ref().unwrap().borrow().get_inertia();
-			let mass: f32 = self_.m_body.as_ref().unwrap().borrow().get_mass();
+			let i: f32 = self.m_body.as_ref().unwrap().borrow().get_inertia();
+			let mass: f32 = self.m_body.as_ref().unwrap().borrow().get_mass();
 
 			// Compute an effective radius that can be used to
 			// set the max torque for a friction joint
@@ -157,9 +157,9 @@ impl<D: UserDataType> ApplyForce<D> {
 
 			let mut jd = B2frictionJointDef::<D>::default();
 			jd.base.body_a = Some(ground.clone());
-			jd.base.body_b = self_.m_body.clone();
+			jd.base.body_b = self.m_body.clone();
 			jd.local_anchor_a.set_zero();
-			jd.local_anchor_b = self_.m_body.as_ref().unwrap().borrow().get_local_center();
+			jd.local_anchor_b = self.m_body.as_ref().unwrap().borrow().get_local_center();
 			jd.base.collide_connected = true;
 			jd.max_force = 0.5 * mass * gravity;
 			jd.max_torque = 0.2 * mass * radius * gravity;

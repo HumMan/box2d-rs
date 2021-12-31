@@ -93,7 +93,7 @@ impl<D: UserDataType> Web<D> {
 				world.set_contact_listener(self_.contact_listener.clone());
 				world.set_debug_draw(global_draw);
 			}
-			Web::init(&mut self_);
+			self_.init();
 		}
 
 		return result_ptr;
