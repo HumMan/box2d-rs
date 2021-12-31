@@ -4,7 +4,7 @@ A native port of [Box2D](https://github.com/erincatto/box2d) to Rust.
 
 Minimum Rust version: 1.47.0
 
-Ported Box2D version: 2.4.1
+Ported Box2D version: 2.4.1 [![commits](https://img.shields.io/badge/dynamic/json?style=flat-square&label=Commits%20waiting&logo=git&query=%24.total_commits&logoColor=ffffff&labelColor=212121&color=0093ed&url=https%3A%2F%2Fapi.github.com%2Frepos%2Ferincatto%2Fbox2d%2Fcompare%2Fv2.4.1...main)](https://github.com/erincatto/box2d/compare/v2.4.1...main)
 
 [![Latest release on crates.io](https://img.shields.io/crates/v/box2d-rs.svg)](https://crates.io/crates/box2d-rs)
 [![Documentation on docs.rs](https://docs.rs/box2d-rs/badge.svg)](https://docs.rs/box2d-rs)
