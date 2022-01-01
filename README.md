@@ -9,6 +9,7 @@ Ported Box2D version: 2.4.1 [![commits](https://img.shields.io/badge/dynamic/jso
 [![Latest release on crates.io](https://img.shields.io/crates/v/box2d-rs.svg)](https://crates.io/crates/box2d-rs)
 [![Documentation on docs.rs](https://docs.rs/box2d-rs/badge.svg)](https://docs.rs/box2d-rs)
 [![Build status](https://github.com/HumMan/box2d-rs//workflows/Rust/badge.svg)](https://github.com/HumMan/box2d-rs/actions/workflows/rust.yml?query=branch%3Amaster)
+[![dependency status](https://deps.rs/repo/github/humman/box2d-rs/status.svg)](https://deps.rs/repo/github/humman/box2d-rs)
 
 When porting, I pursued the following goals
 - Keep file system structure as is for simpler further updates
