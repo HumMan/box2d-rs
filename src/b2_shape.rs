@@ -51,6 +51,7 @@ pub struct B2Shape {
 
 impl B2Shape {
 	/// Get the type of this shape. You can use this to down cast to the concrete shape.
+	/// 
 	/// @return the shape type.
 	pub fn get_type(self) -> B2ShapeType {
 		return self.m_type;
@@ -63,6 +64,7 @@ pub(crate) type ShapePtr = Rc<dyn B2shapeDynTrait>;
 pub trait B2shapeDynTrait: ToDerivedShape {
 	fn get_base(&self) -> &B2Shape;
 	/// Get the type of this shape. You can use this to down cast to the concrete shape.
+	/// 
 	/// @return the shape type.
 	fn get_type(&self) -> B2ShapeType;
 	/// Clone the concrete shape using the provided allocator.

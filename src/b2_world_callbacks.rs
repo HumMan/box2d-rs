@@ -32,7 +32,9 @@ pub trait B2destructionListener<D: UserDataType> {
 /// this class if you want finer control over contact creation.
 pub trait B2contactFilter<D: UserDataType> {
 	/// Return true if contact calculations should be performed between these two shapes.
-	/// @warning for performance reasons this is only called when the AABBs begin to overlap.
+	/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+	/// <strong>Warning:</strong> for performance reasons this is only called when the AABBs begin to overlap.
+	/// </p>
 	fn should_collide(&self, fixture_a: FixturePtr<D>, fixture_b: FixturePtr<D>) -> bool {
 		return private::should_collide(fixture_a, fixture_b);
 	}
@@ -60,7 +62,9 @@ pub struct B2contactImpulse {
 /// single time step.
 /// You should strive to make your callbacks efficient because there may be
 /// many callbacks per time step.
-/// @warning You cannot create/destroy Box2D entities inside these callbacks.
+/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+/// <strong>Warning:</strong> You cannot create/destroy Box2D entities inside these callbacks.
+/// </p>
 pub trait B2contactListener<D: UserDataType> {
 	/// Called when two fixtures begin to touch.
 	fn begin_contact(&mut self, contact: &mut dyn B2contactDynTrait<D>) {
@@ -104,6 +108,7 @@ pub struct B2contactListenerDefault;
 impl<D: UserDataType> B2contactListener<D> for B2contactListenerDefault {}
 
 /// Called for each fixture found in the query AABB.
+/// 
 /// @return false to terminate the query.
 pub trait B2queryCallback<D: UserDataType>: FnMut(
 	/*fixture:*/ FixturePtr<D>
@@ -120,6 +125,7 @@ impl<F, D: UserDataType> B2queryCallback<D> for F where F: FnMut(FixturePtr<D>) 
 /// * `point` - the point of initial intersection
 /// * `normal` - the normal vector at the point of intersection
 /// * `fraction` - the fraction along the ray at the point of intersection
+/// 
 /// @return -1 to filter, 0 to terminate, fraction to clip the ray for
 /// closest hit, 1 to continue
 pub trait B2rayCastCallback<D:UserDataType>: FnMut(	

@@ -1,5 +1,3 @@
-use std::assert;
-
 #[cfg(feature="serde_support")]
 use serde::{de::DeserializeOwned, Serialize};
 

@@ -6,8 +6,6 @@ use box2d_rs::b2_rope::*;
 use box2d_rs::b2rs_common::UserDataType;
 use box2d_rs::b2_world_callbacks::*;
 
-use std::ffi::CString;
-
 use imgui::Slider;
 
 use glium::backend::Facade;

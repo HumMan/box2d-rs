@@ -77,9 +77,13 @@ impl B2polygonShape {
 	pub const STRUCT_NAME: &'static str = "B2polygonShape";
 	/// create a convex hull from the given array of local points.
 	/// The count must be in the range [3, B2_MAX_POLYGON_VERTICES].
-	/// @warning the points may be re-ordered, even if they form a convex polygon
-	/// @warning collinear points are handled but not removed. Collinear points
+	/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+	/// <strong>Warning:</strong> the points may be re-ordered, even if they form a convex polygon
+	/// </p>
+	/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+	/// <strong>Warning:</strong> collinear points are handled but not removed. Collinear points
 	/// may lead to poor stacking behavior.
+	/// </p>
 	pub fn set(&mut self, points: &[B2vec2]) {
 		private::b2_polygon_shape_set(self, points);
 	}
@@ -101,6 +105,7 @@ impl B2polygonShape {
 	}
 
 	/// Validate convexity. This is a very time consuming operation.
+	/// 
 	/// @returns true if valid
 	pub fn validate(self) -> bool {
 		return private::b2_polygon_shape_validate(self);

@@ -54,28 +54,38 @@ impl<D: UserDataType> B2world<D> {
 
 	/// create a rigid body given a definition. No reference to the definition
 	/// is retained.
-	/// @warning This function is locked during callbacks.
+	/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+	/// <strong>Warning:</strong> This function is locked during callbacks.
+	/// </p>
 	pub fn create_body(self_: B2worldPtr<D>, def: &B2bodyDef<D>) -> BodyPtr<D> {
 		return private::create_body(self_, def);
 	}
 
 	/// destroy a rigid body given a definition. No reference to the definition
 	/// is retained. This function is locked during callbacks.
-	/// @warning This automatically deletes all associated shapes and joints.
-	/// @warning This function is locked during callbacks.
+	/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+	/// <strong>Warning:</strong> This automatically deletes all associated shapes and joints.
+	/// </p>
+	/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+	/// <strong>Warning:</strong> This function is locked during callbacks.
+	/// </p>
 	pub fn destroy_body(&mut self, b: BodyPtr<D>) {
 		private::destroy_body(self, b);
 	}
 
 	/// create a joint to constrain bodies together. No reference to the definition
 	/// is retained. This may cause the connected bodies to cease colliding.
-	/// @warning This function is locked during callbacks.
+	/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+	/// <strong>Warning:</strong> This function is locked during callbacks.
+	/// </p>
 	pub fn create_joint(&mut self, def: &B2JointDefEnum<D>) -> B2jointPtr<D> {
 		return private::create_joint(self, def);
 	}
 
 	/// destroy a joint. This may cause the connected bodies to begin colliding.
-	/// @warning This function is locked during callbacks.
+	/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+	/// <strong>Warning:</strong> This function is locked during callbacks.
+	/// </p>
 	pub fn destroy_joint(&mut self, j: B2jointPtr<D>) {
 		private::destroy_joint(self, j);
 	}
@@ -124,6 +134,7 @@ impl<D: UserDataType> B2world<D> {
 	}
 	/// Get the world body list. With the returned body, use b2_body::get_next to get
 	/// the next body in the world list. A None body indicates the end of the list.
+	/// 
 	/// @return the head of the world body list.
 	pub fn get_body_list(&self) -> DoubleLinkedList<B2body<D>> {
 		return inline::get_body_list(self);
@@ -131,6 +142,7 @@ impl<D: UserDataType> B2world<D> {
 
 	/// Get the world joint list. With the returned joint, use B2joint::get_next to get
 	/// the next joint in the world list. A None joint indicates the end of the list.
+	/// 
 	/// @return the head of the world joint list.
 	pub fn get_joint_list(&self) -> DoubleLinkedList<dyn B2jointTraitDyn<D>> {
 		return inline::get_joint_list(self);
@@ -138,8 +150,11 @@ impl<D: UserDataType> B2world<D> {
 
 	/// Get the world contact list. With the returned contact, use B2contact::get_next to get
 	/// the next contact in the world list. A None contact indicates the end of the list.
+	/// 
 	/// @return the head of the world contact list.
-	/// @warning contacts are created and destroyed in the middle of a time step.
+	/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+	/// <strong>Warning:</strong> contacts are created and destroyed in the middle of a time step.
+	/// </p>
 	/// Use B2contactListener to avoid missing contacts.
 	pub fn get_contact_list(&self) -> DoubleLinkedList<dyn B2contactDynTrait<D>> {
 		return inline::get_contact_list(self);

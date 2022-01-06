@@ -131,7 +131,9 @@ pub struct B2bodyDef<D: UserDataType> {
 	/// Is this a fast moving body that should be prevented from tunneling through
 	/// other moving bodies? Note that all bodies are prevented from tunneling through
 	/// kinematic and static bodies. This setting is only considered on dynamic bodies.
-	/// @warning You should use this flag sparingly since it increases processing time.
+	/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+	/// <strong>Warning:</strong> You should use this flag sparingly since it increases processing time.
+	/// </p>
 	pub bullet: bool,
 
 	/// Does this body start out enabled?
@@ -226,7 +228,9 @@ impl<D: UserDataType> B2body<D> {
 	/// If the density is non-zero, this function automatically updates the mass of the body.
 	/// Contacts are not created until the next time step.
 	/// * `def` - the fixture definition.
-	/// @warning This function is locked during callbacks.
+	/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+	/// <strong>Warning:</strong> This function is locked during callbacks.
+	/// </p>
 	pub fn create_fixture(self_: BodyPtr<D>, def: &B2fixtureDef<D>) -> FixturePtr<D> {
 		return private::create_fixture(self_, def);
 	}
@@ -237,7 +241,9 @@ impl<D: UserDataType> B2body<D> {
 	/// If the density is non-zero, this function automatically updates the mass of the body.
 	/// * `shape` - the shape to be cloned.
 	/// * `density` - the shape density (set to zero for static bodies).
-	/// @warning This function is locked during callbacks.
+	/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+	/// <strong>Warning:</strong> This function is locked during callbacks.
+	/// </p>
 	pub fn create_fixture_by_shape(self_: BodyPtr<D>, shape: ShapeDefPtr, density: f32) -> FixturePtr<D> {
 		return private::create_fixture_by_shape(self_, shape, density);
 	}
@@ -248,7 +254,9 @@ impl<D: UserDataType> B2body<D> {
 	/// fixture has positive density.
 	/// All fixtures attached to a body are implicitly destroyed when the body is destroyed.
 	/// * `fixture` - the fixture to be removed.
-	/// @warning This function is locked during callbacks.
+	/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+	/// <strong>Warning:</strong> This function is locked during callbacks.
+	/// </p>
 	pub fn destroy_fixture(self_: BodyPtr<D>, fixture: FixturePtr<D>) {
 		private::destroy_fixture(self_, fixture);
 	}
@@ -263,18 +271,21 @@ impl<D: UserDataType> B2body<D> {
 	}
 
 	/// Get the body transform for the body's origin.
+	/// 
 	/// @return the world transform of the body's origin.
 	pub fn get_transform(&self) -> B2Transform {
 		return inline::get_transform(self);
 	}
 
 	/// Get the world body origin position.
+	/// 
 	/// @return the world position of the body's origin.
 	pub fn get_position(&self) -> B2vec2 {
 		return inline::get_position(self);
 	}
 
 	/// Get the angle in radians.
+	/// 
 	/// @return the current world rotation angle in radians.
 	pub fn get_angle(&self) -> f32 {
 		return inline::get_angle(self);
@@ -297,6 +308,7 @@ impl<D: UserDataType> B2body<D> {
 	}
 
 	/// Get the linear velocity of the center of mass.
+	/// 
 	/// @return the linear velocity of the center of mass.
 	pub fn get_linear_velocity(&self) -> B2vec2 {
 		return inline::get_linear_velocity(self);
@@ -309,6 +321,7 @@ impl<D: UserDataType> B2body<D> {
 	}
 
 	/// Get the angular velocity.
+	/// 
 	/// @return the angular velocity in radians/second.
 	pub fn get_angular_velocity(&self) -> f32 {
 		return inline::get_angular_velocity(self);
@@ -364,18 +377,21 @@ impl<D: UserDataType> B2body<D> {
 	}
 
 	/// Get the total mass of the body.
+	/// 
 	/// @return the mass, usually in kilograms (kg).
 	pub fn get_mass(&self) -> f32 {
 		return inline::get_mass(self);
 	}
 
 	/// Get the rotational inertia of the body about the local origin.
+	/// 
 	/// @return the rotational inertia, usually in kg-m^2.
 	pub fn get_inertia(&self) -> f32 {
 		return inline::get_inertia(self);
 	}
 
 	/// Get the mass data of the body.
+	/// 
 	/// @return a struct containing the mass, inertia and center of the body.
 	pub fn get_mass_data(&self, data: &mut B2massData) {
 		inline::get_mass_data(self, data);
@@ -399,6 +415,7 @@ impl<D: UserDataType> B2body<D> {
 
 	/// Get the world coordinates of a point given the local coordinates.
 	/// * `local_point` - a point on the body measured relative the the body's origin.
+	/// 
 	/// @return the same point expressed in world coordinates.
 	pub fn get_world_point(&self, local_point: B2vec2) -> B2vec2 {
 		return inline::get_world_point(self, local_point);
@@ -406,6 +423,7 @@ impl<D: UserDataType> B2body<D> {
 
 	/// Get the world coordinates of a vector given the local coordinates.
 	/// * `local_vector` - a vector fixed in the body.
+	/// 
 	/// @return the same vector expressed in world coordinates.
 	pub fn get_world_vector(&self, local_vector: B2vec2) -> B2vec2 {
 		return inline::get_world_vector(self, local_vector);
@@ -413,6 +431,7 @@ impl<D: UserDataType> B2body<D> {
 
 	/// Gets a local point relative to the body's origin given a world point.
 	/// * `world_point` - a point in world coordinates.
+	/// 
 	/// @return the corresponding local point relative to the body's origin.
 	pub fn get_local_point(&self, world_point: B2vec2) -> B2vec2 {
 		return inline::get_local_point(self, world_point);
@@ -420,6 +439,7 @@ impl<D: UserDataType> B2body<D> {
 
 	/// Gets a local vector given a world vector.
 	/// * `world_vector` - a vector in world coordinates.
+	/// 
 	/// @return the corresponding local vector.
 	pub fn get_local_vector(&self, world_vector: B2vec2) -> B2vec2 {
 		return inline::get_local_vector(self, world_vector);
@@ -427,6 +447,7 @@ impl<D: UserDataType> B2body<D> {
 
 	/// Get the world linear velocity of a world point attached to this body.
 	/// * `world_point` - a point in world coordinates.
+	/// 
 	/// @return the world velocity of a point.
 	pub fn get_linear_velocity_from_world_point(&self, world_point: B2vec2) -> B2vec2 {
 		return inline::get_linear_velocity_from_world_point(self, world_point);
@@ -434,6 +455,7 @@ impl<D: UserDataType> B2body<D> {
 
 	/// Get the world velocity of a local point.
 	/// * `local_point` - a point in local coordinates.
+	/// 
 	/// @return the world velocity of a point.
 	pub fn get_linear_velocity_from_local_point(&self, local_point: B2vec2) -> B2vec2 {
 		return inline::get_linear_velocity_from_local_point(self, local_point);
@@ -508,6 +530,7 @@ impl<D: UserDataType> B2body<D> {
 	}
 
 	/// Get the sleeping state of this body.
+	/// 
 	/// @return true if the body is awake.
 	pub fn is_awake(&self) -> bool {
 		return inline::is_awake(self);
@@ -562,8 +585,10 @@ impl<D: UserDataType> B2body<D> {
 	}
 
 	/// Get the list of all contacts attached to this body.
-	/// @warning this list changes during the time step and you may
+	/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+	/// <strong>Warning:</strong> this list changes during the time step and you may
 	/// miss some collisions if you don't use B2contactListener.
+	/// </p>
 	pub fn get_contact_list(&self) -> &DoubleLinkedList<B2contactEdge<D>> {
 		return inline::get_contact_list(self);
 	}

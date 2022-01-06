@@ -12,7 +12,9 @@ use std::rc::Rc;
 /// The chain has one-sided collision, with the surface normal pointing to the right of the edge.
 /// This provides a counter-clockwise winding like the polygon shape.
 /// Connectivity information is used to create smooth collisions.
-/// @warning the chain will not collide properly if there are self-intersections.
+/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+/// <strong>Warning:</strong> the chain will not collide properly if there are self-intersections.
+/// </p>
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde_support", derive(Serialize, Deserialize))]
 pub struct B2chainShape {

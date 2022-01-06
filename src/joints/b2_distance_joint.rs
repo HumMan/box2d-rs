@@ -151,6 +151,7 @@ impl<D: UserDataType> B2distanceJoint<D> {
 	}
 
 	/// Set the rest length
+	/// 
 	/// @returns clamped rest length
 	pub fn set_length(&mut self, length: f32)->f32 {
 		return private::set_length(self,length);
@@ -162,6 +163,7 @@ impl<D: UserDataType> B2distanceJoint<D> {
 	}
 
 	/// Set the minimum length
+	/// 
 	/// @returns the clamped minimum length
 	pub fn set_min_length(&mut self, min_length: f32)  -> f32 
 	{
@@ -174,6 +176,7 @@ impl<D: UserDataType> B2distanceJoint<D> {
 	}
 
 	/// Set the maximum length
+	/// 
 	/// @returns the clamped maximum length
 	pub fn set_max_length(&mut self, max_length: f32)  -> f32  {
 		return private::set_max_length(self, max_length);

@@ -120,7 +120,9 @@ impl<D:UserDataType> LinkedListNode<B2fixture<D>> for B2fixture<D>
 /// inherits its transform from its parent. Fixtures hold additional non-geometric data
 /// such as friction, collision filters, etc.
 /// Fixtures are created via b2_body::create_fixture.
-/// @warning you cannot reuse fixtures.
+/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+/// <strong>Warning:</strong> you cannot reuse fixtures.
+/// </p>
 #[derive(Default, Clone)]
 pub struct B2fixture<D: UserDataType> {
 	pub(crate) m_density: f32,
@@ -146,6 +148,7 @@ pub struct B2fixture<D: UserDataType> {
 
 impl<D: UserDataType> B2fixture<D> {
 	/// Get the type of the child shape. You can use this to down cast to the concrete shape.
+	/// 
 	/// @return the shape type.
 	pub fn get_type(&self) -> B2ShapeType {
 		return inline::get_type(self);
@@ -164,6 +167,7 @@ impl<D: UserDataType> B2fixture<D> {
 	}
 
 	/// Is this fixture a sensor (non-solid)?
+	/// 
 	/// @return the true if the shape is a sensor.
 	pub fn is_sensor(&self) -> bool {
 		return inline::is_sensor(self);
@@ -187,12 +191,14 @@ impl<D: UserDataType> B2fixture<D> {
 	}
 
 	/// Get the parent body of this fixture. This is None if the fixture is not attached.
+	/// 
 	/// @return the parent body.
 	pub fn get_body(&self) -> BodyPtr<D> {
 		return inline::get_body(self);
 	}
 
 	/// Get the next fixture in the parent body's fixture list.
+	/// 
 	/// @return the next shape.
 	pub fn get_next(&self) -> Option<FixturePtr<D>> {
 		return inline::get_next(self);

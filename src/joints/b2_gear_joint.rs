@@ -22,7 +22,9 @@ impl<D: UserDataType> Default for B2gearJointDef<D> {
 
 /// Gear joint definition. This definition requires two existing
 /// revolute or prismatic joints (any combination will work).
-/// @warning body_b on the input joints must both be dynamic
+/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+/// <strong>Warning:</strong> body_b on the input joints must both be dynamic
+/// </p>
 #[derive(Clone)]
 pub struct B2gearJointDef<D: UserDataType> {
 	pub base: B2jointDef<D>,
@@ -110,8 +112,10 @@ impl<D: UserDataType> B2jointTraitDyn<D> for B2gearJoint<D> {
 /// The ratio can be negative or positive. If one joint is a revolute joint
 /// and the other joint is a prismatic joint, then the ratio will have units
 /// of length or units of 1/length.
-/// @warning You have to manually destroy the gear joint if joint1 or joint2
+/// <p style="background:rgba(255,181,77,0.16);padding:0.75em;">
+/// <strong>Warning:</strong> You have to manually destroy the gear joint if joint1 or joint2
 /// is destroyed.
+/// </p>
 impl<D: UserDataType> B2gearJoint<D> {
 	/// Get the first joint.
 	pub fn get_joint1(&self) -> B2jointPtr<D> {
