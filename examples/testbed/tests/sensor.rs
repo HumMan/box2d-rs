@@ -17,8 +17,7 @@ use glium::backend::Facade;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use imgui::im_str;
-use imgui::sys;
+use imgui::Slider;
 
 struct B2contactListenerCustom<D: UserDataType> {
 	base: B2testContactListenerDefault<D>,
@@ -230,21 +229,16 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for Sensors<D> {
 		return self.base.clone();
 	}
 	fn update_ui(&mut self, ui: &imgui::Ui<'_>) {
-		imgui::Window::new(im_str!("Sensor Controls"))
+		imgui::Window::new("Sensor Controls")
 			.flags(imgui::WindowFlags::NO_MOVE | imgui::WindowFlags::NO_RESIZE)
 			.position([10.0, 100.0], imgui::Condition::Always)
 			.size([200.0, 60.0], imgui::Condition::Always)
-			.build(&ui, || unsafe {
+			.build(&ui, || {
 				let mut test_data = self.test_data.borrow_mut();
 
-				sys::igSliderFloat(
-					im_str!("Force").as_ptr(),
-					&mut test_data.m_force,
-					0.0,
-					2000.0,
-					im_str!("%.0f").as_ptr(),
-					1.0,
-				);
+				Slider::new("Force", 0.0, 2000.0)
+						.display_format("%.0f")
+						.build(ui, &mut test_data.m_force);
 			});
 	}
 	fn step(

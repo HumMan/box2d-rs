@@ -10,8 +10,8 @@ use box2d_rs::shapes::b2_circle_shape::*;
 use box2d_rs::shapes::b2_edge_shape::*;
 use box2d_rs::shapes::b2_polygon_shape::*;
 
-use imgui::im_str;
-use imgui::sys;
+
+
 
 use glium::backend::Facade;
 use std::cell::RefCell;
@@ -258,7 +258,7 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for CompoundShapes<D> {
 		return self.base.clone();
 	}
 	fn update_ui(&mut self, ui: &imgui::Ui<'_>) {
-		imgui::Window::new(im_str!("Controls"))
+		imgui::Window::new("Controls")
 			.flags(
 				imgui::WindowFlags::NO_MOVE
 					| imgui::WindowFlags::NO_RESIZE
@@ -266,8 +266,8 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for CompoundShapes<D> {
 			)
 			.position([10.0, 100.0], imgui::Condition::Always)
 			.size([200.0, 100.0], imgui::Condition::Always)
-			.build(&ui, || unsafe {
-				if sys::igSmallButton(im_str!("spawn").as_ptr()) {
+			.build(&ui, || {
+				if ui.small_button("spawn") {
 					self.spawn();
 				}
 			});

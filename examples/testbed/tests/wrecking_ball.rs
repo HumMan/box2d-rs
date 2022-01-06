@@ -14,8 +14,8 @@ use box2d_rs::shapes::b2_circle_shape::*;
 use box2d_rs::joints::b2_distance_joint::*;
 use box2d_rs::joints::b2_revolute_joint::*;
 
-use imgui::im_str;
-use imgui::sys;
+
+
 
 use glium::backend::Facade;
 use std::cell::RefCell;
@@ -162,15 +162,15 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for WreckingBall<D> {
 		return self.base.clone();
 	}
 	fn update_ui(&mut self, ui: &imgui::Ui<'_>) {
-		imgui::Window::new(im_str!("Wrecking Ball Controls"))
+		imgui::Window::new("Wrecking Ball Controls")
 			.flags(
 				imgui::WindowFlags::NO_MOVE
 					| imgui::WindowFlags::NO_RESIZE
 			)
 			.position([10.0, 100.0], imgui::Condition::Always)
 			.size([200.0, 100.0], imgui::Condition::Always)
-			.build(&ui, || unsafe {
-				if sys::igCheckbox(im_str!("Stabilize").as_ptr(), &mut self.m_stabilize) {
+			.build(&ui, || {
+				if ui.checkbox("Stabilize", &mut self.m_stabilize) {
 					let m_world = self.base.borrow().m_world.clone();
 					if self.m_stabilize == true && self.m_distance_joint.is_none()
 					{

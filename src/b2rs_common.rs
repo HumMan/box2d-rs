@@ -5,12 +5,6 @@ use serde::{de::DeserializeOwned, Serialize};
 
 use std::rc::{Rc,Weak};
 
-pub(crate) fn get_two_mut<T>(data: & mut [T], a: usize, b: usize) -> (& mut T, & mut T) {
-	assert!(a != b);
-	let ptr: *mut [T] = data;
-	unsafe { (&mut (*ptr)[a], &mut (*ptr)[b]) }
-}
-
 pub fn upgrade<T: ?Sized>(v: &Weak<T>) -> Rc<T> {
 	return v.upgrade().unwrap();
 }

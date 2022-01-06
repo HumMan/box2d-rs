@@ -15,11 +15,11 @@ When porting, I pursued the following goals
 - Keep file system structure as is for simpler further updates
 - Keep all identifiers names(except case convertion) and code order(except some specific cases)
 - Store all new not original code in separate files
+- 100% safe code
 
 ### TODO
 
 - [ ] convert comments from doxygen to rustdoc
-- [ ] replace imgui unsafe blocks by safe
 - [ ] fix some comments
 - [ ] fix deprecation warning in glium modifiers
 

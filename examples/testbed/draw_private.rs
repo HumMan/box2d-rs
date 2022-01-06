@@ -8,8 +8,8 @@ use box2d_rs::b2_common::B2_PI;
 use glium::backend::Facade;
 use glium::Surface;
 
-use imgui::sys;
-use imgui::im_str;
+
+
 use glium::{implement_vertex, uniform};
 
 pub(crate) fn camera_convert_screen_to_world(self_: &Camera, ps: B2vec2) -> B2vec2 {
@@ -500,14 +500,12 @@ pub(crate) fn draw_string(self_: &TestBedDebugDraw, ui: &imgui::Ui<'_>, p: B2vec
 	if self_.m_show_ui == false {
 		return;
 	}
-	imgui::Window::new(im_str!("Overlay"))
+	imgui::Window::new("Overlay")
 		.flags(imgui::WindowFlags::NO_DECORATION | imgui::WindowFlags::NO_BACKGROUND | imgui::WindowFlags::NO_INPUTS)
 		.position([0.0, 0.0], imgui::Condition::Always)
 		.size([2000.0, 2000.0], imgui::Condition::Always)
 		.build(ui, || {
-			unsafe {
-				sys::igSetCursorPos(sys::ImVec2{x:p.x,y:p.y});
-			}
+			ui.set_cursor_pos([p.x,p.y]);
 			ui.text_colored(
 				[230.0 / 255.0, 153.0 / 255.0, 153.0 / 255.0, 255.0 / 255.0],
 				text,

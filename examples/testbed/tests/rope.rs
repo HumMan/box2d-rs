@@ -8,8 +8,7 @@ use box2d_rs::b2_world_callbacks::*;
 
 use std::ffi::CString;
 
-use imgui::im_str;
-use imgui::sys;
+use imgui::Slider;
 
 use glium::backend::Facade;
 use glium::glutin::event::{ElementState, KeyboardInput, VirtualKeyCode};
@@ -137,282 +136,163 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for Rope<D> {
 		return self.base.clone();
 	}
 	fn update_ui(&mut self, ui: &imgui::Ui<'_>) {
-		imgui::Window::new(im_str!("Tuning"))
+		imgui::Window::new("Tuning")
 			.flags(imgui::WindowFlags::NO_MOVE | imgui::WindowFlags::NO_RESIZE)
 			.position([10.0, 100.0], imgui::Condition::Always)
 			.size([200.0, 700.0], imgui::Condition::Always)
-			.build(&ui, || unsafe {
-				sys::igSeparator();
+			.build(&ui, || {
+				ui.separator();
+				//TODO_humman sys::igGetWindowWidth()
+				let width_token = ui.push_item_width(200.0 * 0.5);
 
-				sys::igPushItemWidth(sys::igGetWindowWidth() * 0.5);
-				const COMBO_FLAGS: sys::ImGuiComboFlags = 0;
 				let bend_models = ["Spring", "PBD Ang", "XPBD Ang", "PBD Dist", "PBD Height", "PBD Triangle"];
 				let stretch_models = ["PBD", "XPBD"];
 
-				sys::igText(im_str!("Rope 1").as_ptr());
+				ui.text("Rope 1");
 				{
 					let bend_model1 = &mut self.m_tuning1.bending_model;
-					let bend_model1_name =
-						CString::new(bend_models[*bend_model1 as usize]).unwrap();
-					if sys::igBeginCombo(
-						im_str!("Bend Model##1").as_ptr(),
-						bend_model1_name.as_ptr(),
-						COMBO_FLAGS,
-					) {
-						for (i, b) in bend_models.iter().enumerate() {
-							let is_selected: bool = *bend_model1 as usize == i;
-							let b_name = CString::new(*b).unwrap();
-							if sys::igSelectable(
-								b_name.as_ptr(),
-								is_selected,
-								0,
-								sys::ImVec2 { x: 0.0, y: 0.0 },
-							) {
-								match i {
-									0 => {
-										*bend_model1 = B2bendingModel::B2SpringAngleBendingModel;
-									}
-									1 => {
-										*bend_model1 = B2bendingModel::B2PbdAngleBendingModel;
-									}
-									2 => {
-										*bend_model1 = B2bendingModel::B2XpbdAngleBendingModel;
-									}
-									3 => {
-										*bend_model1 = B2bendingModel::B2PbdDistanceBendingModel;
-									}
-									4 => {
-										*bend_model1 = B2bendingModel::B2PbdHeightBendingModel;
-									}
-									5 => {
-										*bend_model1 = B2bendingModel::B2PbdTriangleBendingModel;
-									}
-									_ => {}
-								}
+					let mut bend_model1_selected: usize = *bend_model1 as usize;
+					if ui.combo_simple_string("Bend Model##1", &mut bend_model1_selected, &bend_models)
+					{
+						match bend_model1_selected {
+							0 => {
+								*bend_model1 = B2bendingModel::B2SpringAngleBendingModel;
 							}
-
-							if is_selected {
-								sys::igSetItemDefaultFocus();
+							1 => {
+								*bend_model1 = B2bendingModel::B2PbdAngleBendingModel;
 							}
+							2 => {
+								*bend_model1 = B2bendingModel::B2XpbdAngleBendingModel;
+							}
+							3 => {
+								*bend_model1 = B2bendingModel::B2PbdDistanceBendingModel;
+							}
+							4 => {
+								*bend_model1 = B2bendingModel::B2PbdHeightBendingModel;
+							}
+							5 => {
+								*bend_model1 = B2bendingModel::B2PbdTriangleBendingModel;
+							}
+							_ => {}
 						}
-						sys::igEndCombo();
-					}
+					}					
 				}
 
-				sys::igSliderFloat(
-					im_str!("Damping##B1").as_ptr(),
-					&mut self.m_tuning1.bend_damping,
-					0.0,
-					4.0,
-					im_str!("%.1f").as_ptr(),
-					1.0,
-				);
-				sys::igSliderFloat(
-					im_str!("Hertz##B1").as_ptr(),
-					&mut self.m_tuning1.bend_hertz,
-					0.0,
-					60.0,
-					im_str!("%.0f").as_ptr(),
-					1.0,
-				);
-				sys::igSliderFloat(
-					im_str!("Stiffness##B1").as_ptr(),
-					&mut self.m_tuning1.bend_stiffness,
-					0.0,
-					1.0,
-					im_str!("%.1f").as_ptr(),
-					1.0,
-				);
+				Slider::new("Damping##B1", 0.0, 4.0)
+                                .display_format("%.1f")
+                                .build(ui, &mut self.m_tuning1.bend_damping);
 
-				sys::igCheckbox(
-					im_str!("Isometric##1").as_ptr(),
+				Slider::new("Hertz##B1", 0.0, 60.0)
+                                .display_format("%.0f")
+                                .build(ui, &mut self.m_tuning1.bend_hertz);
+
+				Slider::new("Stiffness##B1", 0.0, 1.0)
+                                .display_format("%.1f")
+                                .build(ui, &mut self.m_tuning1.bend_stiffness);
+
+				ui.checkbox(
+					"Isometric##1",
 					&mut self.m_tuning1.isometric,
 				);
-				sys::igCheckbox(
-					im_str!("Fixed Mass##1").as_ptr(),
+				ui.checkbox(
+					"Fixed Mass##1",
 					&mut self.m_tuning1.fixed_effective_mass,
 				);
-				sys::igCheckbox(
-					im_str!("Warm Start##1").as_ptr(),
+				ui.checkbox(
+					"Warm Start##1",
 					&mut self.m_tuning1.warm_start,
 				);
 
 				{
 					let stretch_model1 = &mut self.m_tuning1.stretching_model;
-					let stretch_model1_name =
-						CString::new(stretch_models[*stretch_model1 as usize]).unwrap();
-					if sys::igBeginCombo(
-						im_str!("Stretch Model##1").as_ptr(),
-						stretch_model1_name.as_ptr(),
-						COMBO_FLAGS,
-					) {
-						for (i, s) in stretch_models.iter().enumerate() {
-							let is_selected: bool = *stretch_model1 as usize == i;
-							let s_name = CString::new(*s).unwrap();
-							if sys::igSelectable(
-								s_name.as_ptr(),
-								is_selected,
-								0,
-								sys::ImVec2 { x: 0.0, y: 0.0 },
-							) {
-								match i {
-									0 => {
-										*stretch_model1 = B2stretchingModel::B2PbdStretchingModel;
-									}
-									1 => {
-										*stretch_model1 = B2stretchingModel::B2XpbdStretchingModel;
-									}
-									_ => {}
-								}
+					let mut stretch_model1_selected: usize = *stretch_model1 as usize;
+					if ui.combo_simple_string("Stretch Model##1", &mut stretch_model1_selected, &stretch_models) {
+						match stretch_model1_selected {
+							0 => {
+								*stretch_model1 = B2stretchingModel::B2PbdStretchingModel;
 							}
-
-							if is_selected {
-								sys::igSetItemDefaultFocus();
+							1 => {
+								*stretch_model1 = B2stretchingModel::B2XpbdStretchingModel;
 							}
+							_ => {}
 						}
-						sys::igEndCombo();
 					}
 				}
 
-				sys::igSliderFloat(
-					im_str!("Damping##S1").as_ptr(),
-					&mut self.m_tuning1.stretch_damping,
-					0.0,
-					4.0,
-					im_str!("%.1f").as_ptr(),
-					1.0,
-				);
-				sys::igSliderFloat(
-					im_str!("Hertz##S1").as_ptr(),
-					&mut self.m_tuning1.stretch_hertz,
-					0.0,
-					60.0,
-					im_str!("%.0f").as_ptr(),
-					1.0,
-				);
-				sys::igSliderFloat(
-					im_str!("Stiffness##S1").as_ptr(),
-					&mut self.m_tuning1.stretch_stiffness,
-					0.0,
-					1.0,
-					im_str!("%.1f").as_ptr(),
-					1.0,
-				);
+				Slider::new("Damping##S1", 0.0, 4.0)
+                                .display_format("%.1f")
+                                .build(ui, &mut self.m_tuning1.stretch_damping);
 
-				sys::igSliderInt(
-					im_str!("Iterations##1").as_ptr(),
-					&mut self.m_iterations1,
-					1,
-					100,
-					im_str!("%d").as_ptr(),
-				);
+				Slider::new("Hertz##S1", 0.0, 60.0)
+                                .display_format("%.0f")
+                                .build(ui, &mut self.m_tuning1.stretch_hertz);
 
-				sys::igSeparator();
+				Slider::new("Stiffness##S1", 0.0, 1.0)
+                                .display_format("%.1f")
+                                .build(ui, &mut self.m_tuning1.stretch_stiffness);
 
-				sys::igText(im_str!("Rope 2").as_ptr());
+				Slider::new("Iterations##S1", 1, 100)
+                                .display_format("%d")
+                                .build(ui, &mut self.m_iterations1);
+
+				ui.separator();
+
+				ui.text("Rope 2");
 				{
 					let bend_model2 = &mut self.m_tuning2.bending_model;
-					let bend_model2_name =
-						CString::new(bend_models[*bend_model2 as usize]).unwrap();
-					if sys::igBeginCombo(
-						im_str!("Bend Model##2").as_ptr(),
-						bend_model2_name.as_ptr(),
-						COMBO_FLAGS,
-					) {
-						for (i, b) in bend_models.iter().enumerate() {
-							let is_selected: bool = *bend_model2 as usize == i;
-							let b_name = CString::new(*b).unwrap();
-							if sys::igSelectable(
-								b_name.as_ptr(),
-								is_selected,
-								0,
-								sys::ImVec2 { x: 0.0, y: 0.0 },
-							) {
-								match i {
-									0 => {
-										*bend_model2 = B2bendingModel::B2SpringAngleBendingModel;
-									}
-									1 => {
-										*bend_model2 = B2bendingModel::B2PbdAngleBendingModel;
-									}
-									2 => {
-										*bend_model2 = B2bendingModel::B2XpbdAngleBendingModel;
-									}
-									3 => {
-										*bend_model2 = B2bendingModel::B2PbdDistanceBendingModel;
-									}
-									4 => {
-										*bend_model2 = B2bendingModel::B2PbdHeightBendingModel;
-									}
-									_ => {}
-								}
+					let mut bend_model2_selected: usize = *bend_model2 as usize;
+					if ui.combo_simple_string("Bend Model##2", &mut bend_model2_selected, &bend_models) {
+						match bend_model2_selected {
+							0 => {
+								*bend_model2 = B2bendingModel::B2SpringAngleBendingModel;
 							}
-
-							if is_selected {
-								sys::igSetItemDefaultFocus();
+							1 => {
+								*bend_model2 = B2bendingModel::B2PbdAngleBendingModel;
 							}
-						}
-						sys::igEndCombo();
+							2 => {
+								*bend_model2 = B2bendingModel::B2XpbdAngleBendingModel;
+							}
+							3 => {
+								*bend_model2 = B2bendingModel::B2PbdDistanceBendingModel;
+							}
+							4 => {
+								*bend_model2 = B2bendingModel::B2PbdHeightBendingModel;
+							}
+							_ => {}
+						}					
 					}
 				}
+				Slider::new("Damping##B2", 0.0, 4.0)
+                                .display_format("%.1f")
+                                .build(ui, &mut self.m_tuning2.bend_damping);
 
-				sys::igSliderFloat(
-					im_str!("Damping##B2").as_ptr(),
-					&mut self.m_tuning2.bend_damping,
-					0.0,
-					4.0,
-					im_str!("%.1f").as_ptr(),
-					1.0,
-				);
-				sys::igSliderFloat(
-					im_str!("Hertz##B2").as_ptr(),
-					&mut self.m_tuning2.bend_hertz,
-					0.0,
-					60.0,
-					im_str!("%.0f").as_ptr(),
-					1.0,
-				);
-				sys::igSliderFloat(
-					im_str!("Stiffness##B2").as_ptr(),
-					&mut self.m_tuning2.bend_stiffness,
-					0.0,
-					1.0,
-					im_str!("%.1f").as_ptr(),
-					1.0,
-				);
+				Slider::new("Hertz##B2", 0.0, 60.0)
+                                .display_format("%.0f")
+                                .build(ui, &mut self.m_tuning2.bend_hertz);
 
-				sys::igCheckbox(
-					im_str!("Isometric##2").as_ptr(),
+				Slider::new("Stiffness##B2", 0.0, 1.0)
+                                .display_format("%.1f")
+                                .build(ui, &mut self.m_tuning2.bend_stiffness);				
+
+				ui.checkbox(
+					"Isometric##2",
 					&mut self.m_tuning2.isometric,
 				);
-				sys::igCheckbox(
-					im_str!("Fixed Mass##2").as_ptr(),
+				ui.checkbox(
+					"Fixed Mass##2",
 					&mut self.m_tuning2.fixed_effective_mass,
 				);
-				sys::igCheckbox(
-					im_str!("Warm Start##2").as_ptr(),
+				ui.checkbox(
+					"Warm Start##2",
 					&mut self.m_tuning2.warm_start,
 				);
 
 				{
 					let stretch_model2 = &mut self.m_tuning2.stretching_model;
-					let stretch_model2_name =
-						CString::new(stretch_models[*stretch_model2 as usize]).unwrap();
-					if sys::igBeginCombo(
-						im_str!("Stretch Model##2").as_ptr(),
-						stretch_model2_name.as_ptr(),
-						COMBO_FLAGS,
-					) {
-						for (i, s) in stretch_models.iter().enumerate() {
-							let is_selected: bool = *stretch_model2 as usize == i;
-							let s_name = CString::new(*s).unwrap();
-							if sys::igSelectable(
-								s_name.as_ptr(),
-								is_selected,
-								0,
-								sys::ImVec2 { x: 0.0, y: 0.0 },
-							) {
-								match i {
+					let mut stretch_model2_selected: usize = *stretch_model2 as usize;
+					if ui.combo_simple_string("Stretch Model##2", &mut stretch_model2_selected, &stretch_models) {
+					
+								match stretch_model2_selected {
 									0 => {
 										*stretch_model2 = B2stretchingModel::B2PbdStretchingModel;
 									}
@@ -421,70 +301,44 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for Rope<D> {
 									}
 									_ => {}
 								}
-							}
+							
 
-							if is_selected {
-								sys::igSetItemDefaultFocus();
-							}
-						}
-						sys::igEndCombo();
 					}
 				}
 
-				sys::igSliderFloat(
-					im_str!("Damping##S2").as_ptr(),
-					&mut self.m_tuning2.stretch_damping,
-					0.0,
-					4.0,
-					im_str!("%.1f").as_ptr(),
-					1.0,
-				);
-				sys::igSliderFloat(
-					im_str!("Hertz##S2").as_ptr(),
-					&mut self.m_tuning2.stretch_hertz,
-					0.0,
-					60.0,
-					im_str!("%.0f").as_ptr(),
-					1.0,
-				);
-				sys::igSliderFloat(
-					im_str!("Stiffness##S2").as_ptr(),
-					&mut self.m_tuning2.stretch_stiffness,
-					0.0,
-					1.0,
-					im_str!("%.1f").as_ptr(),
-					1.0,
-				);
+				Slider::new("Damping##S2", 0.0, 4.0)
+                                .display_format("%.1f")
+                                .build(ui, &mut self.m_tuning2.stretch_damping);
 
-				sys::igSliderInt(
-					im_str!("Iterations##2").as_ptr(),
-					&mut self.m_iterations2,
-					1,
-					100,
-					im_str!("%d").as_ptr(),
-				);
+				Slider::new("Hertz##S2", 0.0, 60.0)
+                                .display_format("%.0f")
+                                .build(ui, &mut self.m_tuning2.stretch_hertz);
 
-				sys::igSeparator();
+				Slider::new("Stiffness##S2", 0.0, 1.0)
+                                .display_format("%.1f")
+                                .build(ui, &mut self.m_tuning2.stretch_stiffness);
 
-				sys::igSliderFloat(
-					im_str!("Speed").as_ptr(),
-					&mut self.m_speed,
-					10.0,
-					100.0,
-					im_str!("%.0f").as_ptr(),
-					1.0,
-				);
+				Slider::new("Iterations##S2", 1, 100)
+                                .display_format("%d")
+                                .build(ui, &mut self.m_iterations2);
 
-				if sys::igButton(im_str!("Reset").as_ptr(), sys::ImVec2 { x: 0.0, y: 0.0 }) {
+				ui.separator();
+
+				Slider::new("Speed", 10.0, 100.0)
+                                .display_format("%.0f")
+                                .build(ui, &mut self.m_speed);
+
+				if ui.button("Reset") {
 					self.m_position1.set(-5.0, 15.0);
 					self.m_position2.set(5.0, 15.0);
 					self.m_rope1.reset(self.m_position1);
 					self.m_rope2.reset(self.m_position2);
 				}
 
-				sys::igPopItemWidth();
-			});
-	}
+				width_token.pop(ui);
+			});	
+	
+		}
 	fn keyboard(&mut self, key: &KeyboardInput) {
 		match key.virtual_keycode {
 			Some(VirtualKeyCode::Comma) => {

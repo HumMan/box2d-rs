@@ -383,7 +383,8 @@ pub(crate) fn solve_velocity_constraints(self_: &mut B2contactSolver, m_velociti
 			//    = A * x + b'
 			// b' = b - A * a;
 
-			let (mut cp1,mut cp2) = get_two_mut(&mut vc.points, 0, 1);
+			let (cp1, tail) = vc.points.split_first_mut().unwrap();
+			let mut cp2 = &mut tail[0];
 
 			let a = B2vec2::new(cp1.normal_impulse, cp2.normal_impulse);
 			b2_assert(a.x >= 0.0 && a.y >= 0.0);

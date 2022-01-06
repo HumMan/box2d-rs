@@ -11,9 +11,6 @@ use box2d_rs::shapes::b2_circle_shape::*;
 use box2d_rs::shapes::b2_edge_shape::*;
 use box2d_rs::shapes::b2_polygon_shape::*;
 
-use imgui::im_str;
-use imgui::sys;
-
 use glium::backend::Facade;
 use glium::glutin::event::{ElementState, KeyboardInput, VirtualKeyCode};
 use std::cell::RefCell;
@@ -295,7 +292,7 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for EdgeTest<D> {
 		}
 	}
 	fn update_ui(&mut self, ui: &imgui::Ui<'_>) {
-		imgui::Window::new(im_str!("Custom Controls"))
+		imgui::Window::new("Custom Controls")
 			.flags(
 				imgui::WindowFlags::NO_MOVE
 					| imgui::WindowFlags::NO_RESIZE
@@ -303,13 +300,13 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for EdgeTest<D> {
 			)
 			.position([10.0, 100.0], imgui::Condition::Always)
 			.size([200.0, 100.0], imgui::Condition::Always)
-			.build(&ui, || unsafe {
-				if sys::igRadioButtonBool(im_str!("Boxes").as_ptr(), self.m_boxes == true) {
+			.build(&ui, || {
+				if ui.radio_button_bool("Boxes", self.m_boxes == true) {
 					self.create_boxes();
 					self.m_boxes = true;
 				}
 
-				if sys::igRadioButtonBool(im_str!("Circles").as_ptr(), self.m_boxes == false) {
+				if ui.radio_button_bool("Circles", self.m_boxes == false) {
 					self.create_circles();
 					self.m_boxes = false;
 				}

@@ -22,8 +22,7 @@ use glium::backend::Facade;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use imgui::im_str;
-use imgui::sys;
+use imgui::{Slider};
 
 pub(crate) struct RayCast<D: UserDataType> {
 	base: TestBasePtr<D>,
@@ -196,63 +195,59 @@ impl<F: Facade> TestDyn<UserDataTypes, F> for RayCast<UserDataTypes> {
 
 	fn update_ui(&mut self, ui: &imgui::Ui<'_>)
 	{
-		imgui::Window::new(im_str!("Ray-cast Controls"))
+		imgui::Window::new("Ray-cast Controls")
 			.flags(
 				imgui::WindowFlags::NO_MOVE
 					| imgui::WindowFlags::NO_RESIZE
 			)
 			.position([10.0, 100.0], imgui::Condition::Always)
 			.size([210.0, 285.0], imgui::Condition::Always)
-			.build(&ui, || unsafe {
-				if sys::igSmallButton(im_str!("Shape 1").as_ptr())
+			.build(&ui, || {
+				if ui.small_button("Shape 1")
 				{
 					self.create(0);
 				}
-				if sys::igSmallButton(im_str!("Shape 2").as_ptr())
+				if ui.small_button("Shape 2")
 				{
 					self.create(1);
 				}
-				if sys::igSmallButton(im_str!("Shape 3").as_ptr())
+				if ui.small_button("Shape 3")
 				{
 					self.create(2);
 				}
-				if sys::igSmallButton(im_str!("Shape 4").as_ptr())
+				if ui.small_button("Shape 4")
 				{
 					self.create(3);
 				}
-				if sys::igSmallButton(im_str!("Shape 5").as_ptr())
+				if ui.small_button("Shape 5")
 				{
 					self.create(4);
 				}
-				if sys::igSmallButton(im_str!("Shape 6").as_ptr())
+				if ui.small_button("Shape 6")
 				{
 					self.create(5);
 				}
-				if sys::igSmallButton(im_str!("Destroy Shape").as_ptr())
+				if ui.small_button("Destroy Shape")
 				{
 					self.destroy_body();
 				}
 
-				if sys::igRadioButtonBool(im_str!("Any").as_ptr(),  self.m_mode == Mode::EAny) {
+				if ui.radio_button_bool("Any",  self.m_mode == Mode::EAny) {
 					self.m_mode = Mode::EAny;
 				}
 
-				if sys::igRadioButtonBool(im_str!("Closest").as_ptr(),  self.m_mode == Mode::EClosest) {
+				if ui.radio_button_bool("Closest",  self.m_mode == Mode::EClosest) {
 					self.m_mode = Mode::EClosest;
 				}
 
-				if sys::igRadioButtonBool(im_str!("Multiple").as_ptr(),  self.m_mode == Mode::EMultiple) {
+				if ui.radio_button_bool("Multiple",  self.m_mode == Mode::EMultiple) {
 					self.m_mode = Mode::EMultiple;
 				}
 
-				sys::igSliderFloat(
-					im_str!("Angle").as_ptr(),
-					&mut self.m_degrees,
-					0.0,
-					360.0,
-					im_str!("%.0f").as_ptr(),
-					1.0,
-				);
+				Slider::new("Angle", 0.0, 360.0)
+                                .display_format("%.0f")
+                                .build(ui, &mut self.m_degrees);
+
 			});
 
 		

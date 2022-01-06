@@ -8,22 +8,19 @@ use glium::glutin::event::{Event, VirtualKeyCode, WindowEvent, MouseButton, Modi
 use glium::glutin::event_loop::{ControlFlow, EventLoop};
 use glium::glutin::window::WindowBuilder;
 use glium::{Display, Surface};
-use imgui::{sys, Context, FontConfig, FontGlyphRanges, FontSource, TreeNode};
+use imgui::{Context, FontConfig, FontGlyphRanges, FontSource, TreeNode, Slider, TabBar, TabItem};
 use imgui_glium_renderer::Renderer;
 use imgui_winit_support::{HiDpiMode, WinitPlatform};
 use std::time::Instant;
 
 use itertools::Itertools;
 use std::cell::RefCell;
-use std::ptr;
 use std::rc::Rc;
 
 use super::draw::*;
 use super::settings::*;
 use super::test::{TestEntry, TestPtr};
 use super::tests::register::get_tests_list;
-
-use imgui::im_str;
 
 #[cfg(feature="serde_support")]
 use super::test_serialize;
@@ -60,7 +57,7 @@ pub fn init(title: &str) -> System {
     imgui.set_ini_filename(None);
 
     if let Some(backend) = clipboard::init() {
-        imgui.set_clipboard_backend(Box::new(backend));
+        imgui.set_clipboard_backend(backend);
     } else {
         eprintln!("Failed to initialize clipboard");
     }
@@ -153,7 +150,13 @@ impl System {
 
         event_loop.run(move |event, _, control_flow| {
             match &event {
-                Event::NewEvents(_) => last_frame = imgui.io_mut().update_delta_time(last_frame),
+                Event::NewEvents(_) => {
+                    let now = Instant::now();
+                    imgui
+                        .io_mut()
+                        .update_delta_time(now.duration_since(last_frame));
+                    last_frame = now;
+                },
                 Event::MainEventsCleared => {
                     let gl_window = display.gl_window();
                     platform
@@ -474,7 +477,7 @@ impl System {
         if g_debug_draw.borrow().m_show_ui
         {
 
-            imgui::Window::new(im_str!("Tools"))
+            imgui::Window::new("Tools")
                 .title_bar(false)
                 .flags(
                     imgui::WindowFlags::NO_MOVE
@@ -489,118 +492,72 @@ impl System {
                     [menu_width as f32, (g_camera.m_height - 20) as f32],
                     imgui::Condition::Always,
                 )
-                .build(&ui, || unsafe {
-                    if sys::igBeginTabBar(im_str!("ControlTabs").as_ptr(), 0 as ::std::os::raw::c_int) {
-                        if sys::igBeginTabItem(
-                            im_str!("Controls").as_ptr(),
-                            ptr::null_mut(),
-                            0 as ::std::os::raw::c_int,
-                        ) {
-                            sys::igSliderInt(
-                                im_str!("Vel Iters").as_ptr(),
-                                &mut s_settings.m_velocity_iterations,
-                                0,
-                                50,
-                                im_str!("%.0f").as_ptr(),
-                            );
-                            sys::igSliderInt(
-                                im_str!("Pos Iters").as_ptr(),
-                                &mut s_settings.m_position_iterations,
-                                0,
-                                50,
-                                im_str!("%.0f").as_ptr(),
-                            );
-                            sys::igSliderFloat(
-                                im_str!("Hertz").as_ptr(),
-                                &mut s_settings.m_hertz,
-                                5.0,
-                                120.0,
-                                im_str!("%.0f hz").as_ptr(),
-                                1.0,
-                            );
+                .build(&ui, || {
+                    TabBar::new("ControlTabs").build(&ui, || {
+                        TabItem::new("Controls").build(&ui, || {
+                            Slider::new("Vel Iters", 0, 50)
+                                .display_format("%.0f")
+                                .build(ui, &mut s_settings.m_velocity_iterations);
+  
+                            Slider::new("Pos Iter", 0, 50)
+                                .display_format("%.0f")
+                                .build(ui, &mut s_settings.m_position_iterations);
 
-                            sys::igSeparator();
+                            Slider::new("Hertz", 5.0, 120.0)
+                                .display_format("%.0f hz")
+                                .build(ui, &mut s_settings.m_hertz);
 
-                            sys::igCheckbox(im_str!("Sleep").as_ptr(), &mut s_settings.m_enable_sleep);
-                            sys::igCheckbox(
-                                im_str!("Warm Starting").as_ptr(),
-                                &mut s_settings.m_enable_warm_starting,
-                            );
-                            sys::igCheckbox(
-                                im_str!("Time of Impact").as_ptr(),
-                                &mut s_settings.m_enable_continuous,
-                            );
-                            sys::igCheckbox(
-                                im_str!("Sub-Stepping").as_ptr(),
-                                &mut s_settings.m_enable_sub_stepping,
-                            );
-                            sys::igSeparator();
+                            ui.separator();
 
-                            sys::igCheckbox(im_str!("Shapes").as_ptr(), &mut s_settings.m_draw_shapes);
-                            sys::igCheckbox(im_str!("Joints").as_ptr(), &mut s_settings.m_draw_joints);
-                            sys::igCheckbox(im_str!("AABBs").as_ptr(), &mut s_settings.m_draw_aabbs);
-                            sys::igCheckbox(
-                                im_str!("Contact Points").as_ptr(),
-                                &mut s_settings.m_draw_contact_points,
-                            );
-                            sys::igCheckbox(
-                                im_str!("Contact Normals").as_ptr(),
-                                &mut s_settings.m_draw_contact_normals,
-                            );
-                            sys::igCheckbox(
-                                im_str!("Contact Impulses").as_ptr(),
-                                &mut s_settings.m_draw_contact_impulse,
-                            );
-                            sys::igCheckbox(
-                                im_str!("Friction Impulses").as_ptr(),
-                                &mut s_settings.m_draw_friction_impulse,
-                            );
-                            sys::igCheckbox(
-                                im_str!("Center of Masses").as_ptr(),
-                                &mut s_settings.m_draw_coms,
-                            );
-                            sys::igCheckbox(
-                                im_str!("Statistics").as_ptr(),
-                                &mut s_settings.m_draw_stats,
-                            );
-                            sys::igCheckbox(
-                                im_str!("Profile").as_ptr(),
-                                &mut s_settings.m_draw_profile,
-                            );
+                            ui.checkbox("Sleep", &mut s_settings.m_enable_sleep);
+                            ui.checkbox("Warm Starting", &mut s_settings.m_enable_warm_starting);
+                            ui.checkbox("Time of Impact", &mut s_settings.m_enable_continuous);
+                            ui.checkbox("Sub-Stepping", &mut s_settings.m_enable_sub_stepping);
+     
+                            ui.separator();
+
+                            ui.checkbox("Shapes", &mut s_settings.m_draw_shapes);
+                            ui.checkbox("Joints", &mut s_settings.m_draw_joints);
+                            ui.checkbox("AABBs", &mut s_settings.m_draw_aabbs);
+                            ui.checkbox("Contact Points", &mut s_settings.m_draw_contact_points);
+                            ui.checkbox("Contact Normals", &mut s_settings.m_draw_contact_normals);
+                            ui.checkbox("Contact Impulses", &mut s_settings.m_draw_contact_impulse);
+                            ui.checkbox("Friction Impulses", &mut s_settings.m_draw_friction_impulse);
+                            ui.checkbox("Center of Masses", &mut s_settings.m_draw_coms);
+                            ui.checkbox("Statistics", &mut s_settings.m_draw_stats);
+                            ui.checkbox("Profile", &mut s_settings.m_draw_profile);
 
                             let button_sz = [-1.0, 0.0];
-                            if ui.button(im_str!("Pause (P)"), button_sz) {
+                            if ui.button_with_size("Pause (P)", button_sz) {
                                 s_settings.m_pause = !s_settings.m_pause;
                             }
-                            if ui.button(im_str!("Single Step (O)"), button_sz) {
+                            if ui.button_with_size("Single Step (O)", button_sz) {
                                 s_settings.m_single_step = !s_settings.m_single_step;
                             }
-                            if ui.button(im_str!("Restart (R)"), button_sz) {
+                            if ui.button_with_size("Restart (R)", button_sz) {
                                 *s_test = (g_test_entries[s_settings.m_test_index as usize].create_fcn)(
                                     g_debug_draw.clone(),
                                 );
                             }
                             #[cfg(feature="serde_support")]
                             {
-                                if ui.button(im_str!("Serialize"), button_sz) {
+                                if ui.button_with_size("Serialize", button_sz) {
                                     test_serialize::test_serialize::<D>(
                                         g_test_entries[s_settings.m_test_index as usize].name,
                                         s_test.borrow().get_base().borrow().m_world.clone()
                                     );
                                 }
-                                if ui.button(im_str!("Deserialize"), button_sz) {
+                                if ui.button_with_size("Deserialize", button_sz) {
                                     let new_world = test_serialize::test_deserialize::<D>(g_test_entries[s_settings.m_test_index as usize].name);
                                     let base = s_test.borrow().get_base();
                                     new_world.borrow_mut().set_debug_draw(g_debug_draw.clone());
                                     base.borrow_mut().m_world = new_world;
                                 }
                             }
-                            if ui.button(im_str!("Quit"), button_sz) {
+                            if ui.button_with_size("Quit", button_sz) {
                                 *control_flow = ControlFlow::Exit;
                             }
-
-                            sys::igEndTabItem();
-                        }
+                        });
 
                         let leaf_node_flags: imgui::TreeNodeFlags = imgui::TreeNodeFlags::OPEN_ON_ARROW
                             | imgui::TreeNodeFlags::OPEN_ON_DOUBLE_CLICK
@@ -609,27 +566,23 @@ impl System {
                         let node_flags: imgui::TreeNodeFlags = imgui::TreeNodeFlags::OPEN_ON_ARROW
                             | imgui::TreeNodeFlags::OPEN_ON_DOUBLE_CLICK;
 
-                        if sys::igBeginTabItem(
-                            im_str!("Tests").as_ptr(),
-                            ptr::null_mut(),
-                            0 as ::std::os::raw::c_int,
-                        ) {
+                        TabItem::new("Tests").build(&ui, || {
                             let tests = &g_test_entries;
 
                             for (key, group) in &tests.into_iter().group_by(|v| v.category) {
                                 let category_selected: bool =
                                     g_test_entries[s_settings.m_test_index as usize].category == key;
 
-                                TreeNode::new(&im_str!("{0}", key))
+                                TreeNode::new(key)
                                     .flags(node_flags)
                                     .selected(category_selected)
                                     .build(&ui, || {
                                         for test in group {
-                                            TreeNode::new(&im_str!("{0}", test.name))
+                                            TreeNode::new(test.name)
                                                 .flags(leaf_node_flags)
                                                 .selected(s_settings.m_test_index == test.index)
                                                 .build(&ui, || {
-                                                    if sys::igIsItemClicked(0) {
+                                                    if ui.is_item_clicked_with_button(imgui::MouseButton::Left) {
                                                         s_settings.m_test_index = test.index;
                                                         *s_test = (g_test_entries
                                                             [s_settings.m_test_index as usize]
@@ -641,11 +594,8 @@ impl System {
                                         }
                                     });
                             }
-
-                            sys::igEndTabItem();
-                        }
-                        sys::igEndTabBar();
-                    }
+                        });
+                    });
                 });
         }
     }
