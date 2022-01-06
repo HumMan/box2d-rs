@@ -177,10 +177,10 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for Confined<D> {
 			self.base.borrow_mut().m_step_count += 0;
 		}
 
-		//if sleeping
-		//{
-		//	create_circle();
-		//}
+		if sleeping
+		{
+			self.create_circle();
+		}
 
 		Test::step(self.base.clone(), ui, display, target, settings, *camera);
 

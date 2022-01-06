@@ -147,6 +147,7 @@ impl System {
         );
 
         let mut settings_saved = false;
+        let mut modifiers = ModifiersState::default();
 
         event_loop.run(move |event, _, control_flow| {
             match &event {
@@ -221,10 +222,13 @@ impl System {
                         cursor_position = *position;
                         Self::mouse_motion_callback(s_test.clone(), &mut g_camera, position, &mut s_right_mouse_down, &mut s_click_point_ws);
                     }
+                    WindowEvent::ModifiersChanged(modifiers_updated) => {
+                        modifiers = *modifiers_updated;
+                    }
                     WindowEvent::MouseInput {
-                        button, state, modifiers, ..
+                        button, state, ..
                     } => {
-                        Self::mouse_button_callback(s_test.clone(), cursor_position, &mut g_camera, button, state, modifiers , &mut s_right_mouse_down, &mut s_click_point_ws);
+                        Self::mouse_button_callback(s_test.clone(), cursor_position, &mut g_camera, button, state, &modifiers , &mut s_right_mouse_down, &mut s_click_point_ws);
                     }
                     WindowEvent::MouseWheel {
                         delta, ..
@@ -251,7 +255,7 @@ impl System {
                                 }
                                 Some(VirtualKeyCode::Left) => {
                                     // Pan left
-                                    if input.modifiers == ModifiersState::CTRL
+                                    if modifiers == ModifiersState::CTRL
                                     {
                                         let new_origin = B2vec2::new(2.0, 0.0);
                                         s_test.borrow_mut().shift_origin(new_origin);
@@ -263,7 +267,7 @@ impl System {
                                 },
                                 Some(VirtualKeyCode::Right) => {
                                     // Pan right
-                                    if input.modifiers == ModifiersState::CTRL
+                                    if modifiers == ModifiersState::CTRL
                                     {
                                         let new_origin = B2vec2::new(-2.0, 0.0);
                                         s_test.borrow_mut().shift_origin(new_origin);
@@ -275,7 +279,7 @@ impl System {
                                 },
                                 Some(VirtualKeyCode::Down) => {
                                     // Pan down
-                                    if input.modifiers == ModifiersState::CTRL
+                                    if modifiers == ModifiersState::CTRL
                                     {
                                         let new_origin = B2vec2::new(0.0, 2.0);
                                         s_test.borrow_mut().shift_origin(new_origin);
@@ -287,7 +291,7 @@ impl System {
                                 },
                                 Some(VirtualKeyCode::Up) => {
                                     // Pan up
-                                    if input.modifiers == ModifiersState::CTRL
+                                    if modifiers == ModifiersState::CTRL
                                     {
                                         let new_origin = B2vec2::new(0.0, -2.0);
                                         s_test.borrow_mut().shift_origin(new_origin);
