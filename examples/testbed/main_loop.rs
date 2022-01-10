@@ -174,17 +174,8 @@ impl System {
                         target.clear_color_srgb(0.2, 0.2, 0.2, 1.0);
                         platform.prepare_render(&ui, gl_window.window());
 
-                        {
-                            Self::update_ui(
-                                &ui,
-                                &g_camera,
-                                &mut s_settings,
-                                &mut s_test,
-                                g_test_entries.clone(),
-                                g_debug_draw.clone(),
-                                control_flow,
-                            );
-
+                        if g_debug_draw.borrow().m_show_ui                        
+                        {        
                             s_test.borrow().get_base().borrow_mut().draw_title(
                                 &ui,
                                 &format!(
@@ -192,9 +183,7 @@ impl System {
                                     g_test_entries[s_settings.m_test_index as usize].category,
                                     g_test_entries[s_settings.m_test_index as usize].name
                                 ),
-                            );
-
-                            s_test.borrow_mut().update_ui(&ui);
+                            );                            
                         }
 
                         s_test.borrow_mut().step(
@@ -203,6 +192,16 @@ impl System {
                             &mut target,
                             &mut s_settings,
                             &mut g_camera,
+                        );
+
+                        Self::update_ui(
+                            &ui,
+                            &g_camera,
+                            &mut s_settings,
+                            &mut s_test,
+                            g_test_entries.clone(),
+                            g_debug_draw.clone(),
+                            control_flow,
                         );
 
                         let draw_data = ui.render();
@@ -601,6 +600,8 @@ impl System {
                         });
                     });
                 });
+
+            s_test.borrow_mut().update_ui(&ui);
         }
     }
 }
