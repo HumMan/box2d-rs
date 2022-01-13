@@ -1,54 +1,85 @@
-//box2d-rs: waiting const_generics feature
-//#![feature(const_generics)]
-
 use crate::b2_common::*;
-
-const B2_GROWABLE_STACK_SIZE: usize = 256;
 
 /// This is a growable LIFO stack with an initial capacity of n.
 /// If the stack size exceeds the initial capacity, the heap is used
 /// to increase the size of the stack.
-pub struct B2growableStack<T: Copy + Default> {
-	m_stack: Vec<T>,
-	m_array: [T; B2_GROWABLE_STACK_SIZE],
-	m_count: usize,
-	// m_capacity: usize
+pub struct B2growableStack<T: Copy + Default, const N: usize> {
+
+	value:B2rsStackOrVec<T,N>
+	
+	//box2d-rs: using enum because problems to have ref to own field
+	// T* m_stack;
+	// T m_array[N];
+	// int32 m_count;
+	// int32 m_capacity;
 }
 
-impl<T: Copy + Default> B2growableStack<T> {
+struct B2rsStaticArrayWithSize<T: Copy + Default, const N: usize>
+{
+	m_array: [T; N],
+	m_count: usize,
+}
+
+enum B2rsStackOrVec<T: Copy + Default, const N: usize>
+{
+	Stack(B2rsStaticArrayWithSize<T,N>),
+	DynVec(Vec<T>)
+}
+
+impl<T: Copy + Default, const N: usize> B2growableStack<T,N> {
 	pub fn new() -> Self {
 		return B2growableStack {
-			m_stack: Vec::<T>::default(),
-			m_array: [T::default(); B2_GROWABLE_STACK_SIZE],
-			m_count: 0,
-			// m_capacity : B2_GROWABLE_STACK_SIZE
+			value: B2rsStackOrVec::Stack(B2rsStaticArrayWithSize {
+				m_array: [T::default(); N],
+				m_count: 0,
+			})
 		};
 	}
 
 	pub fn push(&mut self, element: &T) {
-		if self.m_count >= B2_GROWABLE_STACK_SIZE {
-			if self.m_count > self.m_stack.len() {
-				self.m_stack.resize(self.m_stack.len() * 2, T::default());
+		match self.value
+		{
+			B2rsStackOrVec::Stack(ref mut stack)=>{
+				if stack.m_count >= N {
+					let mut v = Vec::<T>::with_capacity(stack.m_count+1);
+					v.extend_from_slice(&stack.m_array);
+					v.push(*element);
+					self.value = B2rsStackOrVec::DynVec(v);
+				}else{
+					stack.m_array[stack.m_count] = *element;
+					stack.m_count += 1;
+				}
+			},
+			B2rsStackOrVec::DynVec(ref mut vec)=>{
+				vec.push(*element);
 			}
-			self.m_stack[self.m_count] = *element;
-			self.m_count += 1;
-		} else {
-			self.m_array[self.m_count] = *element;
-			self.m_count += 1;
 		}
 	}
 
 	pub fn pop(&mut self) -> T {
-		b2_assert(self.m_count > 0);
-		self.m_count -= 1;
-		if self.m_count >= B2_GROWABLE_STACK_SIZE {
-			return self.m_array[self.m_count];
-		} else {
-			return self.m_array[self.m_count];
+		match self.value
+		{
+			B2rsStackOrVec::Stack(ref mut stack)=>{
+				b2_assert(stack.m_count > 0);
+				stack.m_count-=1;
+				return stack.m_array[stack.m_count];
+			},
+			B2rsStackOrVec::DynVec(ref mut vec)=>{
+				b2_assert(vec.len() > 0);
+				return vec.pop().unwrap();
+			}
 		}
 	}
 
 	pub fn get_count(&self) -> usize {
-		return self.m_count;
+		match self.value
+		{
+			B2rsStackOrVec::Stack(ref stack)=>{
+				return stack.m_count;
+			},
+			B2rsStackOrVec::DynVec(ref vec)=>{
+				return vec.len();
+			}
+		}
 	}
 }
