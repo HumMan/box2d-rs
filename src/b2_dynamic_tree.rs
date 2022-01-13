@@ -241,7 +241,7 @@ mod inline {
 		mut callback: F,
 		aabb: B2AABB,
 	) {
-		let mut stack = B2growableStack::<i32>::new();
+		let mut stack = B2growableStack::<i32, 256>::new();
 		stack.push(&self_.m_root);
 
 		while stack.get_count() > 0 {
@@ -294,7 +294,7 @@ mod inline {
 			segment_aabb.upper_bound = b2_max_vec2(p1, t);
 		}
 
-		let mut stack = B2growableStack::<i32>::new();
+		let mut stack = B2growableStack::<i32, 256>::new();
 		stack.push(&self_.m_root);
 
 		while stack.get_count() > 0 {
