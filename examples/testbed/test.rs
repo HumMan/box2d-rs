@@ -26,13 +26,13 @@ use std::rc::{Rc, Weak};
 /// Random number in range [-1,1]
 pub(crate) fn random_float() -> f32 {
 	let mut rng = rand::thread_rng();
-	return rng.gen_range(0.0, 10.0);
+	return rng.gen_range::<f32,_>(0.0..=10.0);
 }
 
 /// Random floating point number in range [lo, hi]
 pub(crate) fn random_float_range(lo: f32, hi: f32) -> f32 {
 	let mut rng = rand::thread_rng();
-	return rng.gen_range(lo, hi);
+	return rng.gen_range::<f32,_>(lo..=hi);
 }
 
 // This is called when a joint in the world is implicitly destroyed
@@ -155,7 +155,8 @@ pub(crate) type TestBasePtrWeak<D> = Weak<RefCell<Test<D>>>;
 #[derive(Clone)]
 pub(crate) struct Test<D: UserDataType> {
 	pub(crate) m_ground_body: BodyPtr<D>,
-	pub(crate) m_world_aabb: B2AABB,
+	//box2d-rs: not used yet
+	//pub(crate) m_world_aabb: B2AABB,
 	pub(crate) m_points: Vec<ContactPoint<D>>,
 	pub(crate) m_text_line: i32,
 	pub(crate) m_world: B2worldPtr<D>,
@@ -169,7 +170,6 @@ pub(crate) struct Test<D: UserDataType> {
 	pub(crate) m_max_profile: B2Profile,
 	pub(crate) m_total_profile: B2Profile,
 	pub(crate) g_debug_draw: TestBedDebugDrawPtr,
-	//pub(crate) g_camera: Camera,
 }
 
 impl<D: UserDataType> Test<D> {
@@ -183,7 +183,7 @@ impl<D: UserDataType> Test<D> {
 
 		return Self {
 			m_ground_body,
-			m_world_aabb: B2AABB::default(),
+			//m_world_aabb: B2AABB::default(),
 			m_points: Vec::new(),
 			m_text_line: 0,
 			m_world,
@@ -197,7 +197,6 @@ impl<D: UserDataType> Test<D> {
 			m_max_profile: B2Profile::default(),
 			m_total_profile: B2Profile::default(),
 			g_debug_draw: global_draw,
-			//g_camera: Camera::default(),
 		};
 	}
 	pub fn draw_title(&mut self, ui: &imgui::Ui<'_>, string: &str) {

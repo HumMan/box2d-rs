@@ -63,12 +63,13 @@ impl Default for B2jointType {
 	}
 }
 
-#[derive(Default, Clone, Copy, Debug)]
-pub(crate) struct B2jacobian {
-	linear: B2vec2,
-	angular_a: f32,
-	angular_b: f32,
-}
+//box2d-rs: not used yet
+// #[derive(Default, Clone, Copy, Debug)]
+// pub(crate) struct B2jacobian {
+// 	linear: B2vec2,
+// 	angular_a: f32,
+// 	angular_b: f32,
+// }
 
 pub type B2jointEdgePtr<D> = Rc<RefCell<B2jointEdge<D>>>;
 pub type B2jointEdgeWeakPtr<D> = Weak<RefCell<B2jointEdge<D>>>;
