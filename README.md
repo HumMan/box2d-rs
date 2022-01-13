@@ -79,7 +79,7 @@ Optionally, the following dependencies can be enabled:
 
 ## Documentation
 - You can look at the [testbed](https://github.com/HumMan/box2d-rs/tree/master/examples/testbed/tests) for examples.
-- [Rust generated docs](https://docs.rs/box2d-rs/0.0.2/box2d_rs/)
+- [Rust generated docs](https://docs.rs/box2d-rs/0.0.3/box2d_rs/)
 - [Manual](https://box2d.org/documentation/)
 - [reddit](https://www.reddit.com/r/box2d/)
 - [Discord](https://discord.gg/NKYgCBP)
