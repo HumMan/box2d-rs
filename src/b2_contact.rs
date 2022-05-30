@@ -82,13 +82,13 @@ impl<D:UserDataType> DoubleLinkedListNode<B2contactEdge<D>> for B2contactEdge<D>
 #[derive(Clone)]
 pub struct B2contactEdge<D: UserDataType> {
 	///< provides quick access to the other body attached.
-	pub(crate) other: BodyWeakPtr<D>,
+	pub other: BodyWeakPtr<D>,
 	///< the contact
-	pub(crate) contact: ContactWeakPtr<D>,
+	pub contact: ContactWeakPtr<D>,
 	///< the previous contact edge in the body's contact list
-	pub(crate) prev: Option<ContactEdgeWeakPtr<D>>,
+	pub prev: Option<ContactEdgeWeakPtr<D>>,
 	///< the next contact edge in the body's contact list
-	pub(crate) next: Option<ContactEdgePtr<D>>,
+	pub next: Option<ContactEdgePtr<D>>,
 }
 
 pub type ContactPtr<D> = Rc<RefCell<dyn B2contactDynTrait<D>>>;
