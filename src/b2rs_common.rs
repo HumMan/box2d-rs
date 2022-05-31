@@ -14,13 +14,13 @@ pub fn upgrade_opt<T: ?Sized>(v: &Option<Weak<T>>) -> Rc<T> {
 #[cfg(not(feature="serde_support"))]
 pub trait UserDataType: Default + Clone + 'static {
     type Fixture: Default + Clone + std::fmt::Debug;
-    type Body: Default + Clone + PartialEq + std::fmt::Debug;
+    type Body: Default + Clone + std::fmt::Debug;
     type Joint: Default + Clone + std::fmt::Debug;
 }
 
 #[cfg(feature="serde_support")]
 pub trait UserDataType: Default + Clone + Serialize + DeserializeOwned + 'static {
     type Fixture: Default + Clone + Serialize + DeserializeOwned + std::fmt::Debug;
-    type Body: Default + Clone + Serialize + DeserializeOwned + PartialEq + std::fmt::Debug;
+    type Body: Default + Clone + Serialize + DeserializeOwned + std::fmt::Debug;
     type Joint: Default + Clone + Serialize + DeserializeOwned + std::fmt::Debug;
 }
