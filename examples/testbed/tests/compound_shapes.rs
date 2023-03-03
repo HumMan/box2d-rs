@@ -257,8 +257,8 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for CompoundShapes<D> {
 	fn get_base(&self) -> TestBasePtr<D> {
 		return self.base.clone();
 	}
-	fn update_ui(&mut self, ui: &imgui::Ui<'_>) {
-		imgui::Window::new("Controls")
+	fn update_ui(&mut self, ui: &imgui::Ui) {
+		ui.window("Controls")
 			.flags(
 				imgui::WindowFlags::NO_MOVE
 					| imgui::WindowFlags::NO_RESIZE
@@ -266,7 +266,7 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for CompoundShapes<D> {
 			)
 			.position([10.0, 100.0], imgui::Condition::Always)
 			.size([200.0, 100.0], imgui::Condition::Always)
-			.build(&ui, || {
+			.build(|| {
 				if ui.small_button("spawn") {
 					self.spawn();
 				}
@@ -274,7 +274,7 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for CompoundShapes<D> {
 	}
 	fn step(
 		&mut self,
-		ui: &imgui::Ui<'_>,
+		ui: &imgui::Ui,
 		display: &F,
 		target: &mut glium::Frame,
 		settings: &mut Settings,

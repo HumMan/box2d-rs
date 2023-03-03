@@ -15,8 +15,6 @@ use glium::backend::Facade;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use imgui::{Slider};
-
 // This tests distance joints, body destruction, and joint destruction.
 pub(crate) struct DistanceJoint<D: UserDataType> {
 	base: TestBasePtr<D>,
@@ -127,12 +125,12 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for DistanceJoint<D> {
 	fn get_base(&self) -> TestBasePtr<D> {
 		return self.base.clone();
 	}
-	fn update_ui(&mut self, ui: &imgui::Ui<'_>) {
-		imgui::Window::new("Joint Controls")
+	fn update_ui(&mut self, ui: &imgui::Ui) {
+		ui.window("Joint Controls")
 			.flags(imgui::WindowFlags::NO_MOVE | imgui::WindowFlags::NO_RESIZE)
 			.position([10.0, 100.0], imgui::Condition::Always)
 			.size([260.0, 150.0], imgui::Condition::Always)
-			.build(&ui, || {
+			.build(|| {
 				let mut test_data = self.test_data.borrow_mut();
 
 				match test_data
@@ -144,28 +142,28 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for DistanceJoint<D> {
 				{
 					JointAsDerivedMut::EDistanceJoint(ref mut m_joint) => {
 
-						if Slider::new("Length", 0.0, 20.0)
+						if ui.slider_config("Length", 0.0, 20.0)
                                 .display_format("%.0f")
-                                .build(ui, &mut test_data.m_length)
+                                .build(&mut test_data.m_length)
 								{
 									test_data.m_length = m_joint.set_length(test_data.m_length);
 								}
 
-						if Slider::new("Min Length", 0.0, 20.0)
+						if ui.slider_config("Min Length", 0.0, 20.0)
 						.display_format("%.0f")
-						.build(ui, &mut test_data.m_min_length) {
+						.build(&mut test_data.m_min_length) {
 							test_data.m_min_length = m_joint.set_min_length(test_data.m_min_length);
 						}
 
-						if Slider::new("Max Length", 0.0, 20.0)
+						if ui.slider_config("Max Length", 0.0, 20.0)
 						.display_format("%.0f")
-						.build(ui, &mut test_data.m_max_length) {
+						.build(&mut test_data.m_max_length) {
 							test_data.m_max_length = m_joint.set_max_length(test_data.m_max_length);
 						}
 
-						if Slider::new("Hertz", 0.0, 10.0)
+						if ui.slider_config("Hertz", 0.0, 10.0)
 						.display_format("%.1f")
-						.build(ui, &mut test_data.m_hertz) 
+						.build(&mut test_data.m_hertz) 
 						{
 							let mut stiffness = 0.0;
 							let mut damping = 0.0;
@@ -181,9 +179,9 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for DistanceJoint<D> {
 							m_joint.set_damping(damping);
 						}
 
-						if Slider::new("Damping Ratio", 0.0, 2.0)
+						if ui.slider_config("Damping Ratio", 0.0, 2.0)
 						.display_format("%.1f")
-						.build(ui, &mut test_data.m_damping_ratio) 
+						.build(&mut test_data.m_damping_ratio) 
 						{
 							let mut stiffness = 0.0;
 							let mut damping = 0.0;
@@ -205,7 +203,7 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for DistanceJoint<D> {
 	}
 	fn step(
 		&mut self,
-		ui: &imgui::Ui<'_>,
+		ui: &imgui::Ui,
 		display: &F,
 		target: &mut glium::Frame,
 		settings: &mut Settings,

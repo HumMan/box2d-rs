@@ -94,7 +94,7 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for AddPair<D> {
 	}
 	fn step(
 		&mut self,
-		ui: &imgui::Ui<'_>,
+		ui: &imgui::Ui,
 		display: &F,
 		target: &mut glium::Frame,
 		settings: &mut Settings,

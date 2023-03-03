@@ -11,8 +11,6 @@ use box2d_rs::joints::b2_wheel_joint::*;
 use box2d_rs::shapes::b2_circle_shape::*;
 use box2d_rs::shapes::b2_edge_shape::*;
 
-use imgui::Slider;
-
 use glium::backend::Facade;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -128,8 +126,8 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for WheelJoint<D> {
 	fn get_base(&self) -> TestBasePtr<D> {
 		return self.base.clone();
 	}
-	fn update_ui(&mut self, ui: &imgui::Ui<'_>) {
-		imgui::Window::new("Joint Controls")
+	fn update_ui(&mut self, ui: &imgui::Ui) {
+		ui.window("Joint Controls")
 			.flags(
 				imgui::WindowFlags::NO_MOVE
 					| imgui::WindowFlags::NO_RESIZE
@@ -137,7 +135,7 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for WheelJoint<D> {
 			)
 			.position([10.0, 100.0], imgui::Condition::Always)
 			.size([200.0, 100.0], imgui::Condition::Always)
-			.build(&ui, || {
+			.build(|| {
 				match self.m_joint.as_ref().unwrap().borrow_mut().as_derived_mut() {
 					JointAsDerivedMut::EWheelJoint(ref mut m_joint) => {
 						if ui.checkbox("Limit", &mut self.m_enable_limit) {
@@ -147,9 +145,9 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for WheelJoint<D> {
 							m_joint.enable_motor(self.m_enable_motor);
 						}
 
-						if Slider::new("Hertz", -100.0, 100.0)
+						if ui.slider_config("Hertz", -100.0, 100.0)
                                 .display_format("%.0f")
-                                .build(ui, &mut self.m_motor_speed) {
+                                .build(&mut self.m_motor_speed) {
 							m_joint.set_motor_speed(self.m_motor_speed);
 						}
 					}
@@ -159,7 +157,7 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for WheelJoint<D> {
 	}
 	fn step(
 		&mut self,
-		ui: &imgui::Ui<'_>,
+		ui: &imgui::Ui,
 		display: &F,
 		target: &mut glium::Frame,
 		settings: &mut Settings,

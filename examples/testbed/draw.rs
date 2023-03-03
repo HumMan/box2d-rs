@@ -67,11 +67,11 @@ impl TestBedDebugDraw {
     //     private::destroy(self);
     // }
 
-    pub fn draw_string(&self, ui: &imgui::Ui<'_>, p: B2vec2, text: &str) {
+    pub fn draw_string(&self, ui: &imgui::Ui, p: B2vec2, text: &str) {
         private::draw_string(self, ui, p, text);
     }
 
-    pub fn draw_string_world(&self, ui: &imgui::Ui<'_>, camera: Camera, pw: B2vec2, text: &str) {
+    pub fn draw_string_world(&self, ui: &imgui::Ui, camera: Camera, pw: B2vec2, text: &str) {
         private::draw_string_world(self, ui, camera, pw, text);
     }
 

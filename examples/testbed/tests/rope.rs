@@ -6,8 +6,6 @@ use box2d_rs::b2_rope::*;
 use box2d_rs::b2rs_common::UserDataType;
 use box2d_rs::b2_world_callbacks::*;
 
-use imgui::Slider;
-
 use glium::backend::Facade;
 use glium::glutin::event::{ElementState, KeyboardInput, VirtualKeyCode};
 use std::cell::RefCell;
@@ -133,12 +131,12 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for Rope<D> {
 	fn get_base(&self) -> TestBasePtr<D> {
 		return self.base.clone();
 	}
-	fn update_ui(&mut self, ui: &imgui::Ui<'_>) {
-		imgui::Window::new("Tuning")
+	fn update_ui(&mut self, ui: &imgui::Ui) {
+		ui.window("Tuning")
 			.flags(imgui::WindowFlags::NO_MOVE | imgui::WindowFlags::NO_RESIZE)
 			.position([10.0, 100.0], imgui::Condition::Always)
 			.size([200.0, 700.0], imgui::Condition::Always)
-			.build(&ui, || {
+			.build(|| {
 				ui.separator();
 				//TODO_humman sys::igGetWindowWidth()
 				let width_token = ui.push_item_width(200.0 * 0.5);
@@ -176,17 +174,17 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for Rope<D> {
 					}					
 				}
 
-				Slider::new("Damping##B1", 0.0, 4.0)
+				ui.slider_config("Damping##B1", 0.0, 4.0)
                                 .display_format("%.1f")
-                                .build(ui, &mut self.m_tuning1.bend_damping);
+                                .build(&mut self.m_tuning1.bend_damping);
 
-				Slider::new("Hertz##B1", 0.0, 60.0)
+				ui.slider_config("Hertz##B1", 0.0, 60.0)
                                 .display_format("%.0f")
-                                .build(ui, &mut self.m_tuning1.bend_hertz);
+                                .build(&mut self.m_tuning1.bend_hertz);
 
-				Slider::new("Stiffness##B1", 0.0, 1.0)
+				ui.slider_config("Stiffness##B1", 0.0, 1.0)
                                 .display_format("%.1f")
-                                .build(ui, &mut self.m_tuning1.bend_stiffness);
+                                .build(&mut self.m_tuning1.bend_stiffness);
 
 				ui.checkbox(
 					"Isometric##1",
@@ -217,21 +215,21 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for Rope<D> {
 					}
 				}
 
-				Slider::new("Damping##S1", 0.0, 4.0)
+				ui.slider_config("Damping##S1", 0.0, 4.0)
                                 .display_format("%.1f")
-                                .build(ui, &mut self.m_tuning1.stretch_damping);
+                                .build(&mut self.m_tuning1.stretch_damping);
 
-				Slider::new("Hertz##S1", 0.0, 60.0)
+				ui.slider_config("Hertz##S1", 0.0, 60.0)
                                 .display_format("%.0f")
-                                .build(ui, &mut self.m_tuning1.stretch_hertz);
+                                .build(&mut self.m_tuning1.stretch_hertz);
 
-				Slider::new("Stiffness##S1", 0.0, 1.0)
+				ui.slider_config("Stiffness##S1", 0.0, 1.0)
                                 .display_format("%.1f")
-                                .build(ui, &mut self.m_tuning1.stretch_stiffness);
+                                .build(&mut self.m_tuning1.stretch_stiffness);
 
-				Slider::new("Iterations##S1", 1, 100)
+				ui.slider_config("Iterations##S1", 1, 100)
                                 .display_format("%d")
-                                .build(ui, &mut self.m_iterations1);
+                                .build(&mut self.m_iterations1);
 
 				ui.separator();
 
@@ -260,17 +258,17 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for Rope<D> {
 						}					
 					}
 				}
-				Slider::new("Damping##B2", 0.0, 4.0)
+				ui.slider_config("Damping##B2", 0.0, 4.0)
                                 .display_format("%.1f")
-                                .build(ui, &mut self.m_tuning2.bend_damping);
+                                .build(&mut self.m_tuning2.bend_damping);
 
-				Slider::new("Hertz##B2", 0.0, 60.0)
+				ui.slider_config("Hertz##B2", 0.0, 60.0)
                                 .display_format("%.0f")
-                                .build(ui, &mut self.m_tuning2.bend_hertz);
+                                .build(&mut self.m_tuning2.bend_hertz);
 
-				Slider::new("Stiffness##B2", 0.0, 1.0)
+				ui.slider_config("Stiffness##B2", 0.0, 1.0)
                                 .display_format("%.1f")
-                                .build(ui, &mut self.m_tuning2.bend_stiffness);				
+                                .build(&mut self.m_tuning2.bend_stiffness);				
 
 				ui.checkbox(
 					"Isometric##2",
@@ -304,27 +302,27 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for Rope<D> {
 					}
 				}
 
-				Slider::new("Damping##S2", 0.0, 4.0)
+				ui.slider_config("Damping##S2", 0.0, 4.0)
                                 .display_format("%.1f")
-                                .build(ui, &mut self.m_tuning2.stretch_damping);
+                                .build(&mut self.m_tuning2.stretch_damping);
 
-				Slider::new("Hertz##S2", 0.0, 60.0)
+				ui.slider_config("Hertz##S2", 0.0, 60.0)
                                 .display_format("%.0f")
-                                .build(ui, &mut self.m_tuning2.stretch_hertz);
+                                .build(&mut self.m_tuning2.stretch_hertz);
 
-				Slider::new("Stiffness##S2", 0.0, 1.0)
+				ui.slider_config("Stiffness##S2", 0.0, 1.0)
                                 .display_format("%.1f")
-                                .build(ui, &mut self.m_tuning2.stretch_stiffness);
+                                .build(&mut self.m_tuning2.stretch_stiffness);
 
-				Slider::new("Iterations##S2", 1, 100)
+				ui.slider_config("Iterations##S2", 1, 100)
                                 .display_format("%d")
-                                .build(ui, &mut self.m_iterations2);
+                                .build(&mut self.m_iterations2);
 
 				ui.separator();
 
-				Slider::new("Speed", 10.0, 100.0)
+				ui.slider_config("Speed", 10.0, 100.0)
                                 .display_format("%.0f")
-                                .build(ui, &mut self.m_speed);
+                                .build(&mut self.m_speed);
 
 				if ui.button("Reset") {
 					self.m_position1.set(-5.0, 15.0);
@@ -332,8 +330,9 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for Rope<D> {
 					self.m_rope1.reset(self.m_position1);
 					self.m_rope2.reset(self.m_position2);
 				}
-
-				width_token.pop(ui);
+				
+				//TODO_humman fix
+				//width_token.pop(ui);
 			});	
 	
 		}
@@ -362,7 +361,7 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for Rope<D> {
 	}
 	fn step(
 		&mut self,
-		ui: &imgui::Ui<'_>,
+		ui: &imgui::Ui,
 		display: &F,
 		target: &mut glium::Frame,
 		settings: &mut Settings,

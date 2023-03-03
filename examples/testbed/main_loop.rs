@@ -8,7 +8,7 @@ use glium::glutin::event::{Event, VirtualKeyCode, WindowEvent, MouseButton, Modi
 use glium::glutin::event_loop::{ControlFlow, EventLoop};
 use glium::glutin::window::WindowBuilder;
 use glium::{Display, Surface};
-use imgui::{Context, FontConfig, FontGlyphRanges, FontSource, TreeNode, Slider, TabBar, TabItem};
+use imgui::{Context, FontConfig, FontGlyphRanges, FontSource, TabBar, TabItem};
 use imgui_glium_renderer::Renderer;
 use imgui_winit_support::{HiDpiMode, WinitPlatform};
 use std::time::Instant;
@@ -204,7 +204,7 @@ impl System {
                             control_flow,
                         );
 
-                        let draw_data = ui.render();
+                        let draw_data = imgui.render();
                         renderer
                             .render(&mut target, draw_data)
                             .expect("Rendering failed");
@@ -467,7 +467,7 @@ impl System {
     }
 
     fn update_ui<'a, D: UserDataType, F: Facade>(
-        ui: &imgui::Ui<'_>,
+        ui: &imgui::Ui,
         g_camera: &Camera,
         s_settings: &mut Settings,
         s_test: &mut TestPtr<D, F>,
@@ -480,7 +480,7 @@ impl System {
         if g_debug_draw.borrow().m_show_ui
         {
 
-            imgui::Window::new("Tools")
+            ui.window("Tools")
                 .title_bar(false)
                 .flags(
                     imgui::WindowFlags::NO_MOVE
@@ -495,20 +495,20 @@ impl System {
                     [menu_width as f32, (g_camera.m_height - 20) as f32],
                     imgui::Condition::Always,
                 )
-                .build(&ui, || {
-                    TabBar::new("ControlTabs").build(&ui, || {
-                        TabItem::new("Controls").build(&ui, || {
-                            Slider::new("Vel Iters", 0, 50)
+                .build(|| {
+                    TabBar::new("ControlTabs").build(ui, || {
+                        TabItem::new("Controls").build(ui, || {
+                            ui.slider_config("Vel Iters", 0, 50)
                                 .display_format("%.0f")
-                                .build(ui, &mut s_settings.m_velocity_iterations);
+                                .build(&mut s_settings.m_velocity_iterations);
   
-                            Slider::new("Pos Iter", 0, 50)
+                            ui.slider_config("Pos Iter", 0, 50)
                                 .display_format("%.0f")
-                                .build(ui, &mut s_settings.m_position_iterations);
+                                .build(&mut s_settings.m_position_iterations);
 
-                            Slider::new("Hertz", 5.0, 120.0)
+                            ui.slider_config("Hertz", 5.0, 120.0)
                                 .display_format("%.0f hz")
-                                .build(ui, &mut s_settings.m_hertz);
+                                .build(&mut s_settings.m_hertz);
 
                             ui.separator();
 
@@ -569,22 +569,22 @@ impl System {
                         let node_flags: imgui::TreeNodeFlags = imgui::TreeNodeFlags::OPEN_ON_ARROW
                             | imgui::TreeNodeFlags::OPEN_ON_DOUBLE_CLICK;
 
-                        TabItem::new("Tests").build(&ui, || {
+                        TabItem::new("Tests").build(ui, || {
                             let tests = &g_test_entries;
 
                             for (key, group) in &tests.into_iter().group_by(|v| v.category) {
                                 let category_selected: bool =
                                     g_test_entries[s_settings.m_test_index as usize].category == key;
 
-                                TreeNode::new(key)
+                                ui.tree_node_config(key)
                                     .flags(node_flags)
                                     .selected(category_selected)
-                                    .build(&ui, || {
+                                    .build(|| {
                                         for test in group {
-                                            TreeNode::new(test.name)
+                                            ui.tree_node_config(test.name)
                                                 .flags(leaf_node_flags)
                                                 .selected(s_settings.m_test_index == test.index)
-                                                .build(&ui, || {
+                                                .build(|| {
                                                     if ui.is_item_clicked_with_button(imgui::MouseButton::Left) {
                                                         s_settings.m_test_index = test.index;
                                                         *s_test = (g_test_entries

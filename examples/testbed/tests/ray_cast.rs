@@ -22,8 +22,6 @@ use glium::backend::Facade;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use imgui::{Slider};
-
 pub(crate) struct RayCast<D: UserDataType> {
 	base: TestBasePtr<D>,
 	destruction_listener: B2destructionListenerPtr<D>,
@@ -193,16 +191,16 @@ impl<F: Facade> TestDyn<UserDataTypes, F> for RayCast<UserDataTypes> {
 		return self.base.clone();
 	}
 
-	fn update_ui(&mut self, ui: &imgui::Ui<'_>)
+	fn update_ui(&mut self, ui: &imgui::Ui)
 	{
-		imgui::Window::new("Ray-cast Controls")
+		ui.window("Ray-cast Controls")
 			.flags(
 				imgui::WindowFlags::NO_MOVE
 					| imgui::WindowFlags::NO_RESIZE
 			)
 			.position([10.0, 100.0], imgui::Condition::Always)
 			.size([210.0, 285.0], imgui::Condition::Always)
-			.build(&ui, || {
+			.build(|| {
 				if ui.small_button("Shape 1")
 				{
 					self.create(0);
@@ -244,9 +242,9 @@ impl<F: Facade> TestDyn<UserDataTypes, F> for RayCast<UserDataTypes> {
 					self.m_mode = Mode::EMultiple;
 				}
 
-				Slider::new("Angle", 0.0, 360.0)
+				ui.slider_config("Angle", 0.0, 360.0)
                                 .display_format("%.0f")
-                                .build(ui, &mut self.m_degrees);
+                                .build(&mut self.m_degrees);
 
 			});
 
@@ -256,7 +254,7 @@ impl<F: Facade> TestDyn<UserDataTypes, F> for RayCast<UserDataTypes> {
 
 	fn step(
 		&mut self,
-		ui: &imgui::Ui<'_>,
+		ui: &imgui::Ui,
 		display: &F,
 		target: &mut glium::Frame,
 		settings: &mut Settings,

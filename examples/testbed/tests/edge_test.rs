@@ -291,8 +291,8 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for EdgeTest<D> {
 			}
 		}
 	}
-	fn update_ui(&mut self, ui: &imgui::Ui<'_>) {
-		imgui::Window::new("Custom Controls")
+	fn update_ui(&mut self, ui: &imgui::Ui) {
+		ui.window("Custom Controls")
 			.flags(
 				imgui::WindowFlags::NO_MOVE
 					| imgui::WindowFlags::NO_RESIZE
@@ -300,7 +300,7 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for EdgeTest<D> {
 			)
 			.position([10.0, 100.0], imgui::Condition::Always)
 			.size([200.0, 100.0], imgui::Condition::Always)
-			.build(&ui, || {
+			.build(|| {
 				if ui.radio_button_bool("Boxes", self.m_boxes == true) {
 					self.create_boxes();
 					self.m_boxes = true;
@@ -315,7 +315,7 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for EdgeTest<D> {
 
 	fn step(
 		&mut self,
-		ui: &imgui::Ui<'_>,
+		ui: &imgui::Ui,
 		display: &F,
 		target: &mut glium::Frame,
 		settings: &mut Settings,

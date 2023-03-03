@@ -161,15 +161,15 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for WreckingBall<D> {
 	fn get_base(&self) -> TestBasePtr<D> {
 		return self.base.clone();
 	}
-	fn update_ui(&mut self, ui: &imgui::Ui<'_>) {
-		imgui::Window::new("Wrecking Ball Controls")
+	fn update_ui(&mut self, ui: &imgui::Ui) {
+		ui.window("Wrecking Ball Controls")
 			.flags(
 				imgui::WindowFlags::NO_MOVE
 					| imgui::WindowFlags::NO_RESIZE
 			)
 			.position([10.0, 100.0], imgui::Condition::Always)
 			.size([200.0, 100.0], imgui::Condition::Always)
-			.build(&ui, || {
+			.build(|| {
 				if ui.checkbox("Stabilize", &mut self.m_stabilize) {
 					let m_world = self.base.borrow().m_world.clone();
 					if self.m_stabilize == true && self.m_distance_joint.is_none()
@@ -192,7 +192,7 @@ impl<D: UserDataType, F: Facade> TestDyn<D, F> for WreckingBall<D> {
 	}
 	fn step(
 		&mut self,
-		ui: &imgui::Ui<'_>,
+		ui: &imgui::Ui,
 		display: &F,
 		target: &mut glium::Frame,
 		settings: &mut Settings,

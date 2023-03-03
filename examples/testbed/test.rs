@@ -109,8 +109,8 @@ pub(crate) trait TestDyn<D: UserDataType, F:Facade>
 {
 	fn get_base(&self) -> TestBasePtr<D>;
 	
-	fn step(&mut self, ui: &imgui::Ui<'_>, display: &F, target: &mut glium::Frame, settings: &mut Settings, camera: &mut Camera);
-	fn update_ui(&mut self, _ui: &imgui::Ui<'_>) {}
+	fn step(&mut self, ui: &imgui::Ui, display: &F, target: &mut glium::Frame, settings: &mut Settings, camera: &mut Camera);
+	fn update_ui(&mut self, _ui: &imgui::Ui) {}
 	fn keyboard(&mut self, key: &KeyboardInput) {
 		b2_not_used(key);
 	}
@@ -199,11 +199,11 @@ impl<D: UserDataType> Test<D> {
 			g_debug_draw: global_draw,
 		};
 	}
-	pub fn draw_title(&mut self, ui: &imgui::Ui<'_>, string: &str) {
+	pub fn draw_title(&mut self, ui: &imgui::Ui, string: &str) {
 		private::draw_title(self, ui, string);
 	}
 
-	pub fn step<F:Facade>(self_: TestBasePtr<D>, ui: &imgui::Ui<'_>, display:&F, target: &mut glium::Frame, settings: &mut Settings, g_camera: Camera) {
+	pub fn step<F:Facade>(self_: TestBasePtr<D>, ui: &imgui::Ui, display:&F, target: &mut glium::Frame, settings: &mut Settings, g_camera: Camera) {
 		private::step(self_, ui, display, target, settings, g_camera);
 	}
 }

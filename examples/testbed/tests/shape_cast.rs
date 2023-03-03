@@ -134,7 +134,7 @@ impl<F: Facade> TestDyn<UserDataTypes, F> for ShapeCast<UserDataTypes> {
 	}
 	fn step(
 		&mut self,
-		ui: &imgui::Ui<'_>,
+		ui: &imgui::Ui,
 		display: &F,
 		target: &mut glium::Frame,
 		settings: &mut Settings,

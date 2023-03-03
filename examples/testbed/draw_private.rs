@@ -496,15 +496,15 @@ pub(crate) fn draw_point(self_: &mut TestBedDebugDraw, p: B2vec2, size: f32, col
 	self_.m_points.vertex(p, color, size);
 }
 
-pub(crate) fn draw_string(self_: &TestBedDebugDraw, ui: &imgui::Ui<'_>, p: B2vec2, text: &str) {
+pub(crate) fn draw_string(self_: &TestBedDebugDraw, ui: &imgui::Ui, p: B2vec2, text: &str) {
 	if self_.m_show_ui == false {
 		return;
 	}
-	imgui::Window::new("Overlay")
+	ui.window("Overlay")
 		.flags(imgui::WindowFlags::NO_DECORATION | imgui::WindowFlags::NO_BACKGROUND | imgui::WindowFlags::NO_INPUTS)
 		.position([0.0, 0.0], imgui::Condition::Always)
 		.size([2000.0, 2000.0], imgui::Condition::Always)
-		.build(ui, || {
+		.build(|| {
 			ui.set_cursor_pos([p.x,p.y]);
 			ui.text_colored(
 				[230.0 / 255.0, 153.0 / 255.0, 153.0 / 255.0, 255.0 / 255.0],
@@ -513,7 +513,7 @@ pub(crate) fn draw_string(self_: &TestBedDebugDraw, ui: &imgui::Ui<'_>, p: B2vec
 		});
 }
 
-pub(crate) fn draw_string_world(self_: &TestBedDebugDraw, ui: &imgui::Ui<'_>, camera: Camera, pw: B2vec2, text: &str) {
+pub(crate) fn draw_string_world(self_: &TestBedDebugDraw, ui: &imgui::Ui, camera: Camera, pw: B2vec2, text: &str) {
 	if self_.m_show_ui == false {
 		return;
 	}

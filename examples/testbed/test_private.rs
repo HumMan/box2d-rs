@@ -68,7 +68,7 @@ pub(crate) fn pre_solve<D: UserDataType>(
 	}
 }
 
-pub(crate) fn draw_title<D: UserDataType>(self_: &mut Test<D>, ui: &imgui::Ui<'_>, string: &str) {
+pub(crate) fn draw_title<D: UserDataType>(self_: &mut Test<D>, ui: &imgui::Ui, string: &str) {
 	self_
 		.g_debug_draw
 		.borrow_mut()
@@ -243,7 +243,7 @@ pub(crate) fn launch_bomb<D: UserDataType>(
 
 pub(crate) fn step<D: UserDataType, F: Facade>(
 	self_: TestBasePtr<D>,
-	ui: &imgui::Ui<'_>,
+	ui: &imgui::Ui,
 	display: &F,
 	target: &mut glium::Frame,
 	settings: &mut Settings,
