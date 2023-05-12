@@ -7,7 +7,7 @@ description = "Port of Box2d to Rust"
 readme = "README.md"
 license = "MIT"
 edition = "2021"
-rust-version = "1.51.0"
+rust-version = "1.56.0"
 exclude = [
     "resources/*"
 ]
