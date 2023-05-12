@@ -21,7 +21,7 @@ jobs:
       run: sudo apt-get install libxcb-composite0-dev
     - uses: actions/checkout@v2
     - name: Build
-      run: cargo build --verbose
+      run: cargo build --verbose --examples --tests --features serde_support
     - name: Run tests
       run: cargo test --verbose
       
@@ -32,6 +32,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build
-      run: cargo build
+      run: cargo build --examples --tests --features serde_support
     - name: Run tests
       run: cargo test   

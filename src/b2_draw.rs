@@ -51,7 +51,7 @@ pub struct B2draw {
 }
 
 bitflags! {
-    #[derive(Default)]
+    #[derive(Debug, Clone, Copy, Default)]
     pub struct B2drawShapeFlags: u16 {
     /// draw shapes
     const SHAPE_BIT = 0x0001;

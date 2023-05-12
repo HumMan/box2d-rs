@@ -209,7 +209,6 @@ impl<D: UserDataType> Drop for B2body<D>
 bitflags! {
 	/// m_flags
 	#[derive(Default)]
-	#[cfg_attr(feature = "serde_support", derive(Serialize, Deserialize))]
 	pub struct BodyFlags: u16 {
 		const E_ISLAND_FLAG		= 0x0001;
 		const E_AWAKE_FLAG			= 0x0002;
