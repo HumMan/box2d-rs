@@ -4,6 +4,7 @@ version = "0.0.4"
 authors = ["HumMan <kop3nha@gmail.com>"]
 repository = "https://github.com/humman/box2d-rs"
 description = "Port of Box2d to Rust"
+keywords = ["physics", "2d", "box2d"]
 readme = "README.md"
 license = "MIT"
 edition = "2021"
