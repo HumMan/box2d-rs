@@ -171,7 +171,7 @@ impl System {
 
                     {
                         let ui = imgui.frame();
-                        target.clear_color_srgb(0.2, 0.2, 0.2, 1.0);
+                        target.clear_color(0.2, 0.2, 0.2, 1.0);
                         platform.prepare_render(&ui, gl_window.window());
 
                         if g_debug_draw.borrow().m_show_ui                        
@@ -499,11 +499,11 @@ impl System {
                     TabBar::new("ControlTabs").build(ui, || {
                         TabItem::new("Controls").build(ui, || {
                             ui.slider_config("Vel Iters", 0, 50)
-                                .display_format("%.0f")
+                                .display_format("%d")
                                 .build(&mut s_settings.m_velocity_iterations);
   
                             ui.slider_config("Pos Iter", 0, 50)
-                                .display_format("%.0f")
+                                .display_format("%d")
                                 .build(&mut s_settings.m_position_iterations);
 
                             ui.slider_config("Hertz", 5.0, 120.0)
