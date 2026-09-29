@@ -2,7 +2,7 @@
 
 A native port of [Box2D](https://github.com/erincatto/box2d) to Rust.
 
-Minimum Rust version: 1.56.0 (1.61 for dev-dependecies)
+Minimum Rust version: 1.56.0 (1.61 for dev-dependecies, 1.60 for `wasm32-unknown-unknown` support)
 
 Ported Box2D version: 2.4.2
 

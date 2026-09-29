@@ -10,8 +10,10 @@ pub const B2_DEBUG:bool = true;
 pub const B2_DEBUG:bool = false;
 
 pub fn b2_not_used<T>(_x: T) {}
+/// Checks an internal invariant in debug builds only, as `b2Assert` in C++ Box2D.
+/// Release builds continue with the fallback that follows each check.
 pub fn b2_assert(a: bool) {
-    assert!(a);
+    debug_assert!(a);
 }
 
 pub const B2_MAX_FLOAT: f32 = f32::MAX;

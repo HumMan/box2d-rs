@@ -572,7 +572,7 @@ impl System {
                         TabItem::new("Tests").build(ui, || {
                             let tests = &g_test_entries;
 
-                            for (key, group) in &tests.into_iter().group_by(|v| v.category) {
+                            for (key, group) in &tests.into_iter().chunk_by(|v| v.category) {
                                 let category_selected: bool =
                                     g_test_entries[s_settings.m_test_index as usize].category == key;
 
